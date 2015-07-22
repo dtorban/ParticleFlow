@@ -6,12 +6,15 @@
  * 		Dan Orban (dtorban)
  */
 
-#include <gpu/include/PFGpu/partflow/CudaParticleSet.h>
+#include <gpu/include/PFGpu/partflow/CudaParticleSet.cuh>
 
 namespace PFCore {
 namespace partflow {
 
-CudaParticleSet::CudaParticleSet(int deviceId, int numParticles, int numValues, int numVectors) : ParticleSet(), _deviceId(deviceId), _numParticles(numParticles), _numValues(numValues), _numVectors(numVectors) {
+CudaParticleSet::CudaParticleSet(int deviceId, int numParticles, int numValues, int numVectors) : ParticleSet(), _deviceId(deviceId) {
+	_numParticles = numParticles;
+	_numValues = numValues;
+	_numVectors = numVectors;
 	cudaSetDevice(deviceId);
 	cudaMalloc(&_positions, numParticles*sizeof(math::vec3));
 	cudaMalloc(&_values, numParticles*numValues*sizeof(float));

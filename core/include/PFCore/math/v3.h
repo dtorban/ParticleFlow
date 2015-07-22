@@ -69,7 +69,7 @@ PF_ENV_API v3<T>::v3(T xval, T yval, T zval) {
 }
 
 template<typename T>
-PF_ENV_API v3<T>::~v3() {
+v3<T>::~v3() {
 }
 
 template<typename T>

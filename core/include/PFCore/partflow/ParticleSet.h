@@ -18,15 +18,15 @@ class ParticleSet {
 public:
 	PF_ENV_API ParticleSet(const ParticleSet& particleSet);
 	ParticleSet(int numParticles, int numValues, int numVectors);
-	PF_ENV_API virtual ~ParticleSet();
+	virtual ~ParticleSet();
 
 	PF_ENV_API inline int getNumParticles() const;
 	PF_ENV_API inline int getNumValues() const;
 	PF_ENV_API inline int getNumVectors() const;
 
-	PF_ENV_API inline const math::vec3*& getPositions() const;
+	PF_ENV_API inline const math::vec3* getPositions() const;
 	PF_ENV_API inline float* getValues() const;
-	PF_ENV_API inline const math::vec3*& getVectors() const;
+	PF_ENV_API inline const math::vec3* getVectors() const;
 
 	PF_ENV_API inline math::vec3& getPosition(int index);
 	PF_ENV_API inline float& getValue(int valueIndex, int index);
@@ -70,7 +70,7 @@ ParticleSet::ParticleSet(int numParticles, int numValues, int numVectors) : _num
 	_vectors = new math::vec3[numParticles*numVectors];
 }
 
-PF_ENV_API ParticleSet::~ParticleSet()
+ParticleSet::~ParticleSet()
 {
 	if (_createdArrays)
 	{
@@ -91,7 +91,7 @@ PF_ENV_API inline int ParticleSet::getNumVectors() const {
 	return _numVectors;
 }
 
-PF_ENV_API inline const math::vec3*& ParticleSet::getPositions() const {
+PF_ENV_API inline const math::vec3* ParticleSet::getPositions() const {
 	return _positions;
 }
 
@@ -99,7 +99,7 @@ PF_ENV_API inline float* ParticleSet::getValues() const {
 	return _values;
 }
 
-PF_ENV_API inline const math::vec3*& ParticleSet::getVectors() const {
+PF_ENV_API inline const math::vec3* ParticleSet::getVectors() const {
 	return _vectors;
 }
 
@@ -113,9 +113,6 @@ PF_ENV_API inline float& ParticleSet::getValue(int valueIndex, int index) {
 
 PF_ENV_API inline math::vec3& ParticleSet::getVector(int valueIndex, int index) {
 	return _vectors[valueIndex*_numParticles + index];
-}
-
-inline ParticleSet::~ParticleSet() {
 }
 
 inline size_t ParticleSet::getSize() {

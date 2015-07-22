@@ -12,15 +12,27 @@ set (CMAKE_VERBOSE_MAKEFILE TRUE)
 project (partflow_gpu)
 
 #------------------------------------------
+# Library detection
+#------------------------------------------
+
+find_package(CUDA)
+if (CUDA_FOUND)
+        message("CUDA found")
+        set(USE_CUDA ON)
+        add_definitions(-DUSE_CUDA)
+endif()
+
+
+#------------------------------------------
 # Define the source and header files
 #------------------------------------------
 
 set (CUDA_SOURCEFILES 
-include/PFGpu/partflow/CudaParticleSet.h
+include/PFGpu/partflow/CudaParticleSet.cuh
 )
 
 set (CUDA_HEADERFILES 
-source/partflow/CudaParticleSet.cpp
+source/partflow/CudaParticleSet.cu
 )
 
 set (SOURCEFILES 
@@ -44,18 +56,6 @@ include_directories (
 
 source_group("Header Files" FILES ${HEADERFILES})
 source_group("Source Files" FILES ${SOURCEFILES})
-
-
-#------------------------------------------
-# Library detection
-#------------------------------------------
-
-find_package(CUDA)
-if (CUDA_FOUND)
-	message("CUDA found")
-	set(USE_CUDA ON)
-	add_definitions(-DUSE_CUDA)
-endif()
 
 #------------------------------------------
 # Set output directories to lib, and bin
