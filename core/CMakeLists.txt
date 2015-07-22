@@ -16,10 +16,20 @@ project (partflow)
 #------------------------------------------
 
 set (SOURCEFILES
-source/test.cpp
+source/input/loaders/BlankLoader.cpp
+source/input/loaders/BrickOfFloatLoader.cpp
+source/input/loaders/CompositeDataLoader.cpp
+source/input/loaders/ScaleLoader.cpp
+source/input/loaders/VectorLoader.cpp
 )
 
 set (HEADERFILES
+include/PFCore/input/loaders/BlankLoader.h
+include/PFCore/input/loaders/BrickOfFloatLoader.h
+include/PFCore/input/loaders/CompositeDataLoader.h
+include/PFCore/input/loaders/ScaleLoader.h
+include/PFCore/input/loaders/VectorLoader.h
+include/PFCore/input/DataLoader.h
 include/PFCore/math/v3.h
 include/PFCore/math/v4.h
 include/PFCore/math/vec_math.h
@@ -35,7 +45,7 @@ source_group("Header Files" FILES ${HEADERFILES})
 include_directories (
   .
   ..
-  include/PFCore
+  include
 )
 
 #------------------------------------------

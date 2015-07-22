@@ -6,5 +6,25 @@
  * 		Dan Orban (dtorban)
  */
 
+#ifndef BLANKLOADER_H_
+#define BLANKLOADER_H_
 
+#include "PFCore/input/DataLoader.h"
 
+namespace PFCore {
+namespace input {
+
+class BlankLoader : public DataLoader {
+public:
+	BlankLoader(float val = 0);
+	virtual ~BlankLoader();
+
+	bool load(float *data, int size);
+
+private:
+	float _val;
+};
+
+}}
+
+#endif /* BLANKLOADER_H_ */

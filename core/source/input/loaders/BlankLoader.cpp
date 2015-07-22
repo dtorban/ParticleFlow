@@ -6,23 +6,29 @@
  * 		Dan Orban (dtorban)
  */
 
-#include <iostream>
-#include "PFCore/math/v3.h"
 #include "PFCore/input/loaders/BlankLoader.h"
+#include <iostream>
 
-using namespace PFCore::math;
-using namespace PFCore::input;
-using namespace std;
+namespace PFCore {
+namespace input {
 
-int main(int argc, char** argv) {
+BlankLoader::BlankLoader(float val) : _val(val) {
+	// TODO Auto-generated constructor stub
 
-	BlankLoader loader(2.0);
-	float data[10];
-	loader.load(data,10);
-	cout << data[5] << endl;
-
-	vec3 test(1.0);
-	cout << test.x << "," << test.y << "," << test.z << endl;
-
-	return 0;
 }
+
+BlankLoader::~BlankLoader() {
+	// TODO Auto-generated destructor stub
+}
+
+bool BlankLoader::load(float* data, int size) {
+	for (int f = 0; f < size; f++)
+	{
+		data[f] = _val;
+
+	}
+
+	return true;
+}
+
+}}
