@@ -16,9 +16,11 @@ project (partflow_gpu)
 #------------------------------------------
 
 set (CUDA_SOURCEFILES 
+include/PFGpu/partflow/CudaParticleSet.h
 )
 
 set (CUDA_HEADERFILES 
+source/partflow/CudaParticleSet.cpp
 )
 
 set (SOURCEFILES 
@@ -92,6 +94,8 @@ endif()
 #------------------------------------------
 # Install Target
 #------------------------------------------
+
+install(DIRECTORY include/ DESTINATION include)
 
 install( TARGETS ${PROJECT_NAME}
          LIBRARY DESTINATION lib

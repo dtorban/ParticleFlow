@@ -66,58 +66,58 @@ PF_ENV_API v4<T>::~v4() {
 }
 
 template <typename T>
-PF_ENV_API void v4<T>::operator=(const v4<T> &v) {
+PF_ENV_API inline void v4<T>::operator=(const v4<T> &v) {
 	v3<T>::operator=(v);
 	w = v.w;
 }
 
 template <typename T>
-PF_ENV_API void v4<T>::operator+=(const v4<T> &v) {
+PF_ENV_API inline void v4<T>::operator+=(const v4<T> &v) {
 	v3<T>::operator+=(v);
 	w += v.w;
 }
 
 template <typename T>
-PF_ENV_API v4<T> v4<T>::operator+(const v4<T> &v) const {
+PF_ENV_API inline v4<T> v4<T>::operator+(const v4<T> &v) const {
 	v4<T> nv = *this;
 	nv += v;
 	return nv;
 }
 
 template <typename T>
-PF_ENV_API void v4<T>::operator-=(const v4<T> &v) {
+PF_ENV_API inline void v4<T>::operator-=(const v4<T> &v) {
 	v3<T>::operator-=(v);
 	w -= v.w;
 }
 
 template <typename T>
-PF_ENV_API v4<T> v4<T>::operator-(const v4<T> &v) const {
+PF_ENV_API inline v4<T> v4<T>::operator-(const v4<T> &v) const {
 	v4<T> nv = *this;
 	nv -= v;
 	return nv;
 }
 
 template <typename T>
-PF_ENV_API void v4<T>::operator*=(const v4<T> &v) {
+PF_ENV_API inline void v4<T>::operator*=(const v4<T> &v) {
 	v3<T>::operator*=(v);
 	w *= v.w;
 }
 
 template <typename T>
-PF_ENV_API v4<T> v4<T>::operator*(const v4<T> &v) const {
+PF_ENV_API inline v4<T> v4<T>::operator*(const v4<T> &v) const {
 	v4<T> nv = *this;
 	nv *= v;
 	return nv;
 }
 
 template <typename T>
-PF_ENV_API void v4<T>::operator/=(const v4<T> &v) {
+PF_ENV_API inline void v4<T>::operator/=(const v4<T> &v) {
 	v3<T>::operator/=(v);
 	w /= v.w;
 }
 
 template <typename T>
-PF_ENV_API v4<T> v4<T>::operator/(const v4<T> &v) const {
+PF_ENV_API inline v4<T> v4<T>::operator/(const v4<T> &v) const {
 	v4<T> nv = *this;
 	nv /= v;
 	return nv;

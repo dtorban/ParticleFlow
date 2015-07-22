@@ -73,63 +73,63 @@ PF_ENV_API v3<T>::~v3() {
 }
 
 template<typename T>
-PF_ENV_API void v3<T>::operator=(const v3<T> &v) {
+PF_ENV_API inline void v3<T>::operator=(const v3<T> &v) {
 	x = v.x;
 	y = v.y;
 	z = v.z;
 }
 
 template<typename T>
-PF_ENV_API void v3<T>::operator+=(const v3<T> &v) {
+PF_ENV_API inline void v3<T>::operator+=(const v3<T> &v) {
 	x += v.x;
 	y += v.y;
 	z += v.z;
 }
 
 template<typename T>
-PF_ENV_API v3<T> v3<T>::operator+(const v3<T> &v) const {
+PF_ENV_API inline v3<T> v3<T>::operator+(const v3<T> &v) const {
 	v3<T> nv = *this;
 	nv += v;
 	return nv;
 }
 
 template<typename T>
-PF_ENV_API void v3<T>::operator-=(const v3<T> &v) {
+PF_ENV_API inline void v3<T>::operator-=(const v3<T> &v) {
 	x -= v.x;
 	y -= v.y;
 	z -= v.z;
 }
 
 template<typename T>
-PF_ENV_API v3<T> v3<T>::operator-(const v3<T> &v) const {
+PF_ENV_API inline v3<T> v3<T>::operator-(const v3<T> &v) const {
 	v3<T> nv = *this;
 	nv -= v;
 	return nv;
 }
 
 template<typename T>
-PF_ENV_API void v3<T>::operator*=(const v3<T> &v) {
+PF_ENV_API inline void v3<T>::operator*=(const v3<T> &v) {
 	x *= v.x;
 	y *= v.y;
 	z *= v.z;
 }
 
 template<typename T>
-PF_ENV_API v3<T> v3<T>::operator*(const v3<T> &v) const {
+PF_ENV_API inline v3<T> v3<T>::operator*(const v3<T> &v) const {
 	v3<T> nv = *this;
 	nv *= v;
 	return nv;
 }
 
 template<typename T>
-PF_ENV_API void v3<T>::operator/=(const v3<T> &v) {
+PF_ENV_API inline void v3<T>::operator/=(const v3<T> &v) {
 	x /= v.x;
 	y /= v.y;
 	z /= v.z;
 }
 
 template<typename T>
-PF_ENV_API v3<T> v3<T>::operator/(const v3<T> &v) const {
+PF_ENV_API inline v3<T> v3<T>::operator/(const v3<T> &v) const {
 	v3<T> nv = *this;
 	nv /= v;
 	return nv;
