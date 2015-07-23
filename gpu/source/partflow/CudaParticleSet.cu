@@ -11,14 +11,15 @@
 namespace PFCore {
 namespace partflow {
 
-CudaParticleSet::CudaParticleSet(int deviceId, int numParticles, int numValues, int numVectors) : ParticleSet(), _deviceId(deviceId) {
+CudaParticleSet::CudaParticleSet(int deviceId, int numParticles, int numValues, int numVectors, int numSteps) : ParticleSet(), _deviceId(deviceId) {
 	_numParticles = numParticles;
 	_numValues = numValues;
 	_numVectors = numVectors;
+	_numSteps = numSteps;
 	cudaSetDevice(deviceId);
-	cudaMalloc(&_positions, numParticles*sizeof(math::vec3));
-	cudaMalloc(&_values, numParticles*numValues*sizeof(float));
-	cudaMalloc(&_vectors, numParticles*numVectors*sizeof(math::vec3));
+	cudaMalloc(&_positions, numSteps*numParticles*sizeof(math::vec3));
+	cudaMalloc(&_values, numSteps*numParticles*numValues*sizeof(float));
+	cudaMalloc(&_vectors, numSteps*numParticles*numVectors*sizeof(math::vec3));
 }
 
 CudaParticleSet::~CudaParticleSet() {

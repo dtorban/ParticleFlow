@@ -9,9 +9,11 @@
 #include <iostream>
 #include "PFCore/math/v3.h"
 #include "PFCore/input/loaders/BlankLoader.h"
+#include "PFCore/partflow/ParticleSet.h"
 
 using namespace PFCore::math;
 using namespace PFCore::input;
+using namespace PFCore::partflow;
 using namespace std;
 
 int main(int argc, char** argv) {
@@ -23,6 +25,23 @@ int main(int argc, char** argv) {
 
 	vec3 test(1.0);
 	cout << test.x << "," << test.y << "," << test.z << endl;
+
+	ParticleSet pset(10, 0, 0);
+	for (int f = 0; f < pset.getNumParticles(); f++)
+	{
+		pset.getPosition(f) = vec3(0.0);
+	}
+
+	for (int f = 0; f < pset.getNumParticles(); f++)
+	{
+		pset.getPosition(f) += vec3(f);
+	}
+
+	for (int f = 0; f < pset.getNumParticles(); f++)
+	{
+		vec3& pos = pset.getPosition(f);
+		cout << pos.x << "," << pos.y << "," << pos.z << endl;
+	}
 
 	return 0;
 }
