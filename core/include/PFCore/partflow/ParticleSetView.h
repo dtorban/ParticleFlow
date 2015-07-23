@@ -32,6 +32,8 @@ public:
 	PF_ENV_API inline float& getValue(int valueIndex, int index, int step = 0);
 	PF_ENV_API inline math::vec3& getVector(int valueIndex, int index, int step = 0);
 
+	PF_ENV_API inline void operator=(const ParticleSetView& particleSet);
+
 	size_t getSize();
 
 protected:
@@ -103,6 +105,16 @@ PF_ENV_API inline float& ParticleSetView::getValue(int valueIndex, int index, in
 
 PF_ENV_API inline math::vec3& ParticleSetView::getVector(int valueIndex, int index, int step) {
 	return _vectors[_numSteps*_numParticles*_numVectors + valueIndex*_numParticles + index];
+}
+
+PF_ENV_API inline void ParticleSetView::operator =(const ParticleSetView& particleSet) {
+	_positions = particleSet._positions;
+	_values = particleSet._values;
+	_vectors = particleSet._vectors;
+	_numParticles = particleSet._numParticles;
+	_numValues = particleSet._numValues;
+	_numVectors = particleSet._numVectors;
+	_numSteps = particleSet._numSteps;
 }
 
 inline size_t ParticleSetView::getSize() {
