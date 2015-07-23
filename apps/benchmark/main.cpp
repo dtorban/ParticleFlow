@@ -26,7 +26,7 @@ int main(int argc, char** argv) {
 	vec3 test(1.0);
 	cout << test.x << "," << test.y << "," << test.z << endl;
 
-	ParticleSet pset(10, 0, 0);
+	ParticleSet pset(10, 0, 0, 3);
 	for (int f = 0; f < pset.getNumParticles(); f++)
 	{
 		pset.getPosition(f) = vec3(0.0);
@@ -42,6 +42,8 @@ int main(int argc, char** argv) {
 		vec3& pos = pset.getPosition(f);
 		cout << pos.x << "," << pos.y << "," << pos.z << endl;
 	}
+
+	cout << pset.getSize() << endl;
 
 	return 0;
 }

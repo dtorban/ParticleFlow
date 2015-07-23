@@ -33,6 +33,7 @@ include/PFCore/input/DataLoader.h
 include/PFCore/math/v3.h
 include/PFCore/math/v4.h
 include/PFCore/math/vec_math.h
+include/PFCore/partflow/ParticleSetView.h
 include/PFCore/partflow/ParticleSet.h
 include/PFCore/env_cuda.h
 include/PFCore/env.h
