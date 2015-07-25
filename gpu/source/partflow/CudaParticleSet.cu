@@ -29,5 +29,10 @@ CudaParticleSet::~CudaParticleSet() {
 	cudaFree(_vectors);
 }
 
+ParticleSet* createCudaParticleSet(int deviceId, int numParticles, int numValues, int numVectors, int numSteps)
+{
+	return new CudaParticleSet(deviceId, numParticles, numValues, numVectors, numSteps);
+}
+
 } /* namespace partflow */
 }

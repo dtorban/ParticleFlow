@@ -31,6 +31,7 @@ include_directories (
   .
   ..
   ../../core/include
+  ../../gpu/include
 )
 
 #------------------------------------------
