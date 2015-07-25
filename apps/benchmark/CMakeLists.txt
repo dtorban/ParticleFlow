@@ -71,7 +71,7 @@ endforeach(CONF CMAKE_CONFIGURATION_TYPES)
 #------------------------------------------
 
 add_executable(${PROJECT_NAME} ${HEADERFILES} ${SOURCEFILES})
-target_link_libraries(${PROJECT_NAME} partflow ${All_LIB})
+target_link_libraries(${PROJECT_NAME} partflow partflow_gpu ${All_LIB})
 
 #------------------------------------------
 # Install Target

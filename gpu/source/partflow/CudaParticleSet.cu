@@ -29,6 +29,7 @@ CudaParticleSet::~CudaParticleSet() {
 	cudaFree(_vectors);
 }
 
+extern "C"
 ParticleSet* createCudaParticleSet(int deviceId, int numParticles, int numValues, int numVectors, int numSteps)
 {
 	return new CudaParticleSet(deviceId, numParticles, numValues, numVectors, numSteps);

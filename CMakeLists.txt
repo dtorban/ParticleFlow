@@ -34,6 +34,13 @@ source_group("Header Files" FILES ${HEADERFILES})
 #find_package method should be used here.
 ############################################################
 
+find_package(CUDA)
+if (CUDA_FOUND)
+        message("CUDA found")
+        set(USE_CUDA ON)
+        add_definitions(-DUSE_CUDA)
+endif()
+
 ############################################################
 #End external library searching
 ############################################################
