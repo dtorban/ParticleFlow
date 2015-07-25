@@ -10,6 +10,7 @@
 #include "PFCore/math/v3.h"
 #include "PFCore/input/loaders/BlankLoader.h"
 #include "PFCore/partflow/ParticleSet.h"
+#include "PFCore/partflow/emitters/SphereEmitter.h"
 
 using namespace PFCore::math;
 using namespace PFCore::input;
@@ -44,6 +45,18 @@ int main(int argc, char** argv) {
 	}
 
 	cout << pset.getSize() << endl;
+
+	SphereEmitter emitter(vec3(0.0f), 1.0f, 1);
+	for (int f = 0; f < pset.getNumSteps(); f++)
+	{
+		emitter.emitParticles(pset, f);
+	}
+
+	for (int f = 0; f < pset.getNumParticles(); f++)
+	{
+		vec3& pos = pset.getPosition(f);
+		cout << pos.x << "," << pos.y << "," << pos.z << endl;
+	}
 
 	return 0;
 }

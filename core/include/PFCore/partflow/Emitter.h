@@ -6,17 +6,22 @@
  * 		Dan Orban (dtorban)
  */
 
-#ifndef PF_ENV_CUDA_H_
-#define PF_ENV_CUDA_H_
+#ifndef EMITTER_H_
+#define EMITTER_H_
 
-#define PF_ENV_API __host__ __device__
+#include "PFCore/partflow/ParticleSetView.h"
 
 namespace PFCore {
 namespace partflow {
 
-struct RandomArrayValue;
-#define RandomValue RandomArrayValue
+class Emitter {
+public:
+	virtual ~Emitter() {}
 
-}}
+	virtual void emitParticles(ParticleSetView& particleSet, int step) = 0;
+};
 
-#endif /* PF_ENV_CUDA_H_ */
+} /* namespace partflow */
+} /* namespace PFCore */
+
+#endif /* EMITTER_H_ */
