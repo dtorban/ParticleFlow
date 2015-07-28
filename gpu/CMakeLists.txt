@@ -28,6 +28,7 @@ endif()
 #------------------------------------------
 
 set (CUDA_SOURCEFILES 
+include/PFGpu/partflow/emitters/CudaEmitter.cuh
 include/PFGpu/partflow/CudaParticleSet.cuh
 )
 

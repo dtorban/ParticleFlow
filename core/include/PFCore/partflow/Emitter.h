@@ -18,7 +18,7 @@ class Emitter {
 public:
 	virtual ~Emitter() {}
 
-	virtual void emitParticles(ParticleSetView& particleSet, int step) = 0;
+	virtual void emitParticles(ParticleSetView& particleSet, int step, bool init = false) = 0;
 };
 
 } /* namespace partflow */

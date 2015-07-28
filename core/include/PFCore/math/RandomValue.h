@@ -13,13 +13,17 @@
 #include <cstdlib>
 
 namespace PFCore {
-namespace partflow {
+namespace math {
 
 struct RandomValueGenerator
 {
 	PF_ENV_API inline float getValue(int i) const
 	{
 		return float(std::rand())/RAND_MAX;
+	}
+
+	PF_ENV_API inline void operator=(const RandomValueGenerator &rndVal)
+	{
 	}
 };
 
@@ -32,6 +36,13 @@ struct RandomArrayValue
 	PF_ENV_API inline float getValue(int i) const
 	{
 		return rnd[(i + frameRand)%numRand];
+	}
+
+	PF_ENV_API inline void operator=(const RandomArrayValue &rndVal)
+	{
+		rnd = rndVal.rnd;
+		numRand = rndVal.numRand;
+		frameRand = rndVal.frameRand;
 	}
 };
 

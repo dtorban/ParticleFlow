@@ -12,7 +12,7 @@
 #define PF_ENV_API __host__ __device__
 
 namespace PFCore {
-namespace partflow {
+namespace math {
 
 struct RandomArrayValue;
 #define RandomValue RandomArrayValue

@@ -10,8 +10,9 @@
 #include "PFCore/math/v3.h"
 #include "PFCore/input/loaders/BlankLoader.h"
 #include "PFCore/partflow/ParticleSet.h"
-#include "PFCore/partflow/emitters/SphereEmitter.h"
-#include "PFGpu/partflow/CudaParticleSetFactory.h"
+#include "PFCore/partflow/emitters/BasicEmitter.h"
+#include "PFCore/partflow/emitters/strategies/SphereEmitter.h"
+//#include "PFGpu/partflow/CudaParticleSetFactory.h"
 
 using namespace PFCore::math;
 using namespace PFCore::input;
@@ -20,10 +21,10 @@ using namespace std;
 
 int main(int argc, char** argv) {
 
-	CudaParticleSetFactory f(0);
-	f.createParticleSet(10);
+	//CudaParticleSetFactory f(0);
+	//f.createParticleSet(10);
 
-	/*
+
 	BlankLoader loader(2.0);
 	float data[10];
 	loader.load(data,10);
@@ -51,7 +52,7 @@ int main(int argc, char** argv) {
 
 	cout << pset.getSize() << endl;
 
-	SphereEmitter emitter(vec3(0.0f), 1.0f, 1);
+	BasicEmitter<SphereEmitter> emitter(SphereEmitter(vec3(0.0f), 1.0f, 1, RandomValue()));
 	for (int f = 0; f < pset.getNumSteps(); f++)
 	{
 		emitter.emitParticles(pset, f);
@@ -61,7 +62,7 @@ int main(int argc, char** argv) {
 	{
 		vec3& pos = pset.getPosition(f);
 		cout << pos.x << "," << pos.y << "," << pos.z << endl;
-	}*/
+	}
 
 	return 0;
 }
