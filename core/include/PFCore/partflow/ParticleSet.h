@@ -16,41 +16,36 @@ namespace partflow {
 
 class ParticleSet : public ParticleSetView {
 public:
-	ParticleSet(int numParticles, int numValues, int numVectors, int numSteps = 1);
-	virtual ~ParticleSet();
+	ParticleSet(int numParticles, int numValues, int numVectors, int numSteps = 1) : ParticleSetView()
+	{
+		_numParticles = numParticles;
+		_numValues = numValues;
+		_numVectors = numVectors;
+		_numSteps = numSteps;
+		_createdArrays = true;
+		_positions = new math::vec3[numSteps*numParticles];
+		_values = new float[numSteps*numParticles*numValues];
+		_vectors = new math::vec3[numSteps*numParticles*numVectors];
+	}
+
+	virtual ~ParticleSet()
+	{
+		if (_createdArrays)
+		{
+			delete[] _positions;
+			delete[] _values;
+			delete[] _vectors;
+		}
+	}
 
 private:
 	bool _createdArrays;
 
 protected:
-	ParticleSet();
-};
-
-ParticleSet::ParticleSet(int numParticles, int numValues, int numVectors, int numSteps) : ParticleSetView()
-{
-	_numParticles = numParticles;
-	_numValues = numValues;
-	_numVectors = numVectors;
-	_numSteps = numSteps;
-	_createdArrays = true;
-	_positions = new math::vec3[numSteps*numParticles];
-	_values = new float[numSteps*numParticles*numValues];
-	_vectors = new math::vec3[numSteps*numParticles*numVectors];
-}
-
-ParticleSet::ParticleSet() : ParticleSetView(), _createdArrays(false)
-{
-}
-
-ParticleSet::~ParticleSet()
-{
-	if (_createdArrays)
+	ParticleSet() : ParticleSetView(), _createdArrays(false)
 	{
-		delete[] _positions;
-		delete[] _values;
-		delete[] _vectors;
 	}
-}
+};
 
 } /* namespace partflow */
 } /* namespace PFCore */

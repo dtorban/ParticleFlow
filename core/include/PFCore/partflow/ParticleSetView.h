@@ -16,8 +16,20 @@ namespace partflow {
 
 class ParticleSetView {
 public:
-	PF_ENV_API ParticleSetView(const ParticleSetView& particleSet);
-	PF_ENV_API ~ParticleSetView();
+	PF_ENV_API ParticleSetView(const ParticleSetView& particleSet)
+	{
+		_positions = particleSet._positions;
+		_values = particleSet._values;
+		_vectors = particleSet._vectors;
+		_numParticles = particleSet._numParticles;
+		_numValues = particleSet._numValues;
+		_numVectors = particleSet._numVectors;
+		_numSteps = particleSet._numSteps;
+		_startIndex = particleSet._startIndex;
+		_length = particleSet._length;
+	}
+
+	PF_ENV_API ~ParticleSetView() {}
 
 	PF_ENV_API inline int getNumParticles() const;
 	PF_ENV_API inline int getNumValues() const;
@@ -36,7 +48,9 @@ public:
 
 	PF_ENV_API inline ParticleSetView getView(int startIndex, int length);
 
-	size_t getSize();
+	size_t getSize() {
+		return _numSteps*getLength()*(sizeof(math::vec3) + _numValues*sizeof(float) + _numVectors*sizeof(math::vec3));
+	}
 
 private:
 	PF_ENV_API inline int getLength() const;
@@ -45,7 +59,11 @@ private:
 	int _length;
 
 protected:
-	PF_ENV_API ParticleSetView();
+	PF_ENV_API ParticleSetView() :
+		_positions(0), _values(0), _vectors(0), _numParticles(0), _numValues(0), _numVectors(
+				0), _numSteps(0), _startIndex(0), _length(-1)
+	{
+	}
 
 	math::vec3* _positions;
 	float* _values;
@@ -55,29 +73,6 @@ protected:
 	int _numVectors;
 	int _numSteps;
 };
-
-PF_ENV_API ParticleSetView::ParticleSetView() :
-		_positions(0), _values(0), _vectors(0), _numParticles(0), _numValues(0), _numVectors(
-				0), _numSteps(0), _startIndex(0), _length(-1)
-{
-}
-
-PF_ENV_API ParticleSetView::~ParticleSetView()
-{
-}
-
-PF_ENV_API ParticleSetView::ParticleSetView(const ParticleSetView& particleSet)
-{
-	_positions = particleSet._positions;
-	_values = particleSet._values;
-	_vectors = particleSet._vectors;
-	_numParticles = particleSet._numParticles;
-	_numValues = particleSet._numValues;
-	_numVectors = particleSet._numVectors;
-	_numSteps = particleSet._numSteps;
-	_startIndex = particleSet._startIndex;
-	_length = particleSet._length;
-}
 
 PF_ENV_API inline int ParticleSetView::getNumParticles() const {
 	return getLength();
@@ -140,10 +135,6 @@ PF_ENV_API inline ParticleSetView ParticleSetView::getView(int startIndex, int l
 	particleSet._startIndex += startIndex;
 	particleSet._length = length < getLength() ? length : getLength();
 	return particleSet;
-}
-
-inline size_t ParticleSetView::getSize() {
-	return _numSteps*getLength()*(sizeof(math::vec3) + _numValues*sizeof(float) + _numVectors*sizeof(math::vec3));
 }
 
 } /* namespace partflow */
