@@ -11,6 +11,10 @@
 namespace PFCore {
 namespace partflow {
 
+CudaParticleSet::CudaParticleSet(int numParticles, int numValues, int numVectors, int numSteps) : ParticleSet(numParticles, numValues, numVectors, numSteps), _deviceId(-1)
+{
+}
+
 CudaParticleSet::CudaParticleSet(int deviceId, int numParticles, int numValues, int numVectors, int numSteps) : ParticleSet(), _deviceId(deviceId) {
 	_numParticles = numParticles;
 	_numValues = numValues;
@@ -23,16 +27,26 @@ CudaParticleSet::CudaParticleSet(int deviceId, int numParticles, int numValues, 
 }
 
 CudaParticleSet::~CudaParticleSet() {
-	cudaSetDevice(_deviceId);
-	cudaFree(_positions);
-	cudaFree(_values);
-	cudaFree(_vectors);
+	if (_deviceId >= 0)
+	{
+		cudaSetDevice(_deviceId);
+		cudaFree(_positions);
+		cudaFree(_values);
+		cudaFree(_vectors);
+	}
 }
 
 extern "C"
 ParticleSet* createCudaParticleSet(int deviceId, int numParticles, int numValues, int numVectors, int numSteps)
 {
-	return new CudaParticleSet(deviceId, numParticles, numValues, numVectors, numSteps);
+	if (deviceId >= 0)
+	{
+		return new CudaParticleSet(deviceId, numParticles, numValues, numVectors, numSteps);
+	}
+	else
+	{
+		return new CudaParticleSet(numParticles, numValues, numVectors, numSteps);
+	}
 }
 
 } /* namespace partflow */

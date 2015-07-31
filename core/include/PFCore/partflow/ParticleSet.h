@@ -10,6 +10,7 @@
 #define PARTICLESET_H_
 
 #include "PFCore/partflow/ParticleSetView.h"
+#include "string.h"
 
 namespace PFCore {
 namespace partflow {
@@ -38,12 +39,58 @@ public:
 		}
 	}
 
+	void copy(const ParticleSetView& particleSet)
+	{
+		int numSteps = getNumSteps() < particleSet.getNumSteps() ? getNumSteps() : particleSet.getNumSteps();
+		int numParticles = getNumParticles() < particleSet.getNumParticles() ? getNumParticles() : particleSet.getNumParticles();
+		int numVals = getNumValues() < particleSet.getNumValues() ? getNumValues() : particleSet.getNumValues();
+		int numVectors = getNumVectors() < particleSet.getNumVectors() ? getNumVectors() : particleSet.getNumVectors();
+
+		if (getNumParticles() == particleSet.getNumParticles())
+		{
+			int localStep = getStartStep(particleSet);
+
+			copy(particleSet, (void*)getPositions(localStep), (void*)particleSet.getPositions(), numParticles*numSteps*sizeof(math::vec3));
+			copy(particleSet, (void*)getValues(0, localStep), (void*)particleSet.getValues(), numParticles*numSteps*numVals*sizeof(float));
+			copy(particleSet, (void*)getVectors(0, localStep), (void*)particleSet.getVectors(), numParticles*numSteps*numVectors*sizeof(math::vec3));
+		}
+		else
+		{
+			for (int step = 0; step < numSteps; step++)
+			{
+				int localStep = step + getStartStep(particleSet);
+
+				for (int index = 0; index < numParticles; index++)
+				{
+					int localIndex = getStartIndex(particleSet);
+
+					copy(particleSet, (void*)(getPositions(localStep) + localIndex), (void*)particleSet.getPositions(step), numParticles*sizeof(math::vec3));
+
+					for (int valIndex = 0; valIndex < numVals; valIndex++)
+					{
+						copy(particleSet, (void*)(getValues(valIndex, localStep) + localIndex), (void*)particleSet.getValues(valIndex, step), numParticles*sizeof(float));
+					}
+
+					for (int valIndex = 0; valIndex < numVectors; valIndex++)
+					{
+						copy(particleSet, (void*)(getVectors(valIndex, localStep) + localIndex), (void*)particleSet.getVectors(valIndex, step), numParticles*sizeof(math::vec3));
+					}
+				}
+			}
+		}
+	}
+
 private:
 	bool _createdArrays;
 
 protected:
 	ParticleSet() : ParticleSetView(), _createdArrays(false)
 	{
+	}
+
+	virtual void copy(const ParticleSetView& particleSet, void* dst, const void* src, size_t size)
+	{
+		memcpy(dst, src, size);
 	}
 };
 

@@ -58,9 +58,21 @@ int main(int argc, char** argv) {
 		emitter.emitParticles(pset, f);
 	}
 
-	for (int f = 0; f < pset.getNumParticles(); f++)
+	ParticleSetView view = pset.getView().filterBySize(1,3).filterBySize(2,5).filterByStep(0,4);
+
+	for (int f = 0; f < view.getNumParticles(); f++)
 	{
-		vec3& pos = pset.getPosition(f);
+		vec3& pos = view.getPosition(f);
+		cout << pos.x << "," << pos.y << "," << pos.z << endl;
+	}
+
+	cout << "Reset" << endl;
+
+	view = pset.filterReset();
+
+	for (int f = 0; f < view.getNumParticles(); f++)
+	{
+		vec3& pos = view.getPosition(f);
 		cout << pos.x << "," << pos.y << "," << pos.z << endl;
 	}
 

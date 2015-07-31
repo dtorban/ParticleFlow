@@ -23,22 +23,19 @@ ParticleSet* createCudaParticleSet(int deviceId, int numParticles, int numValues
 
 class CudaParticleSetFactory : public ParticleSetFactory {
 public:
-	CudaParticleSetFactory(int deviceId) : ParticleSetFactory(), _deviceId(deviceId) {}
+	CudaParticleSetFactory() : ParticleSetFactory() {}
 	virtual ~CudaParticleSetFactory() {}
 
-	ParticleSetRef createParticleSet(int numParticles, int numValues = 0, int numVectors = 0, int numSteps = 1)
+	ParticleSetRef createParticleSet(int deviceId, int numParticles, int numValues = 0, int numVectors = 0, int numSteps = 1)
 	{
 #ifdef USE_CUDA
 		std::cout << "Use cuda particle set" << std::endl;
-		return ParticleSetRef(createCudaParticleSet(_deviceId, numParticles, numValues, numVectors, numSteps));
+		return ParticleSetRef(createCudaParticleSet(deviceId, numParticles, numValues, numVectors, numSteps));
 #else
 		std::cout << "Use cpu particle set" << std::endl;
-		return ParticleSetFactory::createParticleSet(numParticles, numValues, numVectors, numSteps);
+		return createParticleSet(numParticles, numValues, numVectors, numSteps);
 #endif
 	}
-
-private:
-	int _deviceId;
 };
 
 } /* namespace partflow */
