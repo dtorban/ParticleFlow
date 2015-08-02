@@ -33,7 +33,7 @@ public:
 		return ParticleSetRef(createCudaParticleSet(deviceId, numParticles, numValues, numVectors, numSteps));
 #else
 		std::cout << "Use cpu particle set" << std::endl;
-		return createParticleSet(numParticles, numValues, numVectors, numSteps);
+		return ParticleSetFactory::createParticleSet(deviceId, numParticles, numValues, numVectors, numSteps);
 #endif
 	}
 };

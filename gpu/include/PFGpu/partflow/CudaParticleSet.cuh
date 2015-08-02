@@ -21,8 +21,8 @@ public:
 	CudaParticleSet(int _deviceId, int numParticles, int numValues, int numVectors, int numSteps = 1);
 	virtual ~CudaParticleSet();
 
-private:
-	int _deviceId;
+protected:
+	void copy(const ParticleSetView& particleSet, void* dst, const void* src, size_t size);
 };
 
 } /* namespace partflow */

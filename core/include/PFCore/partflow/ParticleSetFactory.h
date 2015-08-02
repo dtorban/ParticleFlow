@@ -22,14 +22,14 @@ public:
 	ParticleSetFactory() {}
 	virtual ~ParticleSetFactory() {}
 
-	ParticleSetRef createParticleSet(int numParticles, int numValues = 0, int numVectors = 0, int numSteps = 1)
+	ParticleSetRef createLocalParticleSet(int numParticles, int numValues = 0, int numVectors = 0, int numSteps = 1)
 	{
-		return createParticleSet(-1, numParticles, numValues, numVectors, numSteps);
+		return ParticleSetRef(new ParticleSet(numParticles, numValues, numVectors, numSteps));
 	}
 
 	virtual ParticleSetRef createParticleSet(int deviceId, int numParticles, int numValues = 0, int numVectors = 0, int numSteps = 1)
 	{
-		return ParticleSetRef(new ParticleSet(numParticles, numValues, numVectors, numSteps));
+		return createLocalParticleSet(numParticles, numValues, numVectors, numSteps);
 	}
 };
 

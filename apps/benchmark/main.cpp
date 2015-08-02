@@ -12,69 +12,52 @@
 #include "PFCore/partflow/ParticleSet.h"
 #include "PFCore/partflow/emitters/BasicEmitter.h"
 #include "PFCore/partflow/emitters/strategies/SphereEmitter.h"
-//#include "PFGpu/partflow/CudaParticleSetFactory.h"
+#include "PFGpu/partflow/CudaParticleSetFactory.h"
 
 using namespace PFCore::math;
 using namespace PFCore::input;
 using namespace PFCore::partflow;
 using namespace std;
 
+void printParticleSet(const ParticleSetView& view);
+
 int main(int argc, char** argv) {
 
-	//CudaParticleSetFactory f(0);
-	//f.createParticleSet(10);
-
-
-	BlankLoader loader(2.0);
-	float data[10];
-	loader.load(data,10);
-	cout << data[5] << endl;
-
-	vec3 test(1.0);
-	cout << test.x << "," << test.y << "," << test.z << endl;
-
-	ParticleSet pset(10, 0, 0, 3);
-	for (int f = 0; f < pset.getNumParticles(); f++)
-	{
-		pset.getPosition(f) = vec3(0.0);
-	}
-
-	for (int f = 0; f < pset.getNumParticles(); f++)
-	{
-		pset.getPosition(f) += vec3(f);
-	}
-
-	for (int f = 0; f < pset.getNumParticles(); f++)
-	{
-		vec3& pos = pset.getPosition(f);
-		cout << pos.x << "," << pos.y << "," << pos.z << endl;
-	}
-
-	cout << pset.getSize() << endl;
+	CudaParticleSetFactory psetFactory;
+	ParticleSetRef localSet = psetFactory.createLocalParticleSet(10);
+	ParticleSetRef updatedSet = psetFactory.createLocalParticleSet(10);
+	ParticleSetRef deviceSet = psetFactory.createParticleSet(0, 10);
 
 	BasicEmitter<SphereEmitter> emitter(SphereEmitter(vec3(0.0f), 1.0f, 1, RandomValue()));
-	for (int f = 0; f < pset.getNumSteps(); f++)
+	for (int f = 0; f < localSet->getNumSteps(); f++)
 	{
-		emitter.emitParticles(pset, f);
+		emitter.emitParticles(*localSet, f);
 	}
 
-	ParticleSetView view = pset.getView().filterBySize(1,3).filterBySize(2,5).filterByStep(0,4);
+	// Print out local
+	cout << "Local: " << endl;
+	printParticleSet(*localSet);
+	//printParticleSet(*deviceSet);
 
-	for (int f = 0; f < view.getNumParticles(); f++)
-	{
-		vec3& pos = view.getPosition(f);
-		cout << pos.x << "," << pos.y << "," << pos.z << endl;
-	}
+	// Copy to device
+	deviceSet->copy(localSet->getView().filterBySize(1,5));
+	deviceSet->copy(localSet->getView().filterBySize(7,2));
 
-	cout << "Reset" << endl;
+	// Copy from device
+	updatedSet->copy(*deviceSet);
 
-	view = pset.filterReset();
-
-	for (int f = 0; f < view.getNumParticles(); f++)
-	{
-		vec3& pos = view.getPosition(f);
-		cout << pos.x << "," << pos.y << "," << pos.z << endl;
-	}
+	// Print out device
+	cout << "Device: " << endl;
+	printParticleSet(*updatedSet);
 
 	return 0;
+}
+
+void printParticleSet(const ParticleSetView& view)
+{
+	for (int f = 0; f < view.getNumParticles(); f++)
+	{
+		const vec3& pos = view.getPosition(f);
+		cout << pos.x << "," << pos.y << "," << pos.z << endl;
+	}
 }

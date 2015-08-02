@@ -45,6 +45,7 @@ public:
 	PF_ENV_API inline const math::vec3* getVectors(int valueIndex = 0, int step = 0) const;
 
 	PF_ENV_API inline math::vec3& getPosition(int index, int step = 0);
+	PF_ENV_API inline math::vec3& getPosition(int index, int step = 0) const;
 	PF_ENV_API inline float& getValue(int valueIndex, int index, int step = 0);
 	PF_ENV_API inline math::vec3& getVector(int valueIndex, int index, int step = 0);
 
@@ -117,6 +118,10 @@ PF_ENV_API inline const math::vec3* ParticleSetView::getVectors(int valueIndex, 
 }
 
 PF_ENV_API inline math::vec3& ParticleSetView::getPosition(int index, int step) {
+	return _positions[(step + _startStep)*_numParticles + _startIndex + index];
+}
+
+PF_ENV_API inline math::vec3& ParticleSetView::getPosition(int index, int step) const {
 	return _positions[(step + _startStep)*_numParticles + _startIndex + index];
 }
 

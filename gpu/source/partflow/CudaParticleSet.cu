@@ -36,6 +36,31 @@ CudaParticleSet::~CudaParticleSet() {
 	}
 }
 
+void CudaParticleSet::copy(const ParticleSetView& particleSet, void* dst, const void* src, size_t size)
+{
+	// Both local
+	if (getDeviceId() < 0 && particleSet.getDeviceId() < 0)
+	{
+		ParticleSet::copy(particleSet, dst, src, size);
+	}
+	// On same device
+	else if (getDeviceId() == particleSet.getDeviceId())
+	{
+		// TODO: kernal to copy to same device
+		cudaMemcpy(dst, src, size, cudaMemcpyDeviceToDevice);
+	}
+	// One of the devices is host
+	else if (getDeviceId() < 0 || particleSet.getDeviceId() < 0)
+	{
+		cudaMemcpy(dst, src, size, getDeviceId() < 0 ? cudaMemcpyDeviceToHost :  cudaMemcpyHostToDevice);
+	}
+	// Peer to peer
+	else
+	{
+		cudaMemcpyPeer(dst, getDeviceId(), src, particleSet.getDeviceId(), size);
+	}
+}
+
 extern "C"
 ParticleSet* createCudaParticleSet(int deviceId, int numParticles, int numValues, int numVectors, int numSteps)
 {
