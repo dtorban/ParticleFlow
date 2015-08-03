@@ -25,10 +25,22 @@ struct RandomValueGenerator
 	PF_ENV_API inline void operator=(const RandomValueGenerator &rndVal)
 	{
 	}
+
+	PF_ENV_API inline void randomize(int seed)
+	{
+	}
 };
 
 struct RandomArrayValue
 {
+	RandomArrayValue() : rnd(0), numRand(0), frameRand(0) {}
+	RandomArrayValue(const RandomArrayValue& rndVal)
+	{
+		rnd = rndVal.rnd;
+		numRand = rndVal.numRand;
+		frameRand = rndVal.frameRand;
+	}
+
 	float* rnd;
 	int numRand;
 	int frameRand;
@@ -43,6 +55,11 @@ struct RandomArrayValue
 		rnd = rndVal.rnd;
 		numRand = rndVal.numRand;
 		frameRand = rndVal.frameRand;
+	}
+
+	PF_ENV_API inline void randomize(int seed)
+	{
+		frameRand = numRand*float(std::rand())/RAND_MAX;
 	}
 };
 

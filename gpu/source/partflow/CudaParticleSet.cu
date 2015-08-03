@@ -16,7 +16,7 @@ CudaParticleSet::CudaParticleSet(int numParticles, int numValues, int numVectors
 	_deviceId = -1;
 }
 
-CudaParticleSet::CudaParticleSet(int deviceId, int numParticles, int numValues, int numVectors, int numSteps) : ParticleSet(), _deviceId(deviceId) {
+CudaParticleSet::CudaParticleSet(int deviceId, int numParticles, int numValues, int numVectors, int numSteps) : ParticleSet() {
 	_numParticles = numParticles;
 	_numValues = numValues;
 	_numVectors = numVectors;

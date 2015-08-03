@@ -19,38 +19,37 @@ namespace partflow {
 
 class SphereEmitter {
 public:
-	SphereEmitter(math::vec3 pos, float radius, int duration, math::RandomValue rnd) : _pos(pos), _radius(radius), _duration(duration), _rnd(rnd) {}
+	SphereEmitter(math::vec3 pos, float radius, int duration) : _pos(pos), _radius(radius), _duration(duration) {}
 	PF_ENV_API SphereEmitter(const SphereEmitter& emitter) {
 		_pos = emitter._pos;
 		_radius = emitter._radius;
 		_duration = emitter._duration;
-		_rnd = emitter._rnd;
 	}
 	PF_ENV_API ~SphereEmitter() {}
 
-	PF_ENV_API inline void emitParticle(ParticleSetView& particleSet, int index, int step, bool init);
+	PF_ENV_API inline void preEmit();
+	PF_ENV_API inline void emitParticle(ParticleSetView& particleSet, int index, int step, math::RandomValue rnd, bool init);
 
 private:
 	math::vec3 _pos;
 	float _radius;
 	int _duration;
-	math::RandomValue _rnd;
 };
 
-PF_ENV_API inline void SphereEmitter::emitParticle(ParticleSetView& particleSet, int index, int step, bool init) {
+PF_ENV_API inline void SphereEmitter::emitParticle(ParticleSetView& particleSet, int index, int step, math::RandomValue rnd, bool init) {
 
 	if (init || index % _duration == 0)
 	{
 		math::vec3& partPos = particleSet.getPosition(index, step);
-		partPos.x = _rnd.getValue(index)*2.0-1.0;
-		partPos.y = _rnd.getValue(index+1)*2.0-1.0;
-		partPos.z = _rnd.getValue(index+2)*2.0-1.0;
+		partPos.x = rnd.getValue(index)*2.0-1.0;
+		partPos.y = rnd.getValue(index+1)*2.0-1.0;
+		partPos.z = rnd.getValue(index+2)*2.0-1.0;
 		float len = math::length(partPos);
 		if (len > 0.0f)
 		{
 			partPos /= len;
 		}
-		partPos *= _rnd.getValue(index+4)*_radius;
+		partPos *= rnd.getValue(index+4)*_radius;
 		partPos += _pos;
 	}
 }

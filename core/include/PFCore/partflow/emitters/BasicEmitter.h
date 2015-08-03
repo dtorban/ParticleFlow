@@ -9,6 +9,7 @@
 #define SOURCE_DIRECTORY__CORE_INCLUDE_PFCORE_PARTFLOW_EMITTERS_BASICEMITTER_H_
 
 #include "PFCore/partflow/Emitter.h"
+#include "PFCore/math/RandomValue.h"
 
 namespace PFCore {
 namespace partflow {
@@ -40,7 +41,7 @@ inline void BasicEmitter<Strategy>::emitParticles(
 
 	for (int index = 0; index < particleSet.getNumParticles(); index++)
 	{
-		_strategy.emitParticle(particleSet, index, step, init);
+		_strategy.emitParticle(particleSet, index, step, math::RandomValue(), init);
 	}
 }
 

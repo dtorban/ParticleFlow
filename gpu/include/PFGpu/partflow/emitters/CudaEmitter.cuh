@@ -11,6 +11,8 @@
 
 #include "PFCore/env_cuda.h"
 #include "PFCore/partflow/emitters/BasicEmitter.h"
+#include "PFCore/math/CudaRandomValue.cuh"
+#include <map>
 
 namespace PFCore {
 namespace partflow {
@@ -18,17 +20,17 @@ namespace partflow {
 template<typename Strategy>
 class CudaEmitter : public BasicEmitter<Strategy> {
 public:
-	CudaEmitter(int deviceId, const Strategy& strategy);
+	CudaEmitter(const Strategy& strategy);
 	virtual ~CudaEmitter();
 	
 	void emitParticles(ParticleSetView& particleSet, int step, bool init);
 
 private:
-	int _deviceId;
+	std::map<int, math::CudaRandomValue*> _randValues;
 };
 
 template<typename Strategy>
-inline CudaEmitter<Strategy>::CudaEmitter(int deviceId, const Strategy& strategy) : BasicEmitter(strategy), _deviceId(deviceId)
+inline CudaEmitter<Strategy>::CudaEmitter(const Strategy& strategy) : BasicEmitter(strategy), _randValues()
 {
 }
 
@@ -38,20 +40,29 @@ inline CudaEmitter<Strategy>::~CudaEmitter()
 }
 
 template<typename Strategy>
-__global__ void CudaEmitter_emitParticle(Strategy strategy, ParticleSetView particleSet, int step, bool init)
+__global__ void CudaEmitter_emitParticle(Strategy strategy, ParticleSetView particleSet, int step, math::RandomValue rnd, bool init)
 {
 	int i = (blockIdx.x * blockDim.x) + threadIdx.x;
 	if (i < particleSet.getNumParticles())
 	{
-		strategy.emitParticle(particleSet, i, step, init);
+		strategy.emitParticle(particleSet, i, step, rnd, init);
 	}
 }
 
 template<typename Strategy>
 inline void CudaEmitter<Strategy>::emitParticles(ParticleSetView& particleSet, int step, bool init) {
 
-	cudaSetDevice(_deviceId);
-	CudaEmitter_emitParticle<Strategy><<<1024, particleSet.getNumParticles()/1024>>>(_strategy, particleSet, step, init);
+	int deviceId = particleSet.getDeviceId();
+	cudaSetDevice(deviceId);
+	if (_randValues.find(deviceId) == _randValues.end())
+	{
+		_randValues[deviceId] = new CudaRandomValue(deviceId, 1024*1024);
+	}
+	
+	math::RandomValue rnd = *(_randValues[deviceId]);
+	rnd.randomize(0);
+	
+	CudaEmitter_emitParticle<Strategy><<<1024, particleSet.getNumParticles()/1024>>>(_strategy, particleSet, step, rnd, init);
 }
 
 } /* namespace partflow */

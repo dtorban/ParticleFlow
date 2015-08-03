@@ -21,10 +21,10 @@ extern "C"
 ParticleSet* createCudaParticleSet(int deviceId, int numParticles, int numValues, int numVectors, int numSteps);
 #endif
 
-class CudaParticleSetFactory : public ParticleSetFactory {
+class GpuParticleSetFactory : public ParticleSetFactory {
 public:
-	CudaParticleSetFactory() : ParticleSetFactory() {}
-	virtual ~CudaParticleSetFactory() {}
+	GpuParticleSetFactory() : ParticleSetFactory() {}
+	virtual ~GpuParticleSetFactory() {}
 
 	ParticleSetRef createParticleSet(int deviceId, int numParticles, int numValues = 0, int numVectors = 0, int numSteps = 1)
 	{

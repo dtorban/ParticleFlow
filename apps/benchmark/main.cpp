@@ -12,7 +12,9 @@
 #include "PFCore/partflow/ParticleSet.h"
 #include "PFCore/partflow/emitters/BasicEmitter.h"
 #include "PFCore/partflow/emitters/strategies/SphereEmitter.h"
-#include "PFGpu/partflow/CudaParticleSetFactory.h"
+#include "PFGpu/partflow/GpuParticleSetFactory.h"
+#include "PFGpu/partflow/emitters/GpuEmitterFactory.h"
+#include "PFCore/partflow/PartflowRef.h"
 
 using namespace PFCore::math;
 using namespace PFCore::input;
@@ -23,15 +25,18 @@ void printParticleSet(const ParticleSetView& view);
 
 int main(int argc, char** argv) {
 
-	CudaParticleSetFactory psetFactory;
+	GpuParticleSetFactory psetFactory;
 	ParticleSetRef localSet = psetFactory.createLocalParticleSet(10);
 	ParticleSetRef updatedSet = psetFactory.createLocalParticleSet(10);
 	ParticleSetRef deviceSet = psetFactory.createParticleSet(0, 10);
 
-	BasicEmitter<SphereEmitter> emitter(SphereEmitter(vec3(0.0f), 1.0f, 1, RandomValue()));
+	GpuEmitterFactory emitterFactory;
+	EmitterRef emitter = EmitterRef(emitterFactory.createSphereEmitter(vec3(0.0f), 1.0f, 1));
+
+	//BasicEmitter<SphereEmitter> emitter(SphereEmitter(vec3(0.0f), 1.0f, 1, RandomValue()));
 	for (int f = 0; f < localSet->getNumSteps(); f++)
 	{
-		emitter.emitParticles(*localSet, f);
+		emitter->emitParticles(*localSet, f);
 	}
 
 	// Print out local
@@ -48,6 +53,19 @@ int main(int argc, char** argv) {
 
 	// Print out device
 	cout << "Device: " << endl;
+	printParticleSet(*updatedSet);
+
+	EmitterRef emitterGpu = EmitterRef(emitterFactory.createSphereEmitter(vec3(0.0f), 2.0f, 1));
+	for (int f = 0; f < deviceSet->getNumSteps(); f++)
+	{
+		emitterGpu->emitParticles(*deviceSet, f);
+	}
+
+	// Copy from device
+	updatedSet->copy(*deviceSet);
+
+	// Print out device
+	cout << "Device new: " << endl;
 	printParticleSet(*updatedSet);
 
 	return 0;
