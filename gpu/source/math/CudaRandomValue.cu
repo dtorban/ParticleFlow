@@ -13,12 +13,12 @@ namespace math {
 
 CudaRandomValue::CudaRandomValue(int deviceId, int size) : RandomArrayValue(), _deviceId(deviceId) {
 	numRand = size;
-	cudaSetDevice(deviceId);
+	cudaSetDevice(_deviceId);
 	cudaMalloc(&rnd, numRand*sizeof(float));
 }
 
 CudaRandomValue::~CudaRandomValue() {
-	cudaSetDevice(deviceId);
+	cudaSetDevice(_deviceId);
 	cudaFree(rnd);
 }
 

@@ -37,6 +37,10 @@ inline CudaEmitter<Strategy>::CudaEmitter(const Strategy& strategy) : BasicEmitt
 template<typename Strategy>
 inline CudaEmitter<Strategy>::~CudaEmitter()
 {
+	for (std::map<int, math::CudaRandomValue*>::iterator it=_randValues.begin(); it!=_randValues.end(); ++it)
+    {
+    	delete it->second;
+    }
 }
 
 template<typename Strategy>
