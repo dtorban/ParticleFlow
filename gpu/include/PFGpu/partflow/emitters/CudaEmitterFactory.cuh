@@ -19,13 +19,10 @@ namespace partflow {
 
 class CudaEmitterFactory : public EmitterFactory {
 public:
-	CudaEmitterFactory(int randSize);
+	CudaEmitterFactory();
 	virtual ~CudaEmitterFactory();
 	
-	Emitter* createSphereEmitter(math::vec3 pos, float radius, int duration, int deviceId = -1);
-	
-private:
-	CudaRandomValue rnd;
+	Emitter* createSphereEmitter(math::vec3 pos, float radius, int duration);
 };
 
 } /* namespace partflow */

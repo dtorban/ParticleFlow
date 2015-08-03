@@ -33,8 +33,8 @@ struct RandomValueGenerator
 
 struct RandomArrayValue
 {
-	RandomArrayValue() : rnd(0), numRand(0), frameRand(0) {}
-	RandomArrayValue(const RandomArrayValue& rndVal)
+	PF_ENV_API RandomArrayValue() : rnd(0), numRand(0), frameRand(0) {}
+	PF_ENV_API RandomArrayValue(const RandomArrayValue& rndVal)
 	{
 		rnd = rndVal.rnd;
 		numRand = rndVal.numRand;

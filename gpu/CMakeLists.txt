@@ -28,14 +28,14 @@ endif()
 #------------------------------------------
 
 set (CUDA_SOURCEFILES 
-source/PFGpu/math/CudaRandomValue.cu
+source/math/CudaRandomValue.cu
 source/partflow/emitters/CudaEmitterFactory.cu
 source/partflow/CudaParticleSet.cu
 )
 
 set (CUDA_HEADERFILES 
 include/PFGpu/math/CudaRandomValue.cuh
-include/PFCpu/partflow/emitters/CudaEmitterFactory.cuh
+include/PFGpu/partflow/emitters/CudaEmitterFactory.cuh
 include/PFGpu/partflow/emitters/CudaEmitter.cuh
 include/PFGpu/partflow/CudaParticleSet.cuh
 )

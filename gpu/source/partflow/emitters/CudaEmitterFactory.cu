@@ -6,13 +6,13 @@
  * 		Dan Orban (dtorban)
  */
 
-#include <PFGpu/partflow/emitters/CudaEmitterFactory.h>
-#include "PFGpu/partflow/CudaEmitter.cuh"
+#include <PFGpu/partflow/emitters/CudaEmitterFactory.cuh>
+#include "PFGpu/partflow/emitters/CudaEmitter.cuh"
 
 namespace PFCore {
 namespace partflow {
 
-CudaEmitterFactory::CudaEmitterFactory(int randSize) : rnd(randSize) {
+CudaEmitterFactory::CudaEmitterFactory() : EmitterFactory() {
 	// TODO Auto-generated constructor stub
 
 }
@@ -21,13 +21,13 @@ CudaEmitterFactory::~CudaEmitterFactory() {
 	// TODO Auto-generated destructor stub
 }
 
-Emitter* CudaEmitterFactory::createSphereEmitter(math::vec3 pos, float radius, int duration, int deviceId = -1)
+Emitter* CudaEmitterFactory::createSphereEmitter(math::vec3 pos, float radius, int duration)
 {
-	return new CudaEmitter<SphereEmitter>(SphereEmitter(pos, radius, duration, rnd));
+	return new CudaEmitter<SphereEmitter>(SphereEmitter(pos, radius, duration));
 }
 
 extern "C"
-GpuEmitterFactory* createCudaEmitterFactory()
+EmitterFactory* createCudaEmitterFactory()
 {
 	return new CudaEmitterFactory();
 }

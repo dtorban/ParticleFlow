@@ -11,7 +11,7 @@
 
 #include "PFCore/env_cuda.h"
 #include "PFCore/partflow/emitters/BasicEmitter.h"
-#include "PFCore/math/CudaRandomValue.cuh"
+#include "PFGpu/math/CudaRandomValue.cuh"
 #include <map>
 
 namespace PFCore {
@@ -30,8 +30,9 @@ private:
 };
 
 template<typename Strategy>
-inline CudaEmitter<Strategy>::CudaEmitter(const Strategy& strategy) : BasicEmitter(strategy), _randValues()
+inline CudaEmitter<Strategy>::CudaEmitter(const Strategy& strategy) : BasicEmitter<Strategy>(strategy), _randValues()
 {
+	std::cout << "Created strategry." << std::endl;
 }
 
 template<typename Strategy>
@@ -55,18 +56,23 @@ __global__ void CudaEmitter_emitParticle(Strategy strategy, ParticleSetView part
 
 template<typename Strategy>
 inline void CudaEmitter<Strategy>::emitParticles(ParticleSetView& particleSet, int step, bool init) {
-
 	int deviceId = particleSet.getDeviceId();
+	if (deviceId < 0)
+	{
+		BasicEmitter<Strategy>::emitParticles(particleSet, step, init);
+		return;
+	}
+
 	cudaSetDevice(deviceId);
 	if (_randValues.find(deviceId) == _randValues.end())
 	{
-		_randValues[deviceId] = new CudaRandomValue(deviceId, 1024*1024);
+		_randValues[deviceId] = new math::CudaRandomValue(deviceId, 1024*1024);
 	}
 	
 	math::RandomValue rnd = *(_randValues[deviceId]);
 	rnd.randomize(0);
 	
-	CudaEmitter_emitParticle<Strategy><<<1024, particleSet.getNumParticles()/1024>>>(_strategy, particleSet, step, rnd, init);
+	CudaEmitter_emitParticle<Strategy><<<particleSet.getNumParticles(), particleSet.getNumParticles()>>>(this->_strategy, particleSet, step, rnd, init);
 }
 
 } /* namespace partflow */

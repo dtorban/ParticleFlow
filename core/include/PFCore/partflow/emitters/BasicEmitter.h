@@ -10,6 +10,7 @@
 
 #include "PFCore/partflow/Emitter.h"
 #include "PFCore/math/RandomValue.h"
+#include <iostream>
 
 namespace PFCore {
 namespace partflow {
@@ -38,7 +39,7 @@ inline BasicEmitter<Strategy>::~BasicEmitter() {
 template<typename Strategy>
 inline void BasicEmitter<Strategy>::emitParticles(
 		ParticleSetView& particleSet, int step, bool init) {
-
+	std::cout << "basic." << std::endl;
 	for (int index = 0; index < particleSet.getNumParticles(); index++)
 	{
 		_strategy.emitParticle(particleSet, index, step, math::RandomValue(), init);

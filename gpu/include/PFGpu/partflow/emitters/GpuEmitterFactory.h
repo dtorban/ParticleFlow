@@ -16,7 +16,7 @@ namespace partflow {
 
 #ifdef USE_CUDA
 extern "C"
-GpuEmitterFactory* createCudaEmitterFactory();
+EmitterFactory* createCudaEmitterFactory();
 #endif
 
 class GpuEmitterFactory : public EmitterFactory {
@@ -30,7 +30,6 @@ public:
 	virtual ~GpuEmitterFactory()
 	{
 #ifdef USE_CUDA
-private:
 		delete _innerFactory;
 #endif
 	}
@@ -38,7 +37,7 @@ private:
 	Emitter* createSphereEmitter(math::vec3 pos, float radius, int duration)
 	{
 #ifdef USE_CUDA
-		_innerFactory->createSphereEmitter(pos, radius, duration);
+		return _innerFactory->createSphereEmitter(pos, radius, duration);
 #else
 		return EmitterFactory::createSphereEmitter(pos, radius, duration);
 #endif
@@ -46,7 +45,7 @@ private:
 
 #ifdef USE_CUDA
 private:
-	GpuEmitterFactory* _innerFactory;
+	EmitterFactory* _innerFactory;
 #endif
 };
 

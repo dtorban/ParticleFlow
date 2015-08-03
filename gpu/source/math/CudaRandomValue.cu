@@ -15,6 +15,16 @@ CudaRandomValue::CudaRandomValue(int deviceId, int size) : RandomArrayValue(), _
 	numRand = size;
 	cudaSetDevice(_deviceId);
 	cudaMalloc(&rnd, numRand*sizeof(float));
+
+	float* rndLocal = new float[size];
+	for (int f = 0; f < numRand; f++)
+	{
+		rndLocal[f] = float(std::rand())/RAND_MAX;	
+	}
+
+	cudaMemcpy(rnd, rndLocal, numRand*sizeof(float), cudaMemcpyHostToDevice);
+
+	delete[] rndLocal;
 }
 
 CudaRandomValue::~CudaRandomValue() {

@@ -30,7 +30,7 @@ public:
 	PF_ENV_API v3(const v3<T> &v);
 	PF_ENV_API v3(T a);
 	PF_ENV_API v3(T xval, T yval, T zval);
-	~v3();
+	PF_ENV_API ~v3();
 
 	PF_ENV_API inline void operator=(const v3<T> &v);
 	PF_ENV_API inline void operator+=(const v3<T> &v);
@@ -69,7 +69,7 @@ PF_ENV_API v3<T>::v3(T xval, T yval, T zval) {
 }
 
 template<typename T>
-v3<T>::~v3() {
+PF_ENV_API v3<T>::~v3() {
 }
 
 template<typename T>

@@ -33,7 +33,6 @@ int main(int argc, char** argv) {
 	GpuEmitterFactory emitterFactory;
 	EmitterRef emitter = EmitterRef(emitterFactory.createSphereEmitter(vec3(0.0f), 1.0f, 1));
 
-	//BasicEmitter<SphereEmitter> emitter(SphereEmitter(vec3(0.0f), 1.0f, 1, RandomValue()));
 	for (int f = 0; f < localSet->getNumSteps(); f++)
 	{
 		emitter->emitParticles(*localSet, f);
