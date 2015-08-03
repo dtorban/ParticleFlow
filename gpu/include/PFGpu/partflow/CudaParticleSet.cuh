@@ -17,8 +17,8 @@ namespace partflow {
 
 class CudaParticleSet : public ParticleSet {
 public:
-	CudaParticleSet(int numParticles, int numValues, int numVectors, int numSteps = 1);
-	CudaParticleSet(int _deviceId, int numParticles, int numValues, int numVectors, int numSteps = 1);
+	CudaParticleSet(int numParticles, int numValues, int numVectors, int numSteps);
+	CudaParticleSet(int _deviceId, int numParticles, int numValues, int numVectors, int numSteps);
 	virtual ~CudaParticleSet();
 
 protected:
