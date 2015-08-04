@@ -15,6 +15,9 @@
 #include "PFGpu/partflow/GpuParticleSetFactory.h"
 #include "PFGpu/partflow/emitters/GpuEmitterFactory.h"
 #include "PFCore/partflow/PartflowRef.h"
+#include "PFCore/partflow/advectors/VectorFieldAdvector.h"
+#include "PFCore/partflow/advectors/strategies/EulerAdvector.h"
+#include "PFCore/partflow/vectorFields/ConstantField.h"
 
 using namespace PFCore::math;
 using namespace PFCore::input;
@@ -65,6 +68,20 @@ int main(int argc, char** argv) {
 
 	// Print out device
 	cout << "Device new: " << endl;
+	printParticleSet(*updatedSet);
+
+	// Advect device set
+	Advector* advector = new VectorFieldAdvector<EulerAdvector<ConstantField>, ConstantField>(EulerAdvector<ConstantField>(), ConstantField(vec3(1.0f ,0.0f, 0.0f)));
+	float dt = 0.1f;
+	for (int f = 0; f < 10; f++)
+	{
+		advector->advectParticles(*deviceSet, f, dt*float(f), dt);
+	}
+	delete advector;
+
+	// Copy from device
+	cout << "Device advected: " << endl;
+	updatedSet->copy(*deviceSet);
 	printParticleSet(*updatedSet);
 
 	return 0;

@@ -26,7 +26,7 @@ public:
 	GpuParticleSetFactory() : ParticleSetFactory() {}
 	virtual ~GpuParticleSetFactory() {}
 
-	ParticleSetRef createParticleSet(int deviceId, int numParticles, int numValues = 0, int numVectors = 0, int numSteps = 1)
+	ParticleSetRef createParticleSet(int deviceId, int numParticles, int numValues = 0, int numVectors = 1, int numSteps = 1)
 	{
 #ifdef USE_CUDA
 		std::cout << "Use cuda particle set" << std::endl;

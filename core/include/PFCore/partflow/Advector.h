@@ -6,19 +6,23 @@
  * 		Dan Orban (dtorban)
  */
 
-#ifndef PARTFLOWREF_H_
-#define PARTFLOWREF_H_
+#ifndef ADVECTOR_H_
+#define ADVECTOR_H_
 
-#include <memory>
-#include "PFCore/partflow/Emitter.h"
+#include "PFCore/env.h"
+#include "PFCore/partflow/ParticleSetView.h"
 
 namespace PFCore {
 namespace partflow {
 
-typedef std::shared_ptr<Emitter> EmitterRef;
-typedef std::shared_ptr<Advector> AdvectorRef;
+class Advector {
+public:
+	virtual ~Advector() {}
+
+	virtual void advectParticles(ParticleSetView& particleSet, int step, float time, float dt) = 0;
+};
 
 } /* namespace partflow */
 } /* namespace PFCore */
 
-#endif /* PARTFLOWREF_H_ */
+#endif /* ADVECTOR_H_ */

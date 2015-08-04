@@ -71,6 +71,7 @@ protected:
 	PF_ENV_API inline int getStepLength() const;
 	PF_ENV_API inline int getStartStep(const ParticleSetView& particleSet) const;
 	PF_ENV_API inline int getStartIndex(const ParticleSetView& particleSet) const;
+	PF_ENV_API inline int calcStep(int step) const;
 
 	math::vec3* _positions;
 	float* _values;
@@ -106,31 +107,31 @@ PF_ENV_API inline int ParticleSetView::getDeviceId() const {
 }
 
 PF_ENV_API inline const math::vec3* ParticleSetView::getPositions(int step) const {
-	return &_positions[_numParticles*(step + _startStep) + _startIndex];
+	return &_positions[_numParticles*calcStep(step) + _startIndex];
 }
 
 PF_ENV_API inline float* ParticleSetView::getValues(int valueIndex, int step) const {
-	return &_values[_numParticles*_numValues*(step + _startStep) + valueIndex*_numParticles + _startIndex];
+	return &_values[_numParticles*_numValues*calcStep(step) + valueIndex*_numParticles + _startIndex];
 }
 
 PF_ENV_API inline const math::vec3* ParticleSetView::getVectors(int valueIndex, int step) const {
-	return &_vectors[_numParticles*_numVectors*(step + _startStep) + valueIndex*_numParticles + _startIndex];
+	return &_vectors[_numParticles*_numVectors*calcStep(step) + valueIndex*_numParticles + _startIndex];
 }
 
 PF_ENV_API inline math::vec3& ParticleSetView::getPosition(int index, int step) {
-	return _positions[(step + _startStep)*_numParticles + _startIndex + index];
+	return _positions[calcStep(step)*_numParticles + _startIndex + index];
 }
 
 PF_ENV_API inline math::vec3& ParticleSetView::getPosition(int index, int step) const {
-	return _positions[(step + _startStep)*_numParticles + _startIndex + index];
+	return _positions[calcStep(step)*_numParticles + _startIndex + index];
 }
 
 PF_ENV_API inline float& ParticleSetView::getValue(int valueIndex, int index, int step) {
-	return _values[(step + _startStep)*_numParticles*_numValues + valueIndex*_numParticles + _startIndex + index];
+	return _values[calcStep(step)*_numParticles*_numValues + valueIndex*_numParticles + _startIndex + index];
 }
 
 PF_ENV_API inline math::vec3& ParticleSetView::getVector(int valueIndex, int index, int step) {
-	return _vectors[(step + _startStep)*_numParticles*_numVectors + valueIndex*_numParticles + _startIndex + index];
+	return _vectors[calcStep(step)*_numParticles*_numVectors + valueIndex*_numParticles + _startIndex + index];
 }
 
 PF_ENV_API inline void ParticleSetView::operator =(const ParticleSetView& particleSet) {
@@ -188,6 +189,11 @@ PF_ENV_API inline int ParticleSetView::getStartStep(const ParticleSetView& parti
 PF_ENV_API inline int ParticleSetView::getStartIndex(const ParticleSetView& particleSet) const
 {
 	return particleSet._startIndex;
+}
+
+PF_ENV_API inline int ParticleSetView::calcStep(int step) const
+{
+	return (step + _startStep) % _numSteps;
 }
 
 PF_ENV_API inline ParticleSetView ParticleSetView::getView() {

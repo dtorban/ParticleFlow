@@ -33,9 +33,14 @@ include/PFCore/input/DataLoader.h
 include/PFCore/math/v3.h
 include/PFCore/math/v4.h
 include/PFCore/math/vec_math.h
+include/PFCore/partflow/advectors/strategies/EulerAdvector.h
+include/PFCore/partflow/advectors/strategies/RungaKutta4.h
+include/PFCore/partflow/advectors/VectorFieldAdvector.h
+include/PFCore/partflow/Advector.h
 include/PFCore/partflow/emitters/strategies/SphereEmitter.h
 include/PFCore/partflow/emitters/BasicEmitter.h
 include/PFCore/partflow/emitters/EmitterFactory.h
+include/PFCore/partflow/vectorFields/ConstantField.h
 include/PFCore/partflow/Emitter.h
 include/PFCore/partflow/ParticleSetView.h
 include/PFCore/partflow/ParticleSet.h
