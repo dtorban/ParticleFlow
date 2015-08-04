@@ -17,8 +17,12 @@ namespace partflow {
 
 class ConstantField {
 public:
+	PF_ENV_API ConstantField() : _vec(0.0f) {}
+	PF_ENV_API ConstantField(const ConstantField& field);
 	PF_ENV_API ConstantField(const math::vec3& vec) : _vec(vec) {}
 	PF_ENV_API ~ConstantField() {}
+
+	PF_ENV_API inline void operator=(const ConstantField& field);
 
 	PF_ENV_API inline math::vec3 getVelocity(const math::vec3& pos, float time);
 	std::string getTypeId() { return "ConstantField"; }
@@ -26,6 +30,16 @@ public:
 private:
 	math::vec3 _vec;
 };
+
+PF_ENV_API inline ConstantField::ConstantField(const ConstantField& field)
+{
+	_vec = field._vec;
+}
+
+PF_ENV_API inline void ConstantField::operator=(const ConstantField& field)
+{
+	_vec = field._vec;
+}
 
 PF_ENV_API inline math::vec3 ConstantField::getVelocity(const math::vec3& pos, float time)
 {
