@@ -10,6 +10,7 @@
 #define EULERADVECTOR_H_
 
 #include "PFCore/partflow/Advector.h"
+#include <string>
 
 namespace PFCore {
 namespace partflow {
@@ -21,6 +22,7 @@ public:
 	PF_ENV_API ~EulerAdvector() {}
 
 	PF_ENV_API void advectParticle(ParticleSetView& particleSet, VField vectorField, int index, int step, int prevStep, float time, float dt);
+	std::string getTypeId() { return "Euler"; }
 };
 
 template<typename VField>

@@ -8,3 +8,14 @@
 
 
 
+extern "C"
+int add_int(float a)
+{
+	return a;
+}
+
+extern "C"
+int add(int a)
+{
+	return a;
+}

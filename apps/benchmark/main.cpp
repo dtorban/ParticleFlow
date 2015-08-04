@@ -16,6 +16,7 @@
 #include "PFGpu/partflow/emitters/GpuEmitterFactory.h"
 #include "PFCore/partflow/PartflowRef.h"
 #include "PFCore/partflow/advectors/VectorFieldAdvector.h"
+#include "PFGpu/partflow/advectors/GpuVectorFieldAdvector.h"
 #include "PFCore/partflow/advectors/strategies/EulerAdvector.h"
 #include "PFCore/partflow/vectorFields/ConstantField.h"
 
@@ -71,13 +72,12 @@ int main(int argc, char** argv) {
 	printParticleSet(*updatedSet);
 
 	// Advect device set
-	Advector* advector = new VectorFieldAdvector<EulerAdvector<ConstantField>, ConstantField>(EulerAdvector<ConstantField>(), ConstantField(vec3(1.0f ,0.0f, 0.0f)));
+	AdvectorRef advector = AdvectorRef(new GpuVectorFieldAdvector<EulerAdvector<ConstantField>, ConstantField>(EulerAdvector<ConstantField>(), ConstantField(vec3(1.0f ,0.0f, 0.0f))));
 	float dt = 0.1f;
 	for (int f = 0; f < 10; f++)
 	{
 		advector->advectParticles(*deviceSet, f, dt*float(f), dt);
 	}
-	delete advector;
 
 	// Copy from device
 	cout << "Device advected: " << endl;

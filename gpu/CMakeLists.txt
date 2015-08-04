@@ -29,12 +29,14 @@ endif()
 
 set (CUDA_SOURCEFILES 
 source/math/CudaRandomValue.cu
+source/partflow/advectors/CudaVectorFieldAdvector.cu
 source/partflow/emitters/CudaEmitterFactory.cu
 source/partflow/CudaParticleSet.cu
 )
 
 set (CUDA_HEADERFILES 
 include/PFGpu/math/CudaRandomValue.cuh
+include/PFGpu/partflow/advectors/CudaVectorFieldAdvector.cuh
 include/PFGpu/partflow/emitters/CudaEmitterFactory.cuh
 include/PFGpu/partflow/emitters/CudaEmitter.cuh
 include/PFGpu/partflow/CudaParticleSet.cuh
@@ -45,6 +47,7 @@ source/main.cpp
 )
 
 set (HEADERFILES 
+include/PFGpu/partflow/advectors/GpuVectorFieldAdvector.h
 include/PFGpu/partflow/emitters/GpuEmitterFactory.h
 )
 

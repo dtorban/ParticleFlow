@@ -10,13 +10,14 @@
 #define PARTFLOWREF_H_
 
 #include <memory>
+#include "PFCore/partflow/Advector.h"
 #include "PFCore/partflow/Emitter.h"
 
 namespace PFCore {
 namespace partflow {
 
-typedef std::shared_ptr<Emitter> EmitterRef;
 typedef std::shared_ptr<Advector> AdvectorRef;
+typedef std::shared_ptr<Emitter> EmitterRef;
 
 } /* namespace partflow */
 } /* namespace PFCore */

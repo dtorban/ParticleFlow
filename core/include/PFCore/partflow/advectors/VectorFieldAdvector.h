@@ -20,7 +20,7 @@ public:
 	VectorFieldAdvector(const Strategy& strategy, const VField& vectorField) : _strategy(strategy), _vectorField(vectorField) {}
 	virtual ~VectorFieldAdvector() {}
 
-	void advectParticles(ParticleSetView& particleSet, int step, float time, float dt);
+	virtual void advectParticles(ParticleSetView& particleSet, int step, float time, float dt);
 
 	void setVectorField(VField vectorField) {
 		_vectorField = vectorField;

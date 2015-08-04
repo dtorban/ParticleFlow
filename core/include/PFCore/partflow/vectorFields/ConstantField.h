@@ -10,6 +10,7 @@
 #define CONSTANTFIELD_H_
 
 #include "PFCore/math/v3.h"
+#include <string>
 
 namespace PFCore {
 namespace partflow {
@@ -20,6 +21,7 @@ public:
 	PF_ENV_API ~ConstantField() {}
 
 	PF_ENV_API inline math::vec3 getVelocity(const math::vec3& pos, float time);
+	std::string getTypeId() { return "ConstantField"; }
 
 private:
 	math::vec3 _vec;
