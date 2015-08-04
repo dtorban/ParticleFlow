@@ -40,10 +40,16 @@ include/PFCore/partflow/Advector.h
 include/PFCore/partflow/emitters/strategies/SphereEmitter.h
 include/PFCore/partflow/emitters/BasicEmitter.h
 include/PFCore/partflow/emitters/EmitterFactory.h
+include/PFCore/partflow/interpolators/TrilinearInterpolator.h
 include/PFCore/partflow/updaters/strategies/MagnitudeUpdater.h
+include/PFCore/partflow/updaters/strategies/ParticleFieldUpdater.h
 include/PFCore/partflow/updaters/BasicUpdater.h
 include/PFCore/partflow/vectorFields/ConstantField.h
+include/PFCore/partflow/vectorFields/ParticleFieldView.h
+include/PFCore/partflow/vectorFields/ParticleField.h
+include/PFCore/partflow/vectorFields/ParticleFieldVolume.h
 include/PFCore/partflow/Emitter.h
+include/PFCore/partflow/ParticleFactory.h
 include/PFCore/partflow/ParticleSetView.h
 include/PFCore/partflow/ParticleSet.h
 include/PFCore/partflow/PartflowRef.h

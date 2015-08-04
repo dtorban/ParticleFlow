@@ -16,6 +16,7 @@
 #include <PFCore/partflow/advectors/strategies/EulerAdvector.h>
 #include <PFCore/partflow/advectors/strategies/RungaKutta4.h>
 #include <PFCore/partflow/vectorFields/ConstantField.h>
+#include <PFCore/partflow/vectorFields/ParticleFieldVolume.h>
 
 namespace PFCore {
 namespace partflow {
@@ -81,6 +82,10 @@ inline Advector* parseCudaVectorFieldAdvector(std::string strategyTypeId, std::s
 	if (vectorFieldTypeId == "ConstantField")
 	{
 		return createCudaVectorFieldAdvectorFromField<ConstantField>(strategyTypeId, strategy, vectorField);
+	}
+	else if (vectorFieldTypeId == "ParticleFieldVolume")
+	{
+		return createCudaVectorFieldAdvectorFromField<ParticleFieldVolume>(strategyTypeId, strategy, vectorField);
 	}
 	
 	return NULL;

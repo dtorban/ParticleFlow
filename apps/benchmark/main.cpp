@@ -12,7 +12,7 @@
 #include "PFCore/partflow/ParticleSet.h"
 #include "PFCore/partflow/emitters/BasicEmitter.h"
 #include "PFCore/partflow/emitters/strategies/SphereEmitter.h"
-#include "PFGpu/partflow/GpuParticleSetFactory.h"
+#include "PFGpu/partflow/GpuParticleFactory.h"
 #include "PFGpu/partflow/emitters/GpuEmitterFactory.h"
 #include "PFCore/partflow/PartflowRef.h"
 #include "PFCore/partflow/advectors/VectorFieldAdvector.h"
@@ -32,7 +32,7 @@ void printParticleSet(const ParticleSetView& view, bool printVelocity = false);
 
 int main(int argc, char** argv) {
 
-	GpuParticleSetFactory psetFactory;
+	GpuParticleFactory psetFactory;
 	ParticleSetRef localSet = psetFactory.createLocalParticleSet(10, 1);
 	ParticleSetRef updatedSet = psetFactory.createLocalParticleSet(10, 1);
 	ParticleSetRef deviceSet = psetFactory.createParticleSet(0, 10, 1);

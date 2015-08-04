@@ -8,6 +8,7 @@
 
 #include <PFGpu/partflow/updaters/CudaParticleUpdater.cuh>
 #include "PFCore/partflow/updaters/strategies/MagnitudeUpdater.h"
+#include "PFCore/partflow/updaters/strategies/ParticleFieldUpdater.h"
 
 namespace PFCore {
 namespace partflow {
@@ -18,6 +19,10 @@ ParticleUpdater* createCudaParticleUpdater(std::string strategyTypeId, void* str
 	if (strategyTypeId == "MagnitudeUpdater")
 	{
 		return new CudaParticleUpdater<MagnitudeUpdater>(strategy);
+	}
+	else if (strategyTypeId == "ParticleFieldUpdater")
+	{
+		return new CudaParticleUpdater<ParticleFieldUpdater>(strategy);
 	}
 
 	return NULL;

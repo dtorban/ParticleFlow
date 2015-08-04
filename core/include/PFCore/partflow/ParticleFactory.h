@@ -10,17 +10,16 @@
 #define PARTICLESETFACTORY_H_
 
 #include "PFCore/partflow/ParticleSet.h"
-#include <memory>
+#include "PFCore/partflow/PartflowRef.h"
 
 namespace PFCore {
 namespace partflow {
 
-typedef std::shared_ptr<ParticleSet> ParticleSetRef;
 
-class ParticleSetFactory {
+class ParticleFactory {
 public:
-	ParticleSetFactory() {}
-	virtual ~ParticleSetFactory() {}
+	ParticleFactory() {}
+	virtual ~ParticleFactory() {}
 
 	ParticleSetRef createLocalParticleSet(int numParticles, int numValues = 0, int numVectors = 1, int numSteps = 1)
 	{
@@ -30,6 +29,16 @@ public:
 	virtual ParticleSetRef createParticleSet(int deviceId, int numParticles, int numValues = 0, int numVectors = 0, int numSteps = 1)
 	{
 		return ParticleSetRef(new ParticleSet(numParticles, numValues, numVectors, numSteps));
+	}
+
+	ParticleFieldRef createLocalParticleField(int numValues, int numVectors, math::vec4 start, math::vec4 length, math::vec4 size)
+	{
+		return createParticleField(-1, numValues, numVectors, start, length, size);
+	}
+
+	virtual ParticleFieldRef createParticleField(int deviceId, int numValues, int numVectors, math::vec4 start, math::vec4 length, math::vec4 size)
+	{
+		return ParticleFieldRef(new ParticleField(numValues, numVectors, start, length, size));
 	}
 };
 

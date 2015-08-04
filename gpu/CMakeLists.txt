@@ -31,6 +31,7 @@ set (CUDA_SOURCEFILES
 source/math/CudaRandomValue.cu
 source/partflow/advectors/CudaVectorFieldAdvector.cu
 source/partflow/emitters/CudaEmitterFactory.cu
+source/partflow/vectorFields/CudaParticleField.cu
 source/partflow/CudaParticleSet.cu
 source/partflow/updaters/CudaParticleUpdater.cu
 )
@@ -40,8 +41,10 @@ include/PFGpu/math/CudaRandomValue.cuh
 include/PFGpu/partflow/advectors/CudaVectorFieldAdvector.cuh
 include/PFGpu/partflow/emitters/CudaEmitterFactory.cuh
 include/PFGpu/partflow/emitters/CudaEmitter.cuh
+include/PFGpu/partflow/vectorFields/CudaParticleField.cuh
 include/PFGpu/partflow/CudaParticleSet.cuh
 include/PFGpu/partflow/updaters/CudaParticleUpdater.cuh
+include/PFGpu/CudaHelper.cuh
 )
 
 set (SOURCEFILES 
