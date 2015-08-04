@@ -6,22 +6,22 @@
  * 		Dan Orban (dtorban)
  */
 
-#ifndef ADVECTOR_H_
-#define ADVECTOR_H_
+#ifndef PARTICLEUPDATER_H_
+#define PARTICLEUPDATER_H_
 
 #include "PFCore/partflow/ParticleSetView.h"
 
 namespace PFCore {
 namespace partflow {
 
-class Advector {
+class ParticleUpdater {
 public:
-	virtual ~Advector() {}
+	virtual ~ParticleUpdater() {}
 
-	virtual void advectParticles(ParticleSetView& particleSet, int step, float time, float dt) = 0;
+	virtual void updateParticles(ParticleSetView& particleSet, int step) = 0;
 };
 
 } /* namespace partflow */
 } /* namespace PFCore */
 
-#endif /* ADVECTOR_H_ */
+#endif /* PARTICLEUPDATER_H_ */

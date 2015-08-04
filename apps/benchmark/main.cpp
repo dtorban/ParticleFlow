@@ -19,6 +19,8 @@
 #include "PFGpu/partflow/advectors/GpuVectorFieldAdvector.h"
 #include "PFCore/partflow/advectors/strategies/EulerAdvector.h"
 #include "PFCore/partflow/vectorFields/ConstantField.h"
+#include "PFCore/partflow/updaters/BasicUpdater.h"
+#include "PFCore/partflow/updaters/strategies/MagnitudeUpdater.h"
 
 using namespace PFCore::math;
 using namespace PFCore::input;
@@ -30,9 +32,9 @@ void printParticleSet(const ParticleSetView& view, bool printVelocity = false);
 int main(int argc, char** argv) {
 
 	GpuParticleSetFactory psetFactory;
-	ParticleSetRef localSet = psetFactory.createLocalParticleSet(10);
-	ParticleSetRef updatedSet = psetFactory.createLocalParticleSet(10);
-	ParticleSetRef deviceSet = psetFactory.createParticleSet(0, 10);
+	ParticleSetRef localSet = psetFactory.createLocalParticleSet(10, 1);
+	ParticleSetRef updatedSet = psetFactory.createLocalParticleSet(10, 1);
+	ParticleSetRef deviceSet = psetFactory.createParticleSet(0, 10, 1);
 
 	GpuEmitterFactory emitterFactory;
 	EmitterRef emitter = EmitterRef(emitterFactory.createSphereEmitter(vec3(0.0f), 1.0f, 1));
@@ -79,6 +81,9 @@ int main(int argc, char** argv) {
 		advector->advectParticles(*deviceSet, f, dt*float(f), dt);
 	}
 
+	BasicUpdater<MagnitudeUpdater> updater(MagnitudeUpdater(0,0));
+	updater.updateParticles(*deviceSet, 0);
+
 	// Copy from device
 	cout << "Device advected: " << endl;
 	updatedSet->copy(*deviceSet);
@@ -101,6 +106,12 @@ void printParticleSet(const ParticleSetView& view, bool printVelocity)
 		{
 			const vec3& vel = view.getVector(0,f,0);
 			cout << "Vel: " << vel.x << "," << vel.y << "," << vel.z << endl;
+		}
+
+		for (int f = 0; f < view.getNumParticles(); f++)
+		{
+			const float& mag = view.getValue(0,f,0);
+			cout << "Mag: " << mag << endl;
 		}
 	}
 }
