@@ -32,6 +32,7 @@ source/math/CudaRandomValue.cu
 source/partflow/advectors/CudaVectorFieldAdvector.cu
 source/partflow/emitters/CudaEmitterFactory.cu
 source/partflow/CudaParticleSet.cu
+source/partflow/updaters/CudaParticleUpdater.cu
 )
 
 set (CUDA_HEADERFILES 
@@ -40,6 +41,7 @@ include/PFGpu/partflow/advectors/CudaVectorFieldAdvector.cuh
 include/PFGpu/partflow/emitters/CudaEmitterFactory.cuh
 include/PFGpu/partflow/emitters/CudaEmitter.cuh
 include/PFGpu/partflow/CudaParticleSet.cuh
+include/PFGpu/partflow/updaters/CudaParticleUpdater.cuh
 )
 
 set (SOURCEFILES 
@@ -49,6 +51,7 @@ source/main.cpp
 set (HEADERFILES 
 include/PFGpu/partflow/advectors/GpuVectorFieldAdvector.h
 include/PFGpu/partflow/emitters/GpuEmitterFactory.h
+include/PFGpu/partflow/GpuParticleUpdater.h
 )
 
 if (USE_CUDA)

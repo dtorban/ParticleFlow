@@ -21,6 +21,7 @@
 #include "PFCore/partflow/vectorFields/ConstantField.h"
 #include "PFCore/partflow/updaters/BasicUpdater.h"
 #include "PFCore/partflow/updaters/strategies/MagnitudeUpdater.h"
+#include "PFGpu/partflow/GpuParticleUpdater.h"
 
 using namespace PFCore::math;
 using namespace PFCore::input;
@@ -81,7 +82,7 @@ int main(int argc, char** argv) {
 		advector->advectParticles(*deviceSet, f, dt*float(f), dt);
 	}
 
-	BasicUpdater<MagnitudeUpdater> updater(MagnitudeUpdater(0,0));
+	GpuParticleUpdater<MagnitudeUpdater> updater(MagnitudeUpdater(0,0));
 	updater.updateParticles(*deviceSet, 0);
 
 	// Copy from device

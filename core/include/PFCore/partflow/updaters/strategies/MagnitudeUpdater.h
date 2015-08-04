@@ -11,6 +11,7 @@
 
 #include "PFCore/partflow/ParticleUpdater.h"
 #include "PFCore/math/vec_math.h"
+#include <string>
 
 namespace PFCore {
 namespace partflow {
@@ -24,6 +25,8 @@ public:
 	PF_ENV_API inline void operator=(const MagnitudeUpdater& updater);
 
 	PF_ENV_API inline void updateParticle(ParticleSetView& particleSet, int index, int step);
+
+	std::string getTypeId() { return "MagnitudeUpdater"; }
 
 private:
 	int _valueIndex;
