@@ -39,7 +39,7 @@ template<typename Strategy, typename VField>
 inline GpuVectorFieldAdvector<Strategy, VField>::GpuVectorFieldAdvector(Strategy strategy, VField field) : _localAdvector(strategy, field)
 {
 #ifdef USE_CUDA
-	_innerAdvector = createCudaVectorFieldAdvector(strategy.getTypeId(), vectorField.getTypeId(), &strategy, &vectorField);
+	_innerAdvector = createCudaVectorFieldAdvector(strategy.getTypeId(), field.getTypeId(), &strategy, &field);
 #endif
 }
 

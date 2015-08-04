@@ -12,6 +12,7 @@
 #include "PFCore/env_cuda.h"
 #include "PFCore/partflow/Advector.h"
 #include <string>
+#include <iostream>
 
 namespace PFCore {
 namespace partflow {
@@ -31,8 +32,8 @@ private:
 
 template<typename Strategy, typename VField>
 inline CudaVectorFieldAdvector<Strategy, VField>::CudaVectorFieldAdvector(void* strategy, void* vectorField) {
-	_strategy = *(dynamic_cast<Strategy*>(strategy));
-	_vectorField = *(dynamic_cast<VField*>vectorField));
+	_strategy = *(reinterpret_cast<Strategy*>(strategy));
+	_vectorField = *(reinterpret_cast<VField*>(vectorField));
 }
 
 template<typename Strategy, typename VField>
@@ -40,19 +41,21 @@ inline CudaVectorFieldAdvector<Strategy, VField>::~CudaVectorFieldAdvector() {
 }
 
 template<typename Strategy, typename VField>
-__global__ void CudaVectorFieldAdvector_advectParticle(Strategy strategy, VField vectorField, ParticleSetView particleSet, int step, float time, float dt)
+__global__ void CudaVectorFieldAdvector_advectParticle(Strategy strategy, VField vectorField, ParticleSetView particleSet, int step, int prevStep, float time, float dt)
 {
 	int i = (blockIdx.x * blockDim.x) + threadIdx.x;
 	if (i < particleSet.getNumParticles())
 	{
-		strategy.advectParticle(particleSet, vectorField, i, step, time, dt);
+		strategy.advectParticle(particleSet, vectorField, i, step, prevStep, time, dt);
 	}
 }
 
 
 template<typename Strategy, typename VField>
-void CudaVectorFieldAdvector::advectParticles(ParticleSetView& particleSet, int step, float time, float dt) {
-	CudaVectorFieldAdvector_advectParticle<Strategy, VField><<<particleSet.getNumParticles(), particleSet.getNumParticles()>>>(_strategy, _vectorField, particleSet, step, time, dt);
+void CudaVectorFieldAdvector<Strategy, VField>::advectParticles(ParticleSetView& particleSet, int step, float time, float dt) {
+	std::cout << "Advect cuda!" << std::endl;
+	int prevStep = (particleSet.getNumSteps() + step - 1) % particleSet.getNumSteps();
+	CudaVectorFieldAdvector_advectParticle<Strategy, VField><<<particleSet.getNumParticles(), particleSet.getNumParticles()>>>(_strategy, _vectorField, particleSet, step, prevStep, time, dt);
 }
 
 } /* namespace partflow */
