@@ -36,7 +36,9 @@ PF_ENV_API inline void EulerAdvector<VField>::advectParticle(ParticleSetView& pa
 
 	if (particleSet.getNumVectors() > 0)
 	{
-		particleSet.getVector(0, index, step) = velocity;
+		math::vec3& vel = particleSet.getVector(0, index, step);
+		vel = velocity;
+
 	}
 }
 

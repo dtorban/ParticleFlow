@@ -25,7 +25,7 @@ using namespace PFCore::input;
 using namespace PFCore::partflow;
 using namespace std;
 
-void printParticleSet(const ParticleSetView& view);
+void printParticleSet(const ParticleSetView& view, bool printVelocity = false);
 
 int main(int argc, char** argv) {
 
@@ -82,16 +82,25 @@ int main(int argc, char** argv) {
 	// Copy from device
 	cout << "Device advected: " << endl;
 	updatedSet->copy(*deviceSet);
-	printParticleSet(*updatedSet);
+	printParticleSet(*updatedSet, true);
 
 	return 0;
 }
 
-void printParticleSet(const ParticleSetView& view)
+void printParticleSet(const ParticleSetView& view, bool printVelocity)
 {
 	for (int f = 0; f < view.getNumParticles(); f++)
 	{
 		const vec3& pos = view.getPosition(f);
 		cout << pos.x << "," << pos.y << "," << pos.z << endl;
+	}
+
+	if (printVelocity)
+	{
+		for (int f = 0; f < view.getNumParticles(); f++)
+		{
+			const vec3& vel = view.getVector(0,f,0);
+			cout << "Vel: " << vel.x << "," << vel.y << "," << vel.z << endl;
+		}
 	}
 }

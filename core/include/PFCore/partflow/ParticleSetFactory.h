@@ -22,7 +22,7 @@ public:
 	ParticleSetFactory() {}
 	virtual ~ParticleSetFactory() {}
 
-	ParticleSetRef createLocalParticleSet(int numParticles, int numValues = 0, int numVectors = 0, int numSteps = 1)
+	ParticleSetRef createLocalParticleSet(int numParticles, int numValues = 0, int numVectors = 1, int numSteps = 1)
 	{
 		return createParticleSet(-1, numParticles, numValues, numVectors, numSteps);
 	}
