@@ -17,7 +17,7 @@ namespace partflow {
 
 #ifdef USE_CUDA
 extern "C"
-Advector* createCudaParticleUpdater(std::string strategyTypeId, void* strategy);
+ParticleUpdater* createCudaParticleUpdater(std::string strategyTypeId, void* strategy);
 #endif
 
 template<typename Strategy>
@@ -56,7 +56,7 @@ inline void GpuParticleUpdater<Strategy>::updateParticles(ParticleSetView& parti
 #ifdef USE_CUDA
 	if (particleSet.getDeviceId() >= 0)
 	{
-		_innerAdvector->updateParticles(particleSet, step);
+		_innerUpdater->updateParticles(particleSet, step);
 		return;
 	}
 #endif

@@ -12,6 +12,7 @@
 namespace PFCore {
 namespace partflow {
 
+extern "C"
 ParticleUpdater* createCudaParticleUpdater(std::string strategyTypeId, void* strategy)
 {
 	if (strategyTypeId == "MagnitudeUpdater")

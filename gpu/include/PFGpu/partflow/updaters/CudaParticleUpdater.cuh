@@ -9,7 +9,9 @@
 #ifndef CUDAPARTICLEUPDATER_H_
 #define CUDAPARTICLEUPDATER_H_
 
+#include "PFCore/env_cuda.h"
 #include "PFCore/partflow/ParticleUpdater.h"
+#include <iostream>
 
 namespace PFCore {
 namespace partflow {
