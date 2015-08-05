@@ -7,9 +7,6 @@
  */
 
 #include <PFGpu/partflow/advectors/CudaVectorFieldAdvector.cuh>
-#include <PFCore/partflow/advectors/strategies/EulerAdvector.h>
-#include <PFCore/partflow/advectors/strategies/RungaKutta4.h>
-#include <PFCore/partflow/vectorFields/ConstantField.h>
 
 namespace PFCore {
 namespace partflow {
@@ -17,16 +14,7 @@ namespace partflow {
 extern "C"
 Advector* createCudaVectorFieldAdvector(std::string strategyTypeId, std::string vectorFieldTypeId, void* strategy, void* vectorField)
 {
-	if (strategyTypeId == "Euler" && vectorFieldTypeId == "ConstantField")
-	{
-		return new CudaVectorFieldAdvector<EulerAdvector<ConstantField>, ConstantField>(strategy, vectorField);
-	}
-	else if (strategyTypeId == "RungaKutta4" && vectorFieldTypeId == "ConstantField")
-	{
-		return new CudaVectorFieldAdvector<RungaKutta4<ConstantField>, ConstantField>(strategy, vectorField);
-	}
-
-	return NULL;
+	return parseCudaVectorFieldAdvector(strategyTypeId, vectorFieldTypeId, strategy, vectorField);
 }
 
 } /* namespace partflow */

@@ -13,6 +13,9 @@
 #include "PFCore/partflow/Advector.h"
 #include <string>
 #include <iostream>
+#include <PFCore/partflow/advectors/strategies/EulerAdvector.h>
+#include <PFCore/partflow/advectors/strategies/RungaKutta4.h>
+#include <PFCore/partflow/vectorFields/ConstantField.h>
 
 namespace PFCore {
 namespace partflow {
@@ -56,6 +59,31 @@ void CudaVectorFieldAdvector<Strategy, VField>::advectParticles(ParticleSetView&
 	std::cout << "Advect cuda!" << std::endl;
 	int prevStep = (particleSet.getNumSteps() + step - 1) % particleSet.getNumSteps();
 	CudaVectorFieldAdvector_advectParticle<Strategy, VField><<<particleSet.getNumParticles(), particleSet.getNumParticles()>>>(_strategy, _vectorField, particleSet, step, prevStep, time, dt);
+}
+
+template<typename VField>
+inline Advector* createCudaVectorFieldAdvectorFromField(std::string strategyTypeId, void* strategy, void* vectorField)
+{
+	if (strategyTypeId == "Euler")
+	{
+		return new CudaVectorFieldAdvector<EulerAdvector<VField>, VField>(strategy, vectorField);
+	}
+	else if (strategyTypeId == "RungaKutta4")
+	{
+		return new CudaVectorFieldAdvector<RungaKutta4<VField>, VField>(strategy, vectorField);
+	}
+	
+	return NULL;
+}
+
+inline Advector* parseCudaVectorFieldAdvector(std::string strategyTypeId, std::string vectorFieldTypeId, void* strategy, void* vectorField)
+{
+	if (vectorFieldTypeId == "ConstantField")
+	{
+		return createCudaVectorFieldAdvectorFromField<ConstantField>(strategyTypeId, strategy, vectorField);
+	}
+	
+	return NULL;
 }
 
 } /* namespace partflow */
