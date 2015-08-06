@@ -118,4 +118,5 @@ endif()
 
 add_subdirectory(core)
 add_subdirectory(gpu)
+add_subdirectory(vis)
 add_subdirectory(apps)

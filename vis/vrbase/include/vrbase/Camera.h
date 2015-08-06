@@ -5,3 +5,23 @@
  * Code author(s):
  * 		Dan Orban (dtorban)
  */
+
+#ifndef CAMERA_H_
+#define CAMERA_H_
+
+#include <glm/glm.hpp>
+
+namespace vrbase {
+
+class Camera {
+public:
+	virtual ~Camera() {}
+
+	virtual glm::mat4 getProjetionMatrix() = 0;
+	virtual glm::mat4 getViewMatrix() = 0;
+	virtual glm::mat4 getObjectToWorldMatrix() = 0;
+};
+
+} /* namespace vrbase */
+
+#endif /* CAMERA_H_ */
