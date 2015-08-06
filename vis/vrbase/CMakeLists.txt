@@ -18,6 +18,7 @@ project (vrbase)
 set (SOURCEFILES
 source/cameras/OffAxisCamera.cpp
 source/cameras/WorldCamera.cpp
+source/AppBase.cpp
 source/Box.cpp
 source/main.cpp
 source/Shader.cpp
@@ -26,6 +27,7 @@ source/Shader.cpp
 set (HEADERFILES
 include/vrbase/cameras/OffAxisCamera.h
 include/vrbase/cameras/WorldCamera.h
+include/vrbase/AppBase.h
 include/vrbase/Box.h
 include/vrbase/Camera.h
 include/vrbase/Shader.h

@@ -26,7 +26,6 @@ public:
 	virtual ~Scene() {}
 
 	virtual void init() = 0;
-	virtual void update() = 0;
 	virtual void updateFrame() = 0;
 	virtual const Box& getBoundingBox() = 0;
 	virtual void draw(const Camera& camera) = 0;

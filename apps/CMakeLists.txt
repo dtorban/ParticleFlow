@@ -10,3 +10,4 @@ cmake_minimum_required (VERSION 2.8.2)
 set (CMAKE_VERBOSE_MAKEFILE TRUE)
 
 add_subdirectory(benchmark)
+add_subdirectory(hurricane)

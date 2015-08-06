@@ -16,7 +16,7 @@ namespace vrbase {
 
 class OffAxisCamera : public Camera {
 public:
-	OffAxisCamera(MinVR::CameraOffAxis& camera);
+	OffAxisCamera(MinVR::CameraOffAxis& camera, const glm::mat4& objectToWorld = glm::mat4(1.0f));
 	virtual ~OffAxisCamera();
 
 	glm::mat4 getProjetionMatrix();
@@ -25,6 +25,7 @@ public:
 
 private:
 	MinVR::CameraOffAxis& _camera;
+	glm::mat4 _objectToWorld;
 };
 
 } /* namespace vrbase */

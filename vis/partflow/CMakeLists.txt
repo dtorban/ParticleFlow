@@ -17,9 +17,11 @@ project (partflow_vis)
 
 set (SOURCEFILES
 source/main.cpp
+source/PartFlowApp.cpp
 )
 
 set (HEADERFILES
+include/PFVis/PartFlowApp.h
 )
 
 source_group("Header Files" FILES ${HEADERFILES})

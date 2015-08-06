@@ -6,3 +6,16 @@
  * 		Dan Orban (dtorban)
  */
 
+#include "AppKit_GLFW/MVREngineGLFW.H"
+#include "HurricaneApp.h"
+
+int
+main(int argc, char** argv)
+{
+	MinVR::AbstractMVREngine *engine = new MinVR::MVREngineGLFW();
+	engine->init(argc, argv);
+	MinVR::AbstractMVRAppRef app(new HurricaneApp());
+	engine->runApp(app);
+	delete engine;
+}
+
