@@ -20,7 +20,6 @@ public:
 	virtual ~PartFlowApp();
 
 	virtual void initializeContext(int threadId, MinVR::WindowRef window);
-	virtual vrbase::SceneRef createScene(int threadId, MinVR::WindowRef window);
 
 protected:
 	PartFlowApp();

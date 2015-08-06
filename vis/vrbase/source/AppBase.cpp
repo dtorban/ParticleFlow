@@ -8,11 +8,35 @@
 #include <vis/vrbase/include/vrbase/AppBase.h>
 #include "MVRCore/CameraOffAxis.H"
 #include "vrbase/cameras/OffAxisCamera.h"
+#include "vrbase/scenes/BlankScene.h"
 
 namespace vrbase {
 
+AppBase::AppBase() : _startTime(-1), _numFrames(0) {
+
+}
+
+AppBase::~AppBase() {
+}
+
 void AppBase::doUserInputAndPreDrawComputation(
 		const std::vector<MinVR::EventRef>& events, double synchronizedTime) {
+
+	if (_startTime < 0)
+	{
+		_startTime = synchronizedTime;
+	}
+	else
+	{
+		_numFrames++;
+
+		float fps = 10 / (synchronizedTime - _startTime);
+		if (_numFrames % 10 == 0)
+		{
+			std::cout << fps << std::endl;
+			_startTime = synchronizedTime;
+		}
+	}
 }
 
 void AppBase::initializeContextSpecificVars(int threadId,
@@ -47,11 +71,8 @@ void AppBase::init() {
 void AppBase::init(MinVR::ConfigMapRef configMap) {
 }
 
-AppBase::AppBase() {
-
-}
-
-AppBase::~AppBase() {
+SceneRef AppBase::createScene(int threadId, MinVR::WindowRef window) {
+	return BlankScene::instance();
 }
 
 } /* namespace vrbase */

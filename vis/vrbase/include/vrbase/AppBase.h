@@ -29,7 +29,7 @@ public:
 	virtual void init(MinVR::ConfigMapRef configMap);
 	virtual void postInitialization();
 	virtual void initializeContext(int threadId, MinVR::WindowRef window);
-	virtual SceneRef createScene(int threadId, MinVR::WindowRef window) = 0;
+	virtual SceneRef createScene(int threadId, MinVR::WindowRef window);
 
 protected:
 	AppBase();
@@ -37,6 +37,9 @@ protected:
 private:
 	std::map<int, SceneRef> _threadScenes;
 	MinVR::Mutex _sceneMutex;
+
+	float _startTime;
+	int _numFrames;
 };
 
 } /* namespace vrbase */

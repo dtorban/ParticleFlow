@@ -23,7 +23,6 @@ void PartFlowApp::initializeContext(int threadId,
 
 	bool _blendMode = false;
 
-	glClearColor(0.f, 0.f, 0.f, 0.f);
 
 	glShadeModel(GL_SMOOTH);                    // shading mathod: GL_SMOOTH or GL_FLAT
     glPixelStorei(GL_UNPACK_ALIGNMENT, 4);      // 4-byte pixel alignment
@@ -45,7 +44,7 @@ void PartFlowApp::initializeContext(int threadId,
     glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
     glEnable(GL_COLOR_MATERIAL);
 
-    glClearColor(0, 0, 0, 0);                   // background color
+	glClearColor(0.f, 0.f, 0.f, 0.f);                   // background color
     glClearStencil(0);                          // clear stencil buffer
     glClearDepth(1.0f);                         // 0 is near, 1 is far
     //glDepthFunc(GL_LESS);
@@ -63,11 +62,6 @@ void PartFlowApp::initializeContext(int threadId,
 	if((err = glGetError()) != GL_NO_ERROR) {
 		std::cout << "GLERROR initGL: "<<err<<std::endl;
 	}
-}
-
-vrbase::SceneRef PartFlowApp::createScene(int threadId,
-		MinVR::WindowRef window) {
-	return NULL;
 }
 
 } /* namespace partflow */

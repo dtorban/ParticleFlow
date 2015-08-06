@@ -18,6 +18,7 @@ project (vrbase)
 set (SOURCEFILES
 source/cameras/OffAxisCamera.cpp
 source/cameras/WorldCamera.cpp
+source/scenes/BlankScene.cpp
 source/AppBase.cpp
 source/Box.cpp
 source/main.cpp
@@ -27,6 +28,7 @@ source/Shader.cpp
 set (HEADERFILES
 include/vrbase/cameras/OffAxisCamera.h
 include/vrbase/cameras/WorldCamera.h
+include/vrbase/scenes/BlankScene.h
 include/vrbase/AppBase.h
 include/vrbase/Box.h
 include/vrbase/Camera.h
@@ -81,7 +83,6 @@ endforeach(CONF CMAKE_CONFIGURATION_TYPES)
 #------------------------------------------
 
 add_library ( ${PROJECT_NAME} ${HEADERFILES} ${SOURCEFILES} )
-target_link_libraries(${PROJECT_NAME} ${MinVR_LIBRARIES} ${All_LIB})
 
 #------------------------------------------
 # Install Target

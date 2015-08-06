@@ -75,7 +75,6 @@ endforeach(CONF CMAKE_CONFIGURATION_TYPES)
 #------------------------------------------
 
 add_library ( ${PROJECT_NAME} ${HEADERFILES} ${SOURCEFILES} )
-target_link_libraries(${PROJECT_NAME} partflow partflow_gpu vrbase ${MinVR_LIBRARIES} ${All_LIB})
 
 #------------------------------------------
 # Install Target
