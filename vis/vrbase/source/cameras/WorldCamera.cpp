@@ -17,6 +17,10 @@ WorldCamera::~WorldCamera() {
 	// TODO Auto-generated destructor stub
 }
 
+glm::vec3 WorldCamera::getPosition() {
+	return _camera.getPosition();
+}
+
 glm::mat4 WorldCamera::getProjetionMatrix() {
 	return _camera.getProjetionMatrix();
 }

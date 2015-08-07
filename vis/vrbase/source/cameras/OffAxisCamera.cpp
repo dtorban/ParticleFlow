@@ -10,11 +10,15 @@
 
 namespace vrbase {
 
-OffAxisCamera::OffAxisCamera(MinVR::CameraOffAxis& camera, const glm::mat4& objectToWorld) : _camera(camera), _objectToWorld(objectToWorld) {
+OffAxisCamera::OffAxisCamera(MinVR::CameraOffAxis& camera, const glm::mat4& objectToWorld, glm::vec3 position) : _camera(camera), _objectToWorld(objectToWorld), _position(position) {
 
 }
 
 OffAxisCamera::~OffAxisCamera() {
+}
+
+glm::vec3 OffAxisCamera::getPosition() {
+	return _position;
 }
 
 glm::mat4 OffAxisCamera::getProjetionMatrix() {
