@@ -18,10 +18,10 @@ public:
 	WorldCamera(Camera& camera, const glm::mat4& objectToWorld);
 	virtual ~WorldCamera();
 
-	glm::vec3 getPosition();
-	glm::mat4 getProjetionMatrix();
-	glm::mat4 getViewMatrix();
-	glm::mat4 getObjectToWorldMatrix();
+	glm::vec3 getPosition() const;
+	glm::mat4 getProjetionMatrix() const;
+	glm::mat4 getViewMatrix() const;
+	glm::mat4 getObjectToWorldMatrix() const;
 
 private:
 	Camera& _camera;

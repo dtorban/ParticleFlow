@@ -17,10 +17,10 @@ class Camera {
 public:
 	virtual ~Camera() {}
 
-	virtual glm::vec3 getPosition() = 0;
-	virtual glm::mat4 getProjetionMatrix() = 0;
-	virtual glm::mat4 getViewMatrix() = 0;
-	virtual glm::mat4 getObjectToWorldMatrix() = 0;
+	virtual glm::vec3 getPosition() const = 0;
+	virtual glm::mat4 getProjetionMatrix() const = 0;
+	virtual glm::mat4 getViewMatrix() const = 0;
+	virtual glm::mat4 getObjectToWorldMatrix() const = 0;
 };
 
 } /* namespace vrbase */

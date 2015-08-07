@@ -14,22 +14,21 @@ WorldCamera::WorldCamera(Camera& camera, const glm::mat4& objectToWorld) : _came
 }
 
 WorldCamera::~WorldCamera() {
-	// TODO Auto-generated destructor stub
 }
 
-glm::vec3 WorldCamera::getPosition() {
+glm::vec3 WorldCamera::getPosition() const {
 	return _camera.getPosition();
 }
 
-glm::mat4 WorldCamera::getProjetionMatrix() {
+glm::mat4 WorldCamera::getProjetionMatrix() const {
 	return _camera.getProjetionMatrix();
 }
 
-glm::mat4 WorldCamera::getViewMatrix() {
+glm::mat4 WorldCamera::getViewMatrix() const {
 	return _camera.getViewMatrix();
 }
 
-glm::mat4 WorldCamera::getObjectToWorldMatrix() {
+glm::mat4 WorldCamera::getObjectToWorldMatrix() const {
 	return _objectToWorld;
 }
 
