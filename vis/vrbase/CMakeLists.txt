@@ -19,9 +19,11 @@ set (SOURCEFILES
 source/cameras/OffAxisCamera.cpp
 source/cameras/WorldCamera.cpp
 source/scenes/BlankScene.cpp
+source/scenes/MeshScene.cpp
 source/AppBase.cpp
 source/Box.cpp
 source/main.cpp
+source/Mesh.cpp
 source/Shader.cpp
 )
 
@@ -29,9 +31,11 @@ set (HEADERFILES
 include/vrbase/cameras/OffAxisCamera.h
 include/vrbase/cameras/WorldCamera.h
 include/vrbase/scenes/BlankScene.h
+include/vrbase/scenes/MeshScene.h
 include/vrbase/AppBase.h
 include/vrbase/Box.h
 include/vrbase/Camera.h
+include/vrbase/Mesh.h
 include/vrbase/Shader.h
 )
 

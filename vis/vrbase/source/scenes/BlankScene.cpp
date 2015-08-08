@@ -15,12 +15,6 @@ BlankScene::BlankScene() {
 BlankScene::~BlankScene() {
 }
 
-void BlankScene::init() {
-}
-
-void BlankScene::updateFrame() {
-}
-
 const Box BlankScene::getBoundingBox() {
 	return Box();
 }

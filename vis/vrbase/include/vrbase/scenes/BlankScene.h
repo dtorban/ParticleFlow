@@ -17,8 +17,6 @@ public:
 	BlankScene();
 	virtual ~BlankScene();
 
-	void init();
-	void updateFrame();
 	const Box getBoundingBox();
 	void draw(const Camera& camera);
 

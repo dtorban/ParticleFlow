@@ -9,12 +9,9 @@
 #ifndef SCENE_H_
 #define SCENE_H_
 
-#include "MVRCore/AbstractCamera.H"
-#include "MVRCore/AbstractWindow.H"
 #include "vrbase/Box.h"
 #include "vrbase/Camera.h"
-
-#include <glm/glm.hpp>
+#include <memory>
 
 namespace vrbase {
 
@@ -25,10 +22,13 @@ class Scene {
 public:
 	virtual ~Scene() {}
 
-	virtual void init() = 0;
-	virtual void updateFrame() = 0;
+	virtual void init() {}
+	virtual void updateFrame() {}
+	virtual int getVersion() const { return 0; }
+
 	virtual const Box getBoundingBox() = 0;
 	virtual void draw(const Camera& camera) = 0;
+
 };
 
 }
