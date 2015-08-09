@@ -8,6 +8,9 @@
 
 #include <vrbase/events/BasicMouseListener.h>
 #include <iostream>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_access.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 namespace vrbase {
 
@@ -25,6 +28,7 @@ void BasicMouseListener::handleEvents(
 	for (int f = 0; f < events.size(); f++)
 	{
 		std::cout << events[f]->getName() << std::endl;
+		*(_transformation) = glm::rotate(*(_transformation), 10.0f, glm::vec3(1.0f));
 	}
 }
 

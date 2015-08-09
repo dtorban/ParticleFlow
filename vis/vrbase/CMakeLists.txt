@@ -21,6 +21,7 @@ source/cameras/WorldCamera.cpp
 source/events/BasicMouseListener.cpp
 source/scenes/render/BasicRenderedScene.cpp
 source/scenes/BlankScene.cpp
+source/scenes/CenteredScene.cpp
 source/scenes/MeshScene.cpp
 source/scenes/SceneAdapter.cpp
 source/AppBase.cpp
@@ -36,6 +37,7 @@ include/vrbase/cameras/WorldCamera.h
 include/vrbase/events/BasicMouseListener.h
 include/vrbase/scenes/render/BasicRenderedScene.h
 include/vrbase/scenes/BlankScene.h
+include/vrbase/scenes/CenteredScene.h
 include/vrbase/scenes/MeshScene.h
 include/vrbase/scenes/SceneAdapter.h
 include/vrbase/AppBase.h

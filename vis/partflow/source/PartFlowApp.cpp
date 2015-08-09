@@ -9,6 +9,7 @@
 #include "GL/glew.h"
 #include "vrbase/EventListener.h"
 #include "vrbase/events/BasicMouseListener.h"
+#include "vrbase/scenes/CenteredScene.h"
 
 namespace PFVis {
 namespace partflow {
@@ -72,6 +73,7 @@ void PartFlowApp::initializeContext(int threadId,
 vrbase::SceneRef PartFlowApp::createScene(int threadId,
 		MinVR::WindowRef window) {
 	vrbase::SceneRef scene = createAppScene(threadId, window);
+	scene = vrbase::SceneRef(new vrbase::CenteredScene(scene, &_objectToWorld));
 	return scene;
 }
 

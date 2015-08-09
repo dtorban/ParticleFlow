@@ -10,7 +10,8 @@
 
 namespace vrbase {
 
-WorldCamera::WorldCamera(Camera& camera, const glm::mat4& objectToWorld) : _camera(camera), _objectToWorld(objectToWorld) {
+WorldCamera::WorldCamera(const Camera& camera, const glm::mat4& objectToWorld) : _camera(camera) {
+	_objectToWorld = objectToWorld;
 }
 
 WorldCamera::~WorldCamera() {

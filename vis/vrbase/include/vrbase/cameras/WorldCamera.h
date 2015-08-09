@@ -15,7 +15,7 @@ namespace vrbase {
 
 class WorldCamera : public Camera {
 public:
-	WorldCamera(Camera& camera, const glm::mat4& objectToWorld);
+	WorldCamera(const Camera& camera, const glm::mat4& objectToWorld);
 	virtual ~WorldCamera();
 
 	glm::vec3 getPosition() const;
@@ -24,8 +24,8 @@ public:
 	glm::mat4 getObjectToWorldMatrix() const;
 
 private:
-	Camera& _camera;
-	const glm::mat4& _objectToWorld;
+	const Camera& _camera;
+	glm::mat4 _objectToWorld;
 };
 
 } /* namespace vrbase */
