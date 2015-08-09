@@ -14,7 +14,7 @@ using namespace PFVis::partflow;
 using namespace std;
 
 HurricaneApp::HurricaneApp() : PartFlowApp () {
-	init();
+	AppBase::init();
 
 	vector<glm::vec3> vertices;
 	vertices.push_back(glm::vec3(-1.0f, 0.0, -1.0));
@@ -45,7 +45,7 @@ HurricaneApp::HurricaneApp() : PartFlowApp () {
 HurricaneApp::~HurricaneApp() {
 }
 
-SceneRef HurricaneApp::createScene(int threadId, MinVR::WindowRef window)
+SceneRef HurricaneApp::createAppScene(int threadId, MinVR::WindowRef window)
 {
 	return SceneRef(new BasicRenderedScene(SceneRef(new MeshScene(_mesh))));
 }

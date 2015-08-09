@@ -18,7 +18,7 @@ public:
 	HurricaneApp();
 	virtual ~HurricaneApp();
 
-	vrbase::SceneRef createScene(int threadId, MinVR::WindowRef window);
+	vrbase::SceneRef createAppScene(int threadId, MinVR::WindowRef window);
 
 private:
 	vrbase::MeshRef _mesh;

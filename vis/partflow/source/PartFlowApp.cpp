@@ -7,16 +7,21 @@
 
 #include <PFVis/PartFlowApp.h>
 #include "GL/glew.h"
+#include "vrbase/EventListener.h"
+#include "vrbase/events/BasicMouseListener.h"
 
 namespace PFVis {
 namespace partflow {
 
-PartFlowApp::PartFlowApp() : vrbase::AppBase() {
+PartFlowApp::PartFlowApp() : vrbase::AppBase(), _objectToWorld(1.0f) {
 }
 
 PartFlowApp::~PartFlowApp() {
 }
 
+void PartFlowApp::init(MinVR::ConfigMapRef configMap) {
+	addEventListener(vrbase::EventListenerRef(new vrbase::BasicMouseListener(&_objectToWorld)));
+}
 
 void PartFlowApp::initializeContext(int threadId,
 		MinVR::WindowRef window) {
@@ -62,6 +67,17 @@ void PartFlowApp::initializeContext(int threadId,
 	if((err = glGetError()) != GL_NO_ERROR) {
 		std::cout << "GLERROR initGL: "<<err<<std::endl;
 	}
+}
+
+vrbase::SceneRef PartFlowApp::createScene(int threadId,
+		MinVR::WindowRef window) {
+	vrbase::SceneRef scene = createAppScene(threadId, window);
+	return scene;
+}
+
+vrbase::SceneRef PartFlowApp::createAppScene(int threadId,
+		MinVR::WindowRef window) {
+	return vrbase::AppBase::createScene(threadId, window);
 }
 
 } /* namespace partflow */

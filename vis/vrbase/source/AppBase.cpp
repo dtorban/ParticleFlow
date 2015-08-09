@@ -21,22 +21,12 @@ AppBase::~AppBase() {
 
 void AppBase::doUserInputAndPreDrawComputation(
 		const std::vector<MinVR::EventRef>& events, double synchronizedTime) {
-
-	if (_startTime < 0)
+	for (int f = 0; f < _eventListeners.size(); f++)
 	{
-		_startTime = synchronizedTime;
+		_eventListeners[f]->handleEvents(events, synchronizedTime);
 	}
-	else
-	{
-		_numFrames++;
 
-		float fps = 10 / (synchronizedTime - _startTime);
-		if (_numFrames % 10 == 0)
-		{
-			std::cout << fps << std::endl;
-			_startTime = synchronizedTime;
-		}
-	}
+	preDrawComputation(synchronizedTime);
 }
 
 void AppBase::initializeContextSpecificVars(int threadId,
@@ -53,6 +43,24 @@ void AppBase::postInitialization() {
 
 void AppBase::perFrameComputation(int threadId, MinVR::WindowRef window) {
 	_threadScenes[threadId]->updateFrame();
+}
+
+void AppBase::preDrawComputation(double synchronizedTime) {
+	if (_startTime < 0)
+	{
+		_startTime = synchronizedTime;
+	}
+	else
+	{
+		_numFrames++;
+
+		float fps = 10 / (synchronizedTime - _startTime);
+		if (_numFrames % 10 == 0)
+		{
+			std::cout << fps << std::endl;
+			_startTime = synchronizedTime;
+		}
+	}
 }
 
 void AppBase::drawGraphics(int threadId, MinVR::AbstractCameraRef camera,
@@ -75,6 +83,9 @@ SceneRef AppBase::createScene(int threadId, MinVR::WindowRef window) {
 	return BlankScene::instance();
 }
 
-} /* namespace vrbase */
+void AppBase::addEventListener(EventListenerRef eventListener) {
+	_eventListeners.push_back(eventListener);
+}
 
+} /* namespace vrbase */
 

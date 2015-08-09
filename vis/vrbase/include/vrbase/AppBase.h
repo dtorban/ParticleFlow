@@ -13,6 +13,7 @@
 #include <map>
 #include "MVRCore/Thread.h"
 #include "MVRCore/ConfigVal.H"
+#include "vrbase/EventListener.h"
 
 namespace vrbase {
 
@@ -29,12 +30,16 @@ public:
 	virtual void init(MinVR::ConfigMapRef configMap);
 	virtual void postInitialization();
 	virtual void initializeContext(int threadId, MinVR::WindowRef window);
+	virtual void preDrawComputation(double synchronizedTime);
 	virtual SceneRef createScene(int threadId, MinVR::WindowRef window);
 
 protected:
 	AppBase();
 
+	void addEventListener(EventListenerRef eventListener);
+
 private:
+	std::vector<EventListenerRef> _eventListeners;
 	std::map<int, SceneRef> _threadScenes;
 	MinVR::Mutex _sceneMutex;
 
