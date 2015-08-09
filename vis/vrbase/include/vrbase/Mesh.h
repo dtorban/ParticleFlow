@@ -20,15 +20,15 @@ typedef std::shared_ptr<Mesh> MeshRef;
 
 class Mesh {
 public:
-	Mesh(const std::vector<glm::vec3> &vertices, const std::vector<int>& indices);
-	Mesh(const std::vector<glm::vec3> &vertices, const std::vector<glm::vec3> &normals, const std::vector<int>& indices);
+	Mesh(const std::vector<glm::vec3> &vertices, const std::vector<unsigned int>& indices);
+	Mesh(const std::vector<glm::vec3> &vertices, const std::vector<glm::vec3> &normals, const std::vector<unsigned int>& indices);
 	virtual ~Mesh();
 
 	int getVersion() const;
 	const Box getBoundingBox() const;
 
-	const std::vector<int>& getIndices() const;
-	void setIndices(const std::vector<int>& indices);
+	const std::vector<unsigned int>& getIndices() const;
+	void setIndices(const std::vector<unsigned int>& indices);
 	const std::vector<glm::vec3>& getVertices() const;
 	void setVertices(const std::vector<glm::vec3>& vertices);
 	const std::vector<glm::vec3>& getNormals() const;
@@ -47,7 +47,7 @@ private:
 	bool _hasNormals;
 	std::vector<glm::vec3> _vertices;
 	std::vector<glm::vec3> _normals;
-	std::vector<int> _indices;
+	std::vector<unsigned int> _indices;
 };
 
 } /* namespace vrbase */

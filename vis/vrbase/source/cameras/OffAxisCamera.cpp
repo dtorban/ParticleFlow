@@ -26,7 +26,7 @@ glm::mat4 OffAxisCamera::getProjetionMatrix() const {
 }
 
 glm::mat4 OffAxisCamera::getViewMatrix() const {
-	return glm::mat4(_camera.getLastAppliedProjectionMatrix());
+	return glm::mat4(_camera.getLastAppliedViewMatrix());
 }
 
 glm::mat4 OffAxisCamera::getObjectToWorldMatrix() const {

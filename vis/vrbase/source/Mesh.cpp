@@ -7,16 +7,17 @@
  */
 
 #include <vrbase/Mesh.h>
+#include <iostream>
 
 namespace vrbase {
 
 Mesh::Mesh(const std::vector<glm::vec3>& vertices,
-		const std::vector<int>& indices) : _versionId(0), _vertices(vertices), _indices(indices), _boundingBox(0), _hasNormals(false) {
+		const std::vector<unsigned int>& indices) : _versionId(0), _vertices(vertices), _indices(indices), _boundingBox(0), _hasNormals(false) {
 	init();
 }
 
 Mesh::Mesh(const std::vector<glm::vec3>& vertices, const std::vector<glm::vec3> &normals,
-		const std::vector<int>& indices) : _versionId(0), _vertices(vertices), _normals(normals), _indices(indices), _boundingBox(0), _hasNormals(true) {
+		const std::vector<unsigned int>& indices) : _versionId(0), _vertices(vertices), _normals(normals), _indices(indices), _boundingBox(0), _hasNormals(true) {
 	init();
 }
 
@@ -30,11 +31,11 @@ void Mesh::init() {
 	calculateNormals();
 }
 
-const std::vector<int>& Mesh::getIndices() const {
+const std::vector<unsigned int>& Mesh::getIndices() const {
 	return _indices;
 }
 
-void Mesh::setIndices(const std::vector<int>& indices) {
+void Mesh::setIndices(const std::vector<unsigned int>& indices) {
 	_indices = indices;
 	incrementVersion();
 }
@@ -104,16 +105,20 @@ void Mesh::calculateNormals() {
 	if (!_hasNormals)
 	{
 		_normals.clear();
+		std::cout << "NORMS!!!!!!!!!!!!!!" << std::endl;
 
 		for (int f = 0; f < _vertices.size(); f+=3)
 		{
 			glm::vec3& a = _vertices[f];
 			glm::vec3& b = _vertices[f+1];
 			glm::vec3& c = _vertices[f+2];
-			glm::vec3 cr = glm::cross(c - a, b - a);
+			glm::vec3 cr = glm::cross(c - a, c - b);
+			//cr = glm::vec3(1.0f,0,0);
+			std::cout << f << std::endl;
 
 			for (int i = 0; i < 3; i++)
 			{
+				std::cout << " "<< cr.x << " " << cr.y << " " << cr.z << " " << std::endl;
 				if (cr != glm::vec3(0.0f))
 				{
 					_normals.push_back(glm::normalize(cr));

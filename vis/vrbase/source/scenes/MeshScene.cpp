@@ -8,6 +8,7 @@
 
 #include <vrbase/scenes/MeshScene.h>
 #include <algorithm>
+#include <iostream>
 
 namespace vrbase {
 
@@ -40,33 +41,40 @@ int MeshScene::getVersion() const {
 	return _mesh->getVersion();
 }
 
-void  MeshScene::draw(const Camera& camera) {
-}
-
 void MeshScene::updateVBO() {
 	const std::vector<glm::vec3>& vertices = _mesh->getVertices();
 	const std::vector<glm::vec3>& normals = _mesh->getNormals();
-	const std::vector<int>& indices = _mesh->getIndices();
+	const std::vector<unsigned int>& indices = _mesh->getIndices();
 	int numNormals = normals.size();
 
 	if (!_vboInitialized || vertices.size() != _numVertices || indices.size() != _numIndices)
 	{
+
 		deleteVBO();
 
 		glGenVertexArrays(1, &_vao);
 		glGenBuffers(1, &_vbo);
 		glGenBuffers(1, &_indexVbo);
 
+		_numVertices = vertices.size();
+		_numIndices = indices.size();
+
+		for (int f = 0; f < vertices.size(); f++)
+		{
+			std::cout << _numVertices << " " << numNormals << " " << _numIndices << " " << indices[f] << " "<< vertices[f].x << " " << vertices[f].y << " " << vertices[f].z << " " << std::endl;
+		}
+
 		glBindVertexArray(_vao);
 		glBindBuffer(GL_ARRAY_BUFFER, _vbo);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*_numVertices*3 + sizeof(GLfloat)*numNormals*3, 0, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*_numVertices*3 + sizeof(GLfloat)*numNormals*3, 0, GL_DYNAMIC_DRAW);
 		glEnableVertexAttribArray(0);
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(GLfloat), (char*)0 + 0*sizeof(GLfloat));
 		glEnableVertexAttribArray(1);
 		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3*sizeof(GLfloat), (char*)0 + sizeof(GLfloat)*_numVertices*3);
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexVbo);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int)*_numIndices, 0, GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int)*_numIndices, 0, GL_DYNAMIC_DRAW);
+
 		_vboInitialized = true;
 	}
 
@@ -77,6 +85,11 @@ void MeshScene::updateVBO() {
 	std::copy(vertices.begin(), vertices.end(), verts);
 	std::copy(normals.begin(), normals.end(), norms);
 	std::copy(indices.begin(), indices.end(), ind);
+
+	for (int f = 0; f < vertices.size(); f++)
+	{
+		std::cout << " "<< verts[f].x << " " << verts[f].y << " " << verts[f].z << " " << std::endl;
+	}
 
 	glBindBuffer(GL_ARRAY_BUFFER, _vbo);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(GLfloat)*_numVertices*3, verts);
@@ -98,6 +111,15 @@ void MeshScene::deleteVBO() {
 		glDeleteBuffers(1, &_vbo);
 		glDeleteBuffers(1, &_indexVbo);
 	}
+}
+
+void  MeshScene::draw(const Camera& camera) {
+	glBindVertexArray(_vao);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexVbo);
+
+	glDrawElements(GL_TRIANGLES, _numIndices, GL_UNSIGNED_INT, 0);
+
+	glm::mat4 obj = camera.getViewMatrix();
 }
 
 } /* namespace vrbase */
