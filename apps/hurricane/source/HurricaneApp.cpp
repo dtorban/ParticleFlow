@@ -25,25 +25,53 @@ HurricaneApp::HurricaneApp() : PartFlowApp () {
 	AppBase::init();
 
 	vector<glm::vec3> vertices;
-	vertices.push_back(glm::vec3(-1.0f, 0.0, -1.0));
-	vertices.push_back(glm::vec3(0.0f, 1.0, -1.0));
-	vertices.push_back(glm::vec3(0.0f, 0.0, 0.0));
+	//first side
+	vertices.push_back(glm::vec3(-1.0f, 0.0, 0.0));
+	vertices.push_back(glm::vec3(0.0f, 1.0, 0.0));
+	vertices.push_back(glm::vec3(0.0f, 0.0, 1.0));
 
-	vertices.push_back(glm::vec3(0.0f, 0.0, 0.0));
-	vertices.push_back(glm::vec3(0.0f, 1.0, -1.0));
-	vertices.push_back(glm::vec3(1.0f, 0.0, -1.0));
+	vertices.push_back(glm::vec3(0.0f, 0.0, 1.0));
+	vertices.push_back(glm::vec3(0.0f, 1.0, 0.0));
+	vertices.push_back(glm::vec3(1.0f, 0.0, 0.0));
 
-	vertices.push_back(glm::vec3(0.0f, 0.0, 0.0));
-	vertices.push_back(glm::vec3(0.0f, -1.0, -1.0));
-	vertices.push_back(glm::vec3(-1.0f, 0.0, -1.0));
+	vertices.push_back(glm::vec3(0.0f, 0.0, 1.0));
+	vertices.push_back(glm::vec3(0.0f, -1.0, 0.0));
+	vertices.push_back(glm::vec3(-1.0f, 0.0, 0.0));
 
-	vertices.push_back(glm::vec3(0.0f, 0.0, 0.0));
-	vertices.push_back(glm::vec3(1.0f, 0.0, -1.0));
-	vertices.push_back(glm::vec3(0.0f, -1.0, -1.0));
+	vertices.push_back(glm::vec3(0.0f, 0.0, 1.0));
+	vertices.push_back(glm::vec3(1.0f, 0.0, 0.0));
+	vertices.push_back(glm::vec3(0.0f, -1.0, 0.0));
+
+	//other side
+	vertices.push_back(glm::vec3(1.0f, 0.0, 0.0));
+	vertices.push_back(glm::vec3(0.0f, 0.0, -1.0));
+	vertices.push_back(glm::vec3(0.0f, -1.0, 0.0));
+
+	vertices.push_back(glm::vec3(0.0f, 0.0, -1.0));
+	vertices.push_back(glm::vec3(-1.0f, 0.0, 0.0));
+	vertices.push_back(glm::vec3(0.0f, -1.0, 0.0));
+
+	vertices.push_back(glm::vec3(0.0f, 0.0, -1.0));
+	vertices.push_back(glm::vec3(1.0f, 0.0, 0.0));
+	vertices.push_back(glm::vec3(0.0f, 1.0, 0.0));
+
+	vertices.push_back(glm::vec3(0.0f, 0.0, -1.0));
+	vertices.push_back(glm::vec3(0.0f, 1.0, 0.0));
+	vertices.push_back(glm::vec3(-1.0f, 0.0, 0.0));
+
+	// quad
+	/*vertices.push_back(glm::vec3(-1.0f, -1.0, 0.0));
+	vertices.push_back(glm::vec3(-1.0f, 1.0, 0.0));
+	vertices.push_back(glm::vec3(1.0f, 1.0, 0.0));
+
+	vertices.push_back(glm::vec3(1.0f, 1.0, 0.0));
+	vertices.push_back(glm::vec3(1.0f, -1.0, 0.0));
+	vertices.push_back(glm::vec3(-1.0f, -1.0, 0.0));*/
 
 	for (int f = 0; f < vertices.size(); f++)
 	{
-		vertices[f] *= 0.075;
+		vertices[f] *= 0.005;
+
 	}
 
 	vector<unsigned int> indices;
@@ -54,9 +82,14 @@ HurricaneApp::HurricaneApp() : PartFlowApp () {
 
 	_mesh = MeshRef(new Mesh(vertices, indices));
 
+	//int numParticles = 1024*512;
+	int numParticles = 1024*32;
+	//int numParticles = 10;
+
 	GpuParticleFactory psetFactory;
-	_localSet = psetFactory.createLocalParticleSet(1000, 1);
-	_deviceSet = psetFactory.createParticleSet(0, 1000, 1);
+	_localSet = psetFactory.createLocalParticleSet(numParticles, 1);
+	_deviceSet = psetFactory.createParticleSet(0, numParticles, 1);
+	//_deviceSet = psetFactory.createLocalParticleSet(1024*1024, 1);
 
 	GpuEmitterFactory emitterFactory;
 	_emitter = EmitterRef(emitterFactory.createSphereEmitter(vec3(0.0f), 0.5f, 500));
@@ -98,14 +131,14 @@ void HurricaneApp::preDrawComputation(double synchronizedTime) {
 	float dt = 0.01f;
 	for (int f = 0; f < 1; f++)
 	{
-		//advector->advectParticles(*_deviceSet, _currentStep, dt*float(f), dt);
-		advector->advectParticles(set1, _currentStep, dt*float(f), dt);
-		advector2->advectParticles(set2, _currentStep, dt*float(f), dt);
-		_emitter->emitParticles(set1, _currentStep);
-		_emitter->emitParticles(set2, _currentStep);
+		advector->advectParticles(*_deviceSet, _currentStep, dt*float(f), dt);
+		_emitter->emitParticles(*_deviceSet, _currentStep);
+		//advector->advectParticles(set1, _currentStep, dt*float(f), dt);
+		//advector2->advectParticles(set2, _currentStep, dt*float(f), dt);
+		//_emitter->emitParticles(set1, _currentStep);
+		//_emitter->emitParticles(set2, _currentStep);
 		_currentStep++;
 	}
-
 
 	// Copy from device
 	_localSet->copy(*_deviceSet);

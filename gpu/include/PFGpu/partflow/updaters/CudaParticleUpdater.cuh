@@ -48,7 +48,7 @@ __global__ void CudaParticleUpdater_updateParticles(Strategy strategy, ParticleS
 void CudaParticleUpdater<Strategy>::updateParticles(ParticleSetView& particleSet, int step)
 {
 	std::cout << "update cuda!" << std::endl;
-	CudaParticleUpdater_updateParticles<Strategy><<<particleSet.getNumParticles(), particleSet.getNumParticles()>>>(_strategy, particleSet, step);
+	CudaParticleUpdater_updateParticles<Strategy><<<1024, particleSet.getNumParticles()/1024>>>(_strategy, particleSet, step);
 }
 
 } /* namespace partflow */

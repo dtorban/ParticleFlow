@@ -36,7 +36,7 @@ void BasicRenderedScene::init() {
 			"void main() {\n"
 			"	//p = (Model * vec4(pos,1.0)).xyz;\n"
 			"p = pos*25.0;\n"
-			"v = (View * Model * vec4(pos,1.0)).xyz;\n"
+			"v = (View * Model * vec4(pos+loc,1.0)).xyz;\n"
 			"gl_Position = Projection*View*Model*vec4(pos+loc,1.0);\n"
 			"N = normalize((View*Model*vec4(normal,0)).xyz);\n"
 			"}\n";
@@ -67,7 +67,7 @@ void BasicRenderedScene::init() {
     		"void main() {\n"
     		//"	FragColor = vec4(1.0,0,0,1.0);\n"
 
-    		"	vec3 lightPos = vec3(0.5, 2.0, 3.0);\n"
+    		"	vec3 lightPos = vec3(0.5, 0.0, 3.0);\n"
     		"	vec4 color = vec4(1.0,0,0,1.0);\n" //vec4(p.y,0.4,1.0,0.3);\n"
     		"	vec3 L = normalize(lightPos - v); \n"
     		"\n"

@@ -75,7 +75,7 @@ inline void CudaEmitter<Strategy>::emitParticles(ParticleSetView& particleSet, i
 	rnd.randomize(0);
 	
 	//std::cout << "Cuda emit." << std::endl;
-	CudaEmitter_emitParticle<Strategy><<<particleSet.getNumParticles(), particleSet.getNumParticles()>>>(this->_strategy, particleSet, step, rnd, init);
+	CudaEmitter_emitParticle<Strategy><<<1024, particleSet.getNumParticles()/1024>>>(this->_strategy, particleSet, step, rnd, init);
 }
 
 } /* namespace partflow */
