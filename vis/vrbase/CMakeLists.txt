@@ -43,6 +43,8 @@ include/vrbase/scenes/SceneAdapter.h
 include/vrbase/AppBase.h
 include/vrbase/Box.h
 include/vrbase/Camera.h
+include/vrbase/EventListener.h
+include/vrbase/GraphicsObject.h
 include/vrbase/Mesh.h
 include/vrbase/Shader.h
 )

@@ -12,10 +12,11 @@
 #include "GL/glew.h"
 #include "vrbase/Scene.h"
 #include "vrbase/Mesh.h"
+#include "vrbase/GraphicsObject.h"
 
 namespace vrbase {
 
-class MeshScene : public Scene {
+class MeshScene : public Scene, public GraphicsObject {
 public:
 	MeshScene(MeshRef mesh);
 	virtual ~MeshScene();
@@ -26,6 +27,9 @@ public:
 
 	const Box getBoundingBox();
 	void draw(const Camera& camera);
+
+	void generateVaoAttributes(int &location);
+	int bindIndices();
 
 private:
 	void updateVBO();

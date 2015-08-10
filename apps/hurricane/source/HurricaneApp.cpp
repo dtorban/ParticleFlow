@@ -8,6 +8,7 @@
 #include <HurricaneApp.h>
 #include "vrbase/scenes/render/BasicRenderedScene.h"
 #include "vrbase/scenes/MeshScene.h"
+#include "PFVis/scenes/ParticleScene.h"
 
 using namespace vrbase;
 using namespace PFVis::partflow;
@@ -47,5 +48,9 @@ HurricaneApp::~HurricaneApp() {
 
 SceneRef HurricaneApp::createAppScene(int threadId, MinVR::WindowRef window)
 {
-	return SceneRef(new BasicRenderedScene(SceneRef(new MeshScene(_mesh))));
+	MeshScene* mesh = new MeshScene(_mesh);
+	SceneRef scene = SceneRef(mesh);
+	scene = SceneRef(new ParticleScene(scene, mesh));
+	scene = SceneRef(new BasicRenderedScene(scene));
+	return scene;
 }

@@ -24,6 +24,7 @@ void BasicRenderedScene::init() {
 			"#version 330\n"
 			"layout(location = 0) in vec3 pos;\n"
 			"layout(location = 1) in vec3 normal;\n"
+			"layout(location = 2) in vec3 loc;\n"
 			"uniform mat4 Model;\n"
 			"uniform mat4 View;\n"
 			"uniform mat4 Projection;\n"
@@ -36,7 +37,7 @@ void BasicRenderedScene::init() {
 			"	//p = (Model * vec4(pos,1.0)).xyz;\n"
 			"p = pos*25.0;\n"
 			"v = (View * Model * vec4(pos,1.0)).xyz;\n"
-			"gl_Position = Projection*View*Model*vec4(pos,1.0);\n"
+			"gl_Position = Projection*View*Model*vec4(pos+loc,1.0);\n"
 			"N = normalize((View*Model*vec4(normal,0)).xyz);\n"
 			"}\n";
 			/*
