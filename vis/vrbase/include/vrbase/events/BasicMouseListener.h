@@ -22,6 +22,8 @@ public:
 
 private:
 	glm::mat4* _transformation;
+	bool _rotating;
+	glm::vec2 _lastPosition;
 };
 
 } /* namespace vrbase */
