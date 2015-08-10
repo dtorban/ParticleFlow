@@ -57,7 +57,7 @@ __global__ void CudaVectorFieldAdvector_advectParticle(Strategy strategy, VField
 
 template<typename Strategy, typename VField>
 void CudaVectorFieldAdvector<Strategy, VField>::advectParticles(ParticleSetView& particleSet, int step, float time, float dt) {
-	std::cout << "Advect cuda!" << std::endl;
+	//std::cout << "Advect cuda!" << std::endl;
 	int prevStep = (particleSet.getNumSteps() + step - 1) % particleSet.getNumSteps();
 	CudaVectorFieldAdvector_advectParticle<Strategy, VField><<<particleSet.getNumParticles(), particleSet.getNumParticles()>>>(_strategy, _vectorField, particleSet, step, prevStep, time, dt);
 }

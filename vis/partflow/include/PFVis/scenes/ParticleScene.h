@@ -12,23 +12,29 @@
 #include "vrbase/scenes/SceneAdapter.h"
 #include "vrbase/GraphicsObject.h"
 #include "GL/glew.h"
+#include "PFCore/partflow/ParticleSetView.h"
 
 namespace PFVis {
 namespace partflow {
 
 class ParticleScene : public vrbase::SceneAdapter {
 public:
-	ParticleScene(vrbase::SceneRef scene, vrbase::GraphicsObject* graphicsObject);
+	ParticleScene(vrbase::SceneRef scene, vrbase::GraphicsObject* graphicsObject, PFCore::partflow::ParticleSetView* particleSet, const vrbase::Box& boundingBox);
 	virtual ~ParticleScene();
 
 	void init();
+	void updateFrame();
+	const vrbase::Box getBoundingBox();
 	void draw(const vrbase::Camera& camera);
 
 private:
 	vrbase::GraphicsObject* _graphicsObject;
+	vrbase::Box _boundingBox;
 
 	GLuint _vao;
 	GLuint _vbo;
+
+	PFCore::partflow::ParticleSetView* _particleSet;
 };
 
 }}

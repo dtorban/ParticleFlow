@@ -11,8 +11,8 @@
 namespace PFVis {
 namespace partflow {
 
-ParticleScene::ParticleScene(vrbase::SceneRef scene, vrbase::GraphicsObject* graphicsObject) : vrbase::SceneAdapter(scene), _graphicsObject(graphicsObject),
-			_vbo(0), _vao(0) {
+ParticleScene::ParticleScene(vrbase::SceneRef scene, vrbase::GraphicsObject* graphicsObject, PFCore::partflow::ParticleSetView* particleSet, const vrbase::Box& boundingBox) : vrbase::SceneAdapter(scene), _graphicsObject(graphicsObject),
+			_vbo(0), _vao(0), _particleSet(particleSet), _boundingBox(boundingBox) {
 }
 
 ParticleScene::~ParticleScene() {
@@ -21,7 +21,7 @@ ParticleScene::~ParticleScene() {
 }
 
 void ParticleScene::init() {
-	int numInstances = 5;
+	int numInstances = _particleSet->getNumParticles();
 
 	getInnerScene()->init();
 
@@ -48,9 +48,18 @@ void ParticleScene::init() {
 	verts[4] = glm::vec3(0, 1.0f, 0);
 
 	glBindBuffer(GL_ARRAY_BUFFER, _vbo);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(GLfloat)*numInstances*3, verts);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(GLfloat)*numInstances*3, _particleSet->getPositions(0));
 
 	delete[] verts;
+}
+
+void ParticleScene::updateFrame() {
+	glBindBuffer(GL_ARRAY_BUFFER, _vbo);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(GLfloat)*_particleSet->getNumParticles()*3, _particleSet->getPositions(0));
+}
+
+const vrbase::Box ParticleScene::getBoundingBox() {
+	return _boundingBox;
 }
 
 void ParticleScene::draw(const vrbase::Camera& camera) {
@@ -58,7 +67,7 @@ void ParticleScene::draw(const vrbase::Camera& camera) {
 	int numIndices = _graphicsObject->bindIndices();
 	//glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, 0);
 
-	int numInstances = 5;
+	int numInstances = _particleSet->getNumParticles();
 	glDrawElementsInstancedBaseVertex(GL_TRIANGLES,
 			numIndices,
 			GL_UNSIGNED_INT,
@@ -69,4 +78,6 @@ void ParticleScene::draw(const vrbase::Camera& camera) {
 	glBindVertexArray(0);
 }
 
-}}
+}
+}
+

@@ -27,7 +27,6 @@ public:
 	}
 	PF_ENV_API ~SphereEmitter() {}
 
-	PF_ENV_API inline void preEmit();
 	PF_ENV_API inline void emitParticle(ParticleSetView& particleSet, int index, int step, math::RandomValue rnd, bool init);
 
 private:
@@ -38,7 +37,7 @@ private:
 
 PF_ENV_API inline void SphereEmitter::emitParticle(ParticleSetView& particleSet, int index, int step, math::RandomValue rnd, bool init) {
 
-	if (init || index % _duration == 0)
+	if (init || (index + step) % _duration == 0)
 	{
 		math::vec3& partPos = particleSet.getPosition(index, step);
 		partPos.x = rnd.getValue(index)*2.0-1.0;

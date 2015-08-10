@@ -13,6 +13,8 @@
 #include "PFCore/partflow/emitters/BasicEmitter.h"
 #include "PFGpu/math/CudaRandomValue.cuh"
 #include <map>
+#include <iostream>
+#include <stdio.h>
 
 namespace PFCore {
 namespace partflow {
@@ -72,6 +74,7 @@ inline void CudaEmitter<Strategy>::emitParticles(ParticleSetView& particleSet, i
 	math::RandomValue rnd = *(_randValues[deviceId]);
 	rnd.randomize(0);
 	
+	//std::cout << "Cuda emit." << std::endl;
 	CudaEmitter_emitParticle<Strategy><<<particleSet.getNumParticles(), particleSet.getNumParticles()>>>(this->_strategy, particleSet, step, rnd, init);
 }
 
