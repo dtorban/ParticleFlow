@@ -29,7 +29,7 @@ public:
 	void copy(const ParticleFieldView& particleField)
 	{
 		copy(particleField, _values, particleField.getValues(0), _size.x*_size.y*_size.z*_size.t*_numValues*sizeof(float));
-		copy(particleField, _vectors, particleField.getValues(0), _size.x*_size.y*_size.z*_size.t*_numVectors*sizeof(math::vec3));
+		copy(particleField, _vectors, particleField.getVectors(0), _size.x*_size.y*_size.z*_size.t*_numVectors*sizeof(math::vec3));
 	}
 
 protected:

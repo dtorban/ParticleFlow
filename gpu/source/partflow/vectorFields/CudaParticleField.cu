@@ -20,8 +20,8 @@ CudaParticleField::CudaParticleField(int deviceId, int numValues, int numVectors
 	_length = length;
 	_size = size;
 	cudaSetDevice(_deviceId);
-	cudaMalloc(&_values, size.x*size.y*size.z*size.t*sizeof(float));
-	cudaMalloc(&_vectors, size.x*size.y*size.z*size.t*sizeof(math::vec3));
+	cudaMalloc(&_values, size.x*size.y*size.z*size.t*_numValues*sizeof(float));
+	cudaMalloc(&_vectors, size.x*size.y*size.z*size.t*_numVectors*sizeof(math::vec3));
 }
 
 CudaParticleField::CudaParticleField(int numValues, int numVectors, math::vec4 start, math::vec4 length, math::vec4 size) : ParticleField(numValues, numVectors, start, length, size) {

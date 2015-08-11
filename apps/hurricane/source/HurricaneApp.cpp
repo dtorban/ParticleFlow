@@ -15,6 +15,7 @@
 #include "PFCore/partflow/advectors/strategies/RungaKutta4.h"
 #include "PFCore/partflow/vectorFields/ConstantField.h"
 #include "PFCore/partflow/vectorFields/ParticleFieldVolume.h"
+#include <cstdlib>
 
 using namespace vrbase;
 using namespace PFVis::partflow;
@@ -90,19 +91,24 @@ HurricaneApp::HurricaneApp() : PartFlowApp () {
 	GpuParticleFactory psetFactory;
 	_localSet = psetFactory.createLocalParticleSet(numParticles, 1);
 	_deviceSet = psetFactory.createParticleSet(0, numParticles, 1);
-	_localField = psetFactory.createLocalParticleField(0, 1, vec4(-1.0,-1.0,-1.0, 0.0), vec4(10.0, 10.0, 2.0, 1.0), vec4(50,50,10,1));
-	_deviceField = psetFactory.createParticleField(0, 0, 1, vec4(-1.0,-1.0,-1.0, 0.0), vec4(10.0, 10.0, 2.0, 1.0), vec4(50,50,10,1));
+	_localField = psetFactory.createLocalParticleField(0, 1, vec4(-1.0,-1.0,-1.0, 0.0), vec4(2.0, 2.0, 2.0, 1.0), vec4(500,500,100,1));
+	//_deviceField = psetFactory.createLocalParticleField(0, 1, vec4(-1.0,-1.0,-1.0, 0.0), vec4(1.0, 1.0, 1.0, 1.0), vec4(500,500,10,1));
+	_deviceField = psetFactory.createParticleField(0, 0, 1, vec4(-1.0,-1.0,-1.0, 0.0), vec4(2.0, 2.0, 2.0, 1.0), vec4(500,500,100,1));
 
 	const vec4& fieldSize = _deviceField->getSize();
 
+	std::cout << fieldSize.x*fieldSize.y*fieldSize.z*fieldSize.t << std::endl;
+
 	for (int f = 0; f < fieldSize.x*fieldSize.y*fieldSize.z*fieldSize.t; f++)
 	{
-		_deviceField->getVectors(0)[f] = vec3(1.0,0.0,0.0);
+		_localField->getVectors(0)[f] = vec3(float(std::rand())/RAND_MAX, float(std::rand())/RAND_MAX, float(std::rand())/RAND_MAX) - 0.5;//vec3(1.0,1.0,1.0);
 	}
+
+	_deviceField->copy(*_localField);
 	//_deviceSet = psetFactory.createLocalParticleSet(1024*1024, 1);
 
 	GpuEmitterFactory emitterFactory;
-	_emitter = EmitterRef(emitterFactory.createSphereEmitter(vec3(0.0f), 0.5f, 500));
+	_emitter = EmitterRef(emitterFactory.createSphereEmitter(vec3(0.0f), 1.0f, 500));
 
 	for (int f = 0; f < _deviceSet->getNumSteps(); f++)
 	{
