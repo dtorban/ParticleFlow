@@ -46,7 +46,7 @@ private:
 inline ParticleField::ParticleField(int numValues, int numVectors, math::vec4 start, math::vec4 length, math::vec4 size) : ParticleFieldView()
 {
 	_createdArrays = true;
-	_deviceId = 0;
+	_deviceId = -1;
 	_numValues = numValues;
 	_numVectors = numVectors;
 	_start = start;

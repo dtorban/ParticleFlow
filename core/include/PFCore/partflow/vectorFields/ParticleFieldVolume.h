@@ -20,7 +20,7 @@ public:
 	PF_ENV_API ParticleFieldVolume() {}
 	PF_ENV_API ParticleFieldVolume(const ParticleFieldVolume& volume) { *(this) = volume; }
 	PF_ENV_API ParticleFieldVolume(const ParticleFieldView& particleField, int velocityVectorIndex = 0);
-	PF_ENV_API virtual ~ParticleFieldVolume() {}
+	PF_ENV_API ~ParticleFieldVolume() {}
 	PF_ENV_API inline void operator=(const ParticleFieldVolume& volume);
 
 	PF_ENV_API inline const ParticleFieldView& getParticleField() const;

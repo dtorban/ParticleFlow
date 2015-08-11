@@ -32,7 +32,7 @@ public:
 	PF_ENV_API inline float* getValues(int valueIndex = 0) const;
 	PF_ENV_API inline math::vec3* getVectors(int valueIndex = 0) const;
 
-	size_t getSize() {
+	size_t getMemorySize() {
 		return _size.x*_size.y*_size.z*_size.t*(_numValues*sizeof(float) + _numVectors*sizeof(math::vec3));
 	}
 

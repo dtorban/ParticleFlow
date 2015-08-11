@@ -14,6 +14,7 @@
 #include "PFGpu/partflow/advectors/GpuVectorFieldAdvector.h"
 #include "PFCore/partflow/advectors/strategies/RungaKutta4.h"
 #include "PFCore/partflow/vectorFields/ConstantField.h"
+#include "PFCore/partflow/vectorFields/ParticleFieldVolume.h"
 
 using namespace vrbase;
 using namespace PFVis::partflow;
@@ -89,6 +90,15 @@ HurricaneApp::HurricaneApp() : PartFlowApp () {
 	GpuParticleFactory psetFactory;
 	_localSet = psetFactory.createLocalParticleSet(numParticles, 1);
 	_deviceSet = psetFactory.createParticleSet(0, numParticles, 1);
+	_localField = psetFactory.createLocalParticleField(0, 1, vec4(-1.0,-1.0,-1.0, 0.0), vec4(10.0, 10.0, 2.0, 1.0), vec4(50,50,10,1));
+	_deviceField = psetFactory.createParticleField(0, 0, 1, vec4(-1.0,-1.0,-1.0, 0.0), vec4(10.0, 10.0, 2.0, 1.0), vec4(50,50,10,1));
+
+	const vec4& fieldSize = _deviceField->getSize();
+
+	for (int f = 0; f < fieldSize.x*fieldSize.y*fieldSize.z*fieldSize.t; f++)
+	{
+		_deviceField->getVectors(0)[f] = vec3(1.0,0.0,0.0);
+	}
 	//_deviceSet = psetFactory.createLocalParticleSet(1024*1024, 1);
 
 	GpuEmitterFactory emitterFactory;
@@ -129,9 +139,15 @@ void HurricaneApp::preDrawComputation(double synchronizedTime) {
 	ParticleSetView set1 = (*_deviceSet).getView().filterBySize(0, _deviceSet->getNumParticles()/2);
 	ParticleSetView set2 = (*_deviceSet).getView().filterBySize(_deviceSet->getNumParticles()/2, _deviceSet->getNumParticles()/2);
 	float dt = 0.01f;
+
+	AdvectorRef advector3 = AdvectorRef(new GpuVectorFieldAdvector<RungaKutta4<ParticleFieldVolume>,ParticleFieldVolume>(
+					RungaKutta4<ParticleFieldVolume>(),
+					ParticleFieldVolume(*_deviceField, 0)));
+
 	for (int f = 0; f < 1; f++)
 	{
-		advector->advectParticles(*_deviceSet, _currentStep, dt*float(f), dt);
+		//advector->advectParticles(*_deviceSet, _currentStep, dt*float(f), dt);
+		advector3->advectParticles(*_deviceSet, _currentStep, dt*float(f), dt);
 		_emitter->emitParticles(*_deviceSet, _currentStep);
 		//advector->advectParticles(set1, _currentStep, dt*float(f), dt);
 		//advector2->advectParticles(set2, _currentStep, dt*float(f), dt);

@@ -26,6 +26,8 @@ private:
 	vrbase::MeshRef _mesh;
 	PFCore::partflow::ParticleSetRef _localSet;
 	PFCore::partflow::ParticleSetRef _deviceSet;
+	PFCore::partflow::ParticleFieldRef _localField;
+	PFCore::partflow::ParticleFieldRef _deviceField;
 	PFCore::partflow::EmitterRef _emitter;
 	int _currentStep;
 };
