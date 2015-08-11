@@ -13,6 +13,7 @@
 #include <GLFW/glfw3.h>
 #include "vrbase/Mesh.h"
 #include "PFCore/partflow/PartflowRef.h"
+#include "PFCore/input/DataLoader.h"
 
 class HurricaneApp : public PFVis::partflow::PartFlowApp {
 public:
@@ -23,6 +24,9 @@ public:
 	void preDrawComputation(double synchronizedTime);
 
 private:
+	PFCore::input::DataLoaderRef createVectorLoader(const std::string &dataDir, const std::string &timeStep, bool lowRes);
+	PFCore::input::DataLoaderRef createValueLoader(const std::string &dataDir, const std::string &timeStep, const std::vector<std::string>& params);
+
 	vrbase::MeshRef _mesh;
 	PFCore::partflow::ParticleSetRef _localSet;
 	PFCore::partflow::ParticleSetRef _deviceSet;
