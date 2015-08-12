@@ -20,6 +20,9 @@
 #include "PFCore/input/loaders/ScaleLoader.h"
 #include "PFCore/input/loaders/VectorLoader.h"
 #include "PFCore/input/loaders/CompositeDataLoader.h"
+#include "PFVis/scenes/render/BasicParticleRenderer.h"
+#include "PFCore/partflow/updaters/strategies/MagnitudeUpdater.h"
+#include "PFGpu/partflow/GpuParticleUpdater.h"
 
 using namespace vrbase;
 using namespace PFVis::partflow;
@@ -94,8 +97,8 @@ HurricaneApp::HurricaneApp() : PartFlowApp () {
 	//int numParticles = 10;
 
 	GpuParticleFactory psetFactory;
-	_localSet = psetFactory.createLocalParticleSet(numParticles, 1);
-	_deviceSet = psetFactory.createParticleSet(0, numParticles, 1);
+	_localSet = psetFactory.createLocalParticleSet(numParticles, 0, 1, 1);
+	_deviceSet = psetFactory.createParticleSet(0, numParticles, 0, 1, 1);
 
 /*	_localField = psetFactory.createLocalParticleField(0, 1, vec4(-1.0,-1.0,-1.0, 0.0), vec4(2.0, 2.0, 2.0, 1.0), vec4(500,500,100,1));
 	//_deviceField = psetFactory.createLocalParticleField(0, 1, vec4(-1.0,-1.0,-1.0, 0.0), vec4(1.0, 1.0, 1.0, 1.0), vec4(500,500,10,1));
@@ -131,6 +134,9 @@ HurricaneApp::HurricaneApp() : PartFlowApp () {
 		_emitter->emitParticles(*_deviceSet, f, true);
 	}
 
+	_updater = ParticleUpdaterRef(new GpuParticleUpdater<MagnitudeUpdater>(MagnitudeUpdater(0,0)));
+	_updater->updateParticles(*_deviceSet, _currentStep);
+
 	_currentStep = 1;
 	/*AdvectorRef advector = AdvectorRef(new GpuVectorFieldAdvector<EulerAdvector<ConstantField>, ConstantField>(EulerAdvector<ConstantField>(), ConstantField(vec3(1.0f ,0.0f, 0.0f))));
 	float dt = 0.1f;
@@ -161,7 +167,7 @@ SceneRef HurricaneApp::createAppScene(int threadId, MinVR::WindowRef window)
 	MeshScene* mesh = new MeshScene(_mesh);
 	SceneRef scene = SceneRef(mesh);
 	scene = SceneRef(new ParticleScene(scene, mesh, &(*_localSet), Box(glm::vec3(startField.x, startField.y, startField.z), glm::vec3(startField.x, startField.y, startField.z) + glm::vec3(lenField.x, lenField.y, lenField.z))));
-	scene = SceneRef(new BasicRenderedScene(scene));
+	scene = SceneRef(new BasicParticleRenderer(scene));
 	return scene;
 }
 
@@ -186,6 +192,7 @@ void HurricaneApp::preDrawComputation(double synchronizedTime) {
 		//advector2->advectParticles(set2, _currentStep, dt*float(f), dt);
 		//_emitter->emitParticles(set1, _currentStep);
 		//_emitter->emitParticles(set2, _currentStep);
+		_updater->updateParticles(*_deviceSet, _currentStep);
 		_currentStep++;
 	}
 

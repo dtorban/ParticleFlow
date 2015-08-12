@@ -14,6 +14,7 @@
 #include "PFCore/partflow/Emitter.h"
 #include "PFCore/partflow/ParticleSet.h"
 #include "PFCore/partflow/vectorFields/ParticleField.h"
+#include "PFCore/partflow/ParticleUpdater.h"
 
 namespace PFCore {
 namespace partflow {
@@ -22,6 +23,7 @@ typedef std::shared_ptr<Advector> AdvectorRef;
 typedef std::shared_ptr<Emitter> EmitterRef;
 typedef std::shared_ptr<ParticleSet> ParticleSetRef;
 typedef std::shared_ptr<ParticleField> ParticleFieldRef;
+typedef std::shared_ptr<ParticleUpdater> ParticleUpdaterRef;
 
 } /* namespace partflow */
 } /* namespace PFCore */

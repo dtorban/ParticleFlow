@@ -41,7 +41,9 @@ PF_ENV_API inline void MagnitudeUpdater::operator=(const MagnitudeUpdater& updat
 
 PF_ENV_API inline void MagnitudeUpdater::updateParticle(ParticleSetView& particleSet, int index, int step)
 {
+	//particleSet.getValue(_valueIndex, index, step) = 1.0f;
 	particleSet.getValue(_valueIndex, index, step) = math::length(particleSet.getVector(_vectorIndex, index, step));
+	//particleSet.getValue(_valueIndex, index, step) = math::length(particleSet.getPosition(index, step)/900);
 }
 
 } /* namespace partflow */

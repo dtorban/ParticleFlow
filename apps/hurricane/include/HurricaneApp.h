@@ -33,6 +33,7 @@ private:
 	PFCore::partflow::ParticleFieldRef _localField;
 	PFCore::partflow::ParticleFieldRef _deviceField;
 	PFCore::partflow::EmitterRef _emitter;
+	PFCore::partflow::ParticleUpdaterRef _updater;
 	int _currentStep;
 };
 

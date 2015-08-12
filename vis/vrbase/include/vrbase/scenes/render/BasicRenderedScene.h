@@ -17,10 +17,16 @@ namespace vrbase {
 class BasicRenderedScene : public SceneAdapter {
 public:
 	BasicRenderedScene(SceneRef scene);
+	BasicRenderedScene(SceneRef scene, ShaderRef shader);
 	virtual ~BasicRenderedScene();
 
 	void init();
 	virtual void draw(const Camera& camera);
+
+	void setShader(ShaderRef shader);
+
+protected:
+	virtual void setShaderParameters(const Camera& camera, ShaderRef shader);
 
 private:
 	ShaderRef _shader;

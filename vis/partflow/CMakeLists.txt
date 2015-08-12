@@ -19,11 +19,13 @@ set (SOURCEFILES
 source/main.cpp
 source/PartFlowApp.cpp
 source/scenes/ParticleScene.cpp
+source/scenes/render/BasicParticleRenderer.cpp
 )
 
 set (HEADERFILES
 include/PFVis/PartFlowApp.h
 include/PFVis/scenes/ParticleScene.h
+include/PFVis/scenes/render/BasicParticleRenderer.h
 )
 
 source_group("Header Files" FILES ${HEADERFILES})

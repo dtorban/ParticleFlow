@@ -29,7 +29,10 @@ void ParticleScene::init() {
 	glGenBuffers(1, &_vbo);
 
 	glBindBuffer(GL_ARRAY_BUFFER, _vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*numInstances*3, 0, GL_DYNAMIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, numInstances*(sizeof(GLfloat)*3
+			+ sizeof(GLint)*_particleSet->getNumAttributes()
+			+ sizeof(GLfloat)*_particleSet->getNumValues()
+			+ sizeof(GLfloat)*3*_particleSet->getNumVectors()), 0, GL_DYNAMIC_DRAW);
 
 	int loc = 0;
 	glBindVertexArray(_vao);
@@ -38,7 +41,45 @@ void ParticleScene::init() {
 	glEnableVertexAttribArray(++loc);
 	glVertexAttribPointer(loc, 3, GL_FLOAT, GL_FALSE, 3*sizeof(GLfloat), (char*)0 + 0*sizeof(GLfloat));
 	glVertexAttribDivisorARB(loc, 1);
+
+	int startPos = numInstances*3*sizeof(GLfloat);
+
+	for (int f = 0; f < _particleSet->getNumAttributes(); f++)
+	{
+		glEnableVertexAttribArray(++loc);
+		glVertexAttribPointer(loc, 1, GL_INT, GL_FALSE, sizeof(GLint), (char*)0 + startPos + sizeof(GLint)*numInstances*f);
+		glVertexAttribDivisorARB(loc, 1);
+	}
+
+	startPos += sizeof(GLint)*numInstances*_particleSet->getNumAttributes();
+
+	for (int f = 0; f < _particleSet->getNumValues(); f++)
+	{
+		glEnableVertexAttribArray(++loc);
+		glVertexAttribPointer(loc, 1, GL_FLOAT, GL_FALSE, sizeof(GLfloat), (char*)0 + startPos + sizeof(GLfloat)*numInstances*f);
+		glVertexAttribDivisorARB(loc, 1);
+	}
+
+	startPos += sizeof(GLfloat)*numInstances*_particleSet->getNumValues();
+
+	for (int f = 0; f < _particleSet->getNumVectors(); f++)
+	{
+		glEnableVertexAttribArray(++loc);
+		glVertexAttribPointer(loc, 3, GL_FLOAT, GL_FALSE, 3*sizeof(GLfloat), (char*)0 + startPos + sizeof(GLfloat)*numInstances*f);
+		glVertexAttribDivisorARB(loc, 1);
+	}
+
 	glBindVertexArray(0);
+
+	/*
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(GLfloat), (char*)0 + 0*sizeof(GLfloat));
+    for (int f = 0; f < _numValues; f++)
+    {
+    	glEnableVertexAttribArray(f+1);
+        glVertexAttribPointer(f+1, 1, GL_FLOAT, GL_FALSE, sizeof(GLfloat), (char*)0 + sizeof(glm::vec3)*_particleField->getSize() + (f)*sizeof(GLfloat)*_particleField->getSize());
+    }
+	 */
 
 	glm::vec3* verts = new glm::vec3[numInstances];
 	verts[0] = glm::vec3(0.0f);
@@ -48,14 +89,30 @@ void ParticleScene::init() {
 	verts[4] = glm::vec3(0, 1.0f, 0);
 
 	glBindBuffer(GL_ARRAY_BUFFER, _vbo);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(GLfloat)*numInstances*3, _particleSet->getPositions(0));
+	startPos = 0;
+	glBufferSubData(GL_ARRAY_BUFFER, startPos, sizeof(GLfloat)*numInstances*3, _particleSet->getPositions(0));
+	startPos += sizeof(GLfloat)*numInstances*3;
+	glBufferSubData(GL_ARRAY_BUFFER, startPos, sizeof(GLint)*numInstances*_particleSet->getNumAttributes(), _particleSet->getAttributes(0));
+	startPos += sizeof(GLint)*numInstances*_particleSet->getNumAttributes();
+	glBufferSubData(GL_ARRAY_BUFFER, startPos, sizeof(GLfloat)*numInstances*_particleSet->getNumValues(), _particleSet->getValues(0));
+	startPos += sizeof(GLfloat)*numInstances*_particleSet->getNumValues();
+	glBufferSubData(GL_ARRAY_BUFFER, startPos, sizeof(GLfloat)*numInstances*_particleSet->getNumVectors()*3, _particleSet->getVectors(0));
 
 	delete[] verts;
 }
 
 void ParticleScene::updateFrame() {
+	int numInstances = _particleSet->getNumParticles();
 	glBindBuffer(GL_ARRAY_BUFFER, _vbo);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(GLfloat)*_particleSet->getNumParticles()*3, _particleSet->getPositions(0));
+	int startPos = 0;
+	glBufferSubData(GL_ARRAY_BUFFER, startPos, sizeof(GLfloat)*numInstances*3, _particleSet->getPositions(0));
+	startPos += sizeof(GLfloat)*numInstances*3;
+	glBufferSubData(GL_ARRAY_BUFFER, startPos, sizeof(GLint)*numInstances*_particleSet->getNumAttributes(), _particleSet->getAttributes(0));
+	startPos += sizeof(GLint)*numInstances*_particleSet->getNumAttributes();
+	glBufferSubData(GL_ARRAY_BUFFER, startPos, sizeof(GLfloat)*numInstances*_particleSet->getNumValues(), _particleSet->getValues(0));
+	startPos += sizeof(GLfloat)*numInstances*_particleSet->getNumValues();
+	glBufferSubData(GL_ARRAY_BUFFER, startPos, sizeof(GLfloat)*numInstances*_particleSet->getNumVectors()*3, _particleSet->getVectors(0));
+
 }
 
 const vrbase::Box ParticleScene::getBoundingBox() {
