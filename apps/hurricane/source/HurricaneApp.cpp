@@ -215,8 +215,8 @@ DataLoaderRef HurricaneApp::createVectorLoader(const std::string &dataDir, const
 		w = DataLoaderRef(new BrickOfFloatLoader(dataDir + "/Wf" + timeStep + ".bin"));
 	}
 	std::vector<DataLoaderRef> uvw;
+	uvw.push_back(DataLoaderRef(new ScaleLoader(v, -60.0f*60.0f/1000.0f)));
 	uvw.push_back(DataLoaderRef(new ScaleLoader(u, 60.0f*60.0f/1000.0f)));
-	uvw.push_back(DataLoaderRef(new ScaleLoader(v, 60.0f*60.0f/1000.0f)));
 	uvw.push_back(DataLoaderRef(new ScaleLoader(w, 60.0f*60.0f/1000.0f)));
 	//uvw.push_back(u);
 	//uvw.push_back(v);
