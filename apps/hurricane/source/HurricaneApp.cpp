@@ -23,6 +23,7 @@
 #include "PFVis/scenes/render/BasicParticleRenderer.h"
 #include "PFCore/partflow/updaters/strategies/MagnitudeUpdater.h"
 #include "PFGpu/partflow/GpuParticleUpdater.h"
+#include "PFCore/partflow/updaters/strategies/ParticleFieldUpdater.h"
 
 using namespace vrbase;
 using namespace PFVis::partflow;
@@ -97,8 +98,8 @@ HurricaneApp::HurricaneApp() : PartFlowApp () {
 	//int numParticles = 10;
 
 	GpuParticleFactory psetFactory;
-	_localSet = psetFactory.createLocalParticleSet(numParticles, 0, 1, 1);
-	_deviceSet = psetFactory.createParticleSet(0, numParticles, 0, 1, 1);
+	_localSet = psetFactory.createLocalParticleSet(numParticles, 0, 0, 1);
+	_deviceSet = psetFactory.createParticleSet(0, numParticles, 0, 0, 1);
 
 /*	_localField = psetFactory.createLocalParticleField(0, 1, vec4(-1.0,-1.0,-1.0, 0.0), vec4(2.0, 2.0, 2.0, 1.0), vec4(500,500,100,1));
 	//_deviceField = psetFactory.createLocalParticleField(0, 1, vec4(-1.0,-1.0,-1.0, 0.0), vec4(1.0, 1.0, 1.0, 1.0), vec4(500,500,10,1));
@@ -134,10 +135,6 @@ HurricaneApp::HurricaneApp() : PartFlowApp () {
 		_emitter->emitParticles(*_deviceSet, f, true);
 	}
 
-	_updater = ParticleUpdaterRef(new GpuParticleUpdater<MagnitudeUpdater>(MagnitudeUpdater(0,0)));
-	_updater->updateParticles(*_deviceSet, _currentStep);
-
-	_currentStep = 1;
 	/*AdvectorRef advector = AdvectorRef(new GpuVectorFieldAdvector<EulerAdvector<ConstantField>, ConstantField>(EulerAdvector<ConstantField>(), ConstantField(vec3(1.0f ,0.0f, 0.0f))));
 	float dt = 0.1f;
 	for (int f = 0; f < 10; f++)
@@ -152,6 +149,13 @@ HurricaneApp::HurricaneApp() : PartFlowApp () {
 	ss << start;
 	DataLoaderRef dataLoader = createVectorLoader("/home/dan/Data", ss.str(), true);
 	dataLoader->load(reinterpret_cast<float*>(_deviceField->getVectors(0)), fieldSize.x*fieldSize.y*fieldSize.z*fieldSize.t);
+
+
+	//_updater = ParticleUpdaterRef(new GpuParticleUpdater<MagnitudeUpdater>(MagnitudeUpdater(0,0)));
+	_updater = ParticleUpdaterRef(new GpuParticleUpdater<ParticleFieldUpdater>(ParticleFieldUpdater(ParticleFieldVolume(*_deviceField, 0))));
+	_updater->updateParticles(*_deviceSet, _currentStep);
+
+	_currentStep = 1;
 }
 
 HurricaneApp::~HurricaneApp() {
