@@ -12,19 +12,21 @@
 namespace PFCore {
 namespace partflow {
 
-CudaParticleSet::CudaParticleSet(int numParticles, int numValues, int numVectors, int numSteps) : ParticleSet(numParticles, numValues, numVectors, numSteps)
+CudaParticleSet::CudaParticleSet(int numParticles, int numAttributes, int numValues, int numVectors, int numSteps) : ParticleSet(numParticles, numAttributes, numValues, numVectors, numSteps)
 {
 	_deviceId = -1;
 }
 
-CudaParticleSet::CudaParticleSet(int deviceId, int numParticles, int numValues, int numVectors, int numSteps) : ParticleSet() {
+CudaParticleSet::CudaParticleSet(int deviceId, int numParticles, int numAttributes, int numValues, int numVectors, int numSteps) : ParticleSet() {
 	_numParticles = numParticles;
+	_numAttributes = _numAttributes;
 	_numValues = numValues;
 	_numVectors = numVectors;
 	_numSteps = numSteps;
 	_deviceId = deviceId;
 	cudaSetDevice(deviceId);
 	cudaMalloc(&_positions, numSteps*numParticles*sizeof(math::vec3));
+	cudaMalloc(&_values, numSteps*numParticles*numAttributes*sizeof(int));
 	cudaMalloc(&_values, numSteps*numParticles*numValues*sizeof(float));
 	cudaMalloc(&_vectors, numSteps*numParticles*numVectors*sizeof(math::vec3));
 }
@@ -34,6 +36,7 @@ CudaParticleSet::~CudaParticleSet() {
 	{
 		cudaSetDevice(_deviceId);
 		cudaFree(_positions);
+		cudaFree(_attributes);
 		cudaFree(_values);
 		cudaFree(_vectors);
 	}
@@ -45,15 +48,15 @@ void CudaParticleSet::copy(const ParticleSetView& particleSet, void* dst, const 
 }
 
 extern "C"
-ParticleSet* createCudaParticleSet(int deviceId, int numParticles, int numValues, int numVectors, int numSteps)
+ParticleSet* createCudaParticleSet(int deviceId, int numParticles, int numAttributes, int numValues, int numVectors, int numSteps)
 {
 	if (deviceId >= 0)
 	{
-		return new CudaParticleSet(deviceId, numParticles, numValues, numVectors, numSteps);
+		return new CudaParticleSet(deviceId, numParticles, numAttributes, numValues, numVectors, numSteps);
 	}
 	else
 	{
-		return new CudaParticleSet(numParticles, numValues, numVectors, numSteps);
+		return new CudaParticleSet(numParticles, numAttributes, numValues, numVectors, numSteps);
 	}
 }
 

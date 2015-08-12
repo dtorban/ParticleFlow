@@ -18,7 +18,7 @@ namespace partflow {
 
 #ifdef USE_CUDA
 extern "C"
-ParticleSet* createCudaParticleSet(int deviceId, int numParticles, int numValues, int numVectors, int numSteps);
+ParticleSet* createCudaParticleSet(int deviceId, int numParticles, int numAttributes, int numValues, int numVectors, int numSteps);
 #endif
 
 #ifdef USE_CUDA
@@ -31,14 +31,14 @@ public:
 	GpuParticleFactory() : ParticleFactory() {}
 	virtual ~GpuParticleFactory() {}
 
-	ParticleSetRef createParticleSet(int deviceId, int numParticles, int numValues = 0, int numVectors = 1, int numSteps = 1)
+	ParticleSetRef createParticleSet(int deviceId, int numParticles, int numAttributes = 0, int numValues = 0, int numVectors = 0, int numSteps = 1)
 	{
 #ifdef USE_CUDA
 		std::cout << "Use cuda particle set" << std::endl;
-		return ParticleSetRef(createCudaParticleSet(deviceId, numParticles, numValues, numVectors, numSteps));
+		return ParticleSetRef(createCudaParticleSet(deviceId, numParticles, numAttributes, numValues, numVectors, numSteps));
 #else
 		std::cout << "Use cpu particle set" << std::endl;
-		return ParticleFactory::createParticleSet(deviceId, numParticles, numValues, numVectors, numSteps);
+		return ParticleFactory::createParticleSet(deviceId, numParticles, numAttributes, numValues, numVectors, numSteps);
 #endif
 	}
 
