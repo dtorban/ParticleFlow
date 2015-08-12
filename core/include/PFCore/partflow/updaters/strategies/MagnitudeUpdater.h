@@ -24,7 +24,7 @@ public:
 	PF_ENV_API ~MagnitudeUpdater() {}
 	PF_ENV_API inline void operator=(const MagnitudeUpdater& updater);
 
-	PF_ENV_API inline void updateParticle(ParticleSetView& particleSet, int index, int step);
+	PF_ENV_API inline void updateParticle(ParticleSetView& particleSet, int index, int step, float time);
 
 	std::string getTypeId() { return "MagnitudeUpdater"; }
 
@@ -39,7 +39,7 @@ PF_ENV_API inline void MagnitudeUpdater::operator=(const MagnitudeUpdater& updat
 	_vectorIndex = updater._vectorIndex;
 }
 
-PF_ENV_API inline void MagnitudeUpdater::updateParticle(ParticleSetView& particleSet, int index, int step)
+PF_ENV_API inline void MagnitudeUpdater::updateParticle(ParticleSetView& particleSet, int index, int step, float time)
 {
 	//particleSet.getValue(_valueIndex, index, step) = 1.0f;
 	particleSet.getValue(_valueIndex, index, step) = math::length(particleSet.getVector(_vectorIndex, index, step));

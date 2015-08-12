@@ -20,17 +20,17 @@ public:
 	BasicUpdater(const Strategy& strategy) : _strategy(strategy) {}
 	virtual ~BasicUpdater() {}
 
-	void updateParticles(ParticleSetView& particleSet, int step);
+	void updateParticles(ParticleSetView& particleSet, int step, float time);
 
 private:
 	Strategy _strategy;
 };
 
 template<typename Strategy>
-void BasicUpdater<Strategy>::updateParticles(ParticleSetView& particleSet, int step) {
+void BasicUpdater<Strategy>::updateParticles(ParticleSetView& particleSet, int step, float time) {
 	for (int index = 0; index < particleSet.getNumParticles(); index++)
 	{
-		_strategy.updateParticle(particleSet, index, step);
+		_strategy.updateParticle(particleSet, index, step, time);
 	}
 }
 

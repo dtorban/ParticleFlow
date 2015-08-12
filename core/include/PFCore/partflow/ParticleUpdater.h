@@ -18,7 +18,7 @@ class ParticleUpdater {
 public:
 	virtual ~ParticleUpdater() {}
 
-	virtual void updateParticles(ParticleSetView& particleSet, int step) = 0;
+	virtual void updateParticles(ParticleSetView& particleSet, int step, float time) = 0;
 };
 
 } /* namespace partflow */

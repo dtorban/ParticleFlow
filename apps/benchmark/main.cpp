@@ -83,7 +83,7 @@ int main(int argc, char** argv) {
 	}
 
 	GpuParticleUpdater<MagnitudeUpdater> updater(MagnitudeUpdater(0,0));
-	updater.updateParticles(*deviceSet, 0);
+	updater.updateParticles(*deviceSet, 0, 0);
 
 	// Copy from device
 	cout << "Device advected: " << endl;

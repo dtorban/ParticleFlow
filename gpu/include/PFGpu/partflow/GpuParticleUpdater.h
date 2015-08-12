@@ -26,7 +26,7 @@ public:
 	GpuParticleUpdater(Strategy strategy);
 	virtual ~GpuParticleUpdater();
 
-	void updateParticles(ParticleSetView& particleSet, int step);
+	void updateParticles(ParticleSetView& particleSet, int step, float time);
 
 private:
 	BasicUpdater<Strategy> _localUpdater;
@@ -51,17 +51,17 @@ inline GpuParticleUpdater<Strategy>::~GpuParticleUpdater() {
 }
 
 template<typename Strategy>
-inline void GpuParticleUpdater<Strategy>::updateParticles(ParticleSetView& particleSet, int step)
+inline void GpuParticleUpdater<Strategy>::updateParticles(ParticleSetView& particleSet, int step, float time)
 {
 #ifdef USE_CUDA
 	if (particleSet.getDeviceId() >= 0)
 	{
-		_innerUpdater->updateParticles(particleSet, step);
+		_innerUpdater->updateParticles(particleSet, step, time);
 		return;
 	}
 #endif
 
-	_localUpdater.updateParticles(particleSet, step);
+	_localUpdater.updateParticles(particleSet, step, time);
 }
 
 } /* namespace partflow */

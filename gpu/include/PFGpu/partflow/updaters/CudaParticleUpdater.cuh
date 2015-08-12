@@ -35,20 +35,20 @@ CudaParticleUpdater<Strategy>::CudaParticleUpdater(void* strategy)
 }
 
 template<typename Strategy>
-__global__ void CudaParticleUpdater_updateParticles(Strategy strategy, ParticleSetView particleSet, int step)
+__global__ void CudaParticleUpdater_updateParticles(Strategy strategy, ParticleSetView particleSet, int step, float time)
 {
 	int i = (blockIdx.x * blockDim.x) + threadIdx.x;
 	if (i < particleSet.getNumParticles())
 	{
-		strategy.updateParticle(particleSet, i, step);
+		strategy.updateParticle(particleSet, i, step, time);
 	}
 }
 
  template<typename Strategy>
-void CudaParticleUpdater<Strategy>::updateParticles(ParticleSetView& particleSet, int step)
+void CudaParticleUpdater<Strategy>::updateParticles(ParticleSetView& particleSet, int step, float time)
 {
 	std::cout << "update cuda!" << std::endl;
-	CudaParticleUpdater_updateParticles<Strategy><<<1024, particleSet.getNumParticles()/1024>>>(_strategy, particleSet, step);
+	CudaParticleUpdater_updateParticles<Strategy><<<1024, particleSet.getNumParticles()/1024>>>(_strategy, particleSet, step, time);
 }
 
 } /* namespace partflow */

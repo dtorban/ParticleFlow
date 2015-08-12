@@ -106,12 +106,16 @@ HurricaneApp::HurricaneApp() : PartFlowApp () {
 	_deviceField = psetFactory.createParticleField(0, 0, 1, vec4(-1.0,-1.0,-1.0, 0.0), vec4(2.0, 2.0, 2.0, 1.0), vec4(500,500,100,1));*/
 
 	int start = 20;
-	int numTimeSteps = 1;
+	int numTimeSteps = 3;
 
 	vec4 startField = vec4(0.0f, 0.0f);
-	vec4 lenField = vec4(2139.0f, 2004.0f, 198.0f, 1.0f);//numTimeSteps*60.0f*60.0);
-	_localField = psetFactory.createLocalParticleField(0, 1, startField, lenField, vec4(50,50,10,1));
-	_deviceField = psetFactory.createParticleField(0, 0, 1, startField, lenField, vec4(50,50,10,1));
+	vec4 lenField = vec4(2139.0f, 2004.0f, 198.0f, numTimeSteps*1.0f);//numTimeSteps*60.0f*60.0);
+	//_localField = psetFactory.createLocalParticleField(0, 1, startField, lenField, vec4(50,50,10,numTimeSteps));
+	//_deviceField = psetFactory.createParticleField(0, 0, 1, startField, lenField, vec4(50,50,10,numTimeSteps));
+	_localField = psetFactory.createLocalParticleField(0, 1, startField, lenField, vec4(50,50,10,numTimeSteps));
+	_deviceField = psetFactory.createParticleField(0, 0, 1, startField, lenField, vec4(50,50,10,numTimeSteps));
+
+	std::cout << "Field size: " << _deviceField->getMemorySize() << std::endl;
 
 	const vec4& fieldSize = _deviceField->getSize();
 
@@ -145,15 +149,19 @@ HurricaneApp::HurricaneApp() : PartFlowApp () {
 	// Copy from device
 	_localSet->copy(*_deviceSet);
 
-	std::stringstream ss;
-	ss << start;
-	DataLoaderRef dataLoader = createVectorLoader("/home/dan/Data", ss.str(), true);
-	dataLoader->load(reinterpret_cast<float*>(_deviceField->getVectors(0)), fieldSize.x*fieldSize.y*fieldSize.z*fieldSize.t);
+	for (int f = 0; f < numTimeSteps; f++)
+	{
+		std::stringstream ss;
+		ss << start + f;
+		DataLoaderRef dataLoader = createVectorLoader("/home/dan/Data", ss.str(), true);
+		dataLoader->load(reinterpret_cast<float*>(&_deviceField->getVectors(0)[(int)(fieldSize.x*fieldSize.y*fieldSize.z*f)]), fieldSize.x*fieldSize.y*fieldSize.z*1);
+	}
 
+	_currentParticleTime = 0.0f;
 
 	//_updater = ParticleUpdaterRef(new GpuParticleUpdater<MagnitudeUpdater>(MagnitudeUpdater(0,0)));
 	_updater = ParticleUpdaterRef(new GpuParticleUpdater<ParticleFieldUpdater>(ParticleFieldUpdater(ParticleFieldVolume(*_deviceField, 0))));
-	_updater->updateParticles(*_deviceSet, _currentStep);
+	_updater->updateParticles(*_deviceSet, _currentStep, _currentParticleTime);
 
 	_currentStep = 1;
 }
@@ -190,14 +198,15 @@ void HurricaneApp::preDrawComputation(double synchronizedTime) {
 	for (int f = 0; f < 1; f++)
 	{
 		//advector->advectParticles(*_deviceSet, _currentStep, dt*float(f), dt);
-		advector3->advectParticles(*_deviceSet, _currentStep, dt*float(f), dt);
+		advector3->advectParticles(*_deviceSet, _currentStep, _currentParticleTime, dt);
 		_emitter->emitParticles(*_deviceSet, _currentStep);
 		//advector->advectParticles(set1, _currentStep, dt*float(f), dt);
 		//advector2->advectParticles(set2, _currentStep, dt*float(f), dt);
 		//_emitter->emitParticles(set1, _currentStep);
 		//_emitter->emitParticles(set2, _currentStep);
-		_updater->updateParticles(*_deviceSet, _currentStep);
+		_updater->updateParticles(*_deviceSet, _currentStep, _currentParticleTime);
 		_currentStep++;
+		_currentParticleTime += dt;
 	}
 
 	// Copy from device

@@ -24,7 +24,7 @@ public:
 	PF_ENV_API ~ParticleFieldUpdater() {}
 	PF_ENV_API inline void operator=(const ParticleFieldUpdater& updater);
 
-	PF_ENV_API inline void updateParticle(ParticleSetView& particleSet, int index, int step);
+	PF_ENV_API inline void updateParticle(ParticleSetView& particleSet, int index, int step, float time);
 
 	std::string getTypeId() { return "ParticleFieldUpdater"; }
 
@@ -37,14 +37,14 @@ PF_ENV_API inline void ParticleFieldUpdater::operator=(const ParticleFieldUpdate
 	_volume = updater._volume;
 }
 
-PF_ENV_API inline void ParticleFieldUpdater::updateParticle(ParticleSetView& particleSet, int index, int step)
+PF_ENV_API inline void ParticleFieldUpdater::updateParticle(ParticleSetView& particleSet, int index, int step, float time)
 {
 	int numValues = _volume.getParticleField().getNumValues() < particleSet.getNumValues() ? _volume.getParticleField().getNumValues() : particleSet.getNumValues();
 	int numVectors = _volume.getParticleField().getNumVectors() < particleSet.getNumVectors() ? _volume.getParticleField().getNumVectors() : particleSet.getNumVectors();
 
 	math::vec3& pos = particleSet.getPosition(index, step);
 	math::vec4 inc = _volume.getParticleField().getIncrement();
-	float time = inc.t * (step % (int)(_volume.getParticleField().getSize().t));
+	//float time = inc.t * (step % (int)(_volume.getParticleField().getSize().t));
 
 
 	for (int f = 0; f < numValues; f++)

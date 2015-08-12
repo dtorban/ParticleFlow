@@ -35,6 +35,7 @@ private:
 	PFCore::partflow::EmitterRef _emitter;
 	PFCore::partflow::ParticleUpdaterRef _updater;
 	int _currentStep;
+	float _currentParticleTime;
 };
 
 #endif /* SOURCE_DIRECTORY__APPS_HURRICANE_INCLUDE_HURRICANEAPP_H_ */
