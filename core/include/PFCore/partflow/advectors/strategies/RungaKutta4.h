@@ -11,6 +11,7 @@
 
 #include "PFCore/partflow/Advector.h"
 #include <string>
+#include "PFCore/math/vec_math.h"
 
 namespace PFCore {
 namespace partflow {

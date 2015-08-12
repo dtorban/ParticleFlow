@@ -26,6 +26,11 @@ Emitter* CudaEmitterFactory::createSphereEmitter(math::vec3 pos, float radius, i
 	return new CudaEmitter<SphereEmitter>(SphereEmitter(pos, radius, duration));
 }
 
+Emitter* CudaEmitterFactory::createBoxEmitter(const math::vec3 &low, const math::vec3 &high, int duration)
+{
+	return new CudaEmitter<BoxEmitter>(BoxEmitter(low, high, duration));
+}
+
 extern "C"
 EmitterFactory* createCudaEmitterFactory()
 {

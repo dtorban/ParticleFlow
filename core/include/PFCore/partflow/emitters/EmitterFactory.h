@@ -11,6 +11,7 @@
 
 #include "PFCore/partflow/emitters/BasicEmitter.h"
 #include "PFCore/partflow/emitters/strategies/SphereEmitter.h"
+#include "PFCore/partflow/emitters/strategies/BoxEmitter.h"
 
 namespace PFCore {
 namespace partflow {
@@ -23,6 +24,11 @@ public:
 	virtual Emitter* createSphereEmitter(math::vec3 pos, float radius, int duration)
 	{
 		return new BasicEmitter<SphereEmitter>(SphereEmitter(pos, radius, duration));
+	}
+
+	virtual Emitter* createBoxEmitter(const math::vec3 &low, const math::vec3 &high, int duration)
+	{
+		return new BasicEmitter<BoxEmitter>(BoxEmitter(low, high, duration));
 	}
 };
 

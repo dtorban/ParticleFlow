@@ -122,7 +122,8 @@ HurricaneApp::HurricaneApp() : PartFlowApp () {
 	//_deviceSet = psetFactory.createLocalParticleSet(1024*1024, 1);
 
 	GpuEmitterFactory emitterFactory;
-	_emitter = EmitterRef(emitterFactory.createSphereEmitter((startField + lenField)/2.0f, PFCore::math::length(vec3(lenField)/2.0f), 500));
+	//_emitter = EmitterRef(emitterFactory.createSphereEmitter((startField + lenField)/2.0f, PFCore::math::length(vec3(lenField)/2.0f), 500));
+	_emitter = EmitterRef(emitterFactory.createBoxEmitter(startField, startField + lenField, 500));
 	//_emitter = EmitterRef(emitterFactory.createSphereEmitter(vec3(0.0f), 0.5f, 500));
 
 	for (int f = 0; f < _deviceSet->getNumSteps(); f++)
@@ -155,7 +156,7 @@ SceneRef HurricaneApp::createAppScene(int threadId, MinVR::WindowRef window)
 	int numTimeSteps = 1;
 
 	vec4 startField = vec4(0.0f, 0.0f);
-	vec4 lenField = vec4(2139.0f, 2004.0f, 198.0f, numTimeSteps*60.0f*60.0);
+	vec4 lenField = vec4(2139.0f, 2004.0f, 198.0f, numTimeSteps);
 
 	MeshScene* mesh = new MeshScene(_mesh);
 	SceneRef scene = SceneRef(mesh);
@@ -170,7 +171,7 @@ void HurricaneApp::preDrawComputation(double synchronizedTime) {
 	ParticleSetView set1 = (*_deviceSet).getView().filterBySize(0, _deviceSet->getNumParticles()/2);
 	ParticleSetView set2 = (*_deviceSet).getView().filterBySize(_deviceSet->getNumParticles()/2, _deviceSet->getNumParticles()/2);
 	//float dt = 0.01f;
-	float dt = 100.1f;
+	float dt = 1.0/60.0f;
 
 	AdvectorRef advector3 = AdvectorRef(new GpuVectorFieldAdvector<RungaKutta4<ParticleFieldVolume>,ParticleFieldVolume>(
 					RungaKutta4<ParticleFieldVolume>(),
@@ -214,9 +215,9 @@ DataLoaderRef HurricaneApp::createVectorLoader(const std::string &dataDir, const
 		w = DataLoaderRef(new BrickOfFloatLoader(dataDir + "/Wf" + timeStep + ".bin"));
 	}
 	std::vector<DataLoaderRef> uvw;
-	uvw.push_back(DataLoaderRef(new ScaleLoader(u, 1.0f/1000.0f)));
-	uvw.push_back(DataLoaderRef(new ScaleLoader(v, 1.0f/1000.0f)));
-	uvw.push_back(DataLoaderRef(new ScaleLoader(w, 1.0f/1000.0f)));
+	uvw.push_back(DataLoaderRef(new ScaleLoader(u, 60.0f*60.0f/1000.0f)));
+	uvw.push_back(DataLoaderRef(new ScaleLoader(v, 60.0f*60.0f/1000.0f)));
+	uvw.push_back(DataLoaderRef(new ScaleLoader(w, 60.0f*60.0f/1000.0f)));
 	//uvw.push_back(u);
 	//uvw.push_back(v);
 	//uvw.push_back(w);

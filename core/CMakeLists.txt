@@ -38,6 +38,7 @@ include/PFCore/partflow/advectors/strategies/RungaKutta4.h
 include/PFCore/partflow/advectors/VectorFieldAdvector.h
 include/PFCore/partflow/Advector.h
 include/PFCore/partflow/emitters/strategies/SphereEmitter.h
+include/PFCore/partflow/emitters/strategies/BoxEmitter.h
 include/PFCore/partflow/emitters/BasicEmitter.h
 include/PFCore/partflow/emitters/EmitterFactory.h
 include/PFCore/partflow/interpolators/TrilinearInterpolator.h

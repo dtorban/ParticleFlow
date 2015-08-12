@@ -43,6 +43,15 @@ public:
 #endif
 	}
 
+	Emitter* createBoxEmitter(const math::vec3 &low, const math::vec3 &high, int duration)
+	{
+#ifdef USE_CUDA
+		return _innerFactory->createBoxEmitter(low, high, duration);
+#else
+		return EmitterFactory::createBoxEmitter(low, high, duration);
+#endif
+	}
+
 #ifdef USE_CUDA
 private:
 	EmitterFactory* _innerFactory;

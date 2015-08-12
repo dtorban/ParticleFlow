@@ -23,6 +23,7 @@ public:
 	virtual ~CudaEmitterFactory();
 	
 	Emitter* createSphereEmitter(math::vec3 pos, float radius, int duration);
+	Emitter* createBoxEmitter(const math::vec3 &low, const math::vec3 &high, int duration);
 };
 
 } /* namespace partflow */
