@@ -22,14 +22,14 @@ public:
 	CudaParticleUpdater(void* strategy);
 	virtual ~CudaParticleUpdater() {}
 	
-	void updateParticles(ParticleSetView& particleSet, int step);
+	void updateParticles(ParticleSetView& particleSet, int step, float time);
 	
 private:
 	Strategy _strategy;
 };
 
 template<typename Strategy>
-CudaParticleUpdater<Strategy>::CudaParticleUpdater(void* strategy)
+CudaParticleUpdater<Strategy>::CudaParticleUpdater(void* strategy) : ParticleUpdater()
 {
 	_strategy = *(reinterpret_cast<Strategy*>(strategy));
 }
@@ -47,7 +47,7 @@ __global__ void CudaParticleUpdater_updateParticles(Strategy strategy, ParticleS
  template<typename Strategy>
 void CudaParticleUpdater<Strategy>::updateParticles(ParticleSetView& particleSet, int step, float time)
 {
-	std::cout << "update cuda!" << std::endl;
+//	std::cout << "update cuda!" << std::endl;
 	CudaParticleUpdater_updateParticles<Strategy><<<1024, particleSet.getNumParticles()/1024>>>(_strategy, particleSet, step, time);
 }
 

@@ -18,7 +18,7 @@ namespace partflow {
 
 class ParticleFieldUpdater {
 public:
-	//PF_ENV_API ParticleFieldUpdater() {}
+	PF_ENV_API ParticleFieldUpdater() {}
 	PF_ENV_API ParticleFieldUpdater(const ParticleFieldUpdater& updater) { (*this) = updater; }
 	PF_ENV_API ParticleFieldUpdater(const ParticleFieldVolume& volume) : _volume(volume) {}
 	PF_ENV_API ~ParticleFieldUpdater() {}

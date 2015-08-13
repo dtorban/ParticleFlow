@@ -35,6 +35,24 @@ using namespace PFCore::partflow;
 HurricaneApp::HurricaneApp() : PartFlowApp () {
 	AppBase::init();
 
+	_currentStep = 0;
+	_currentParticleTime = 0.0f;
+}
+
+HurricaneApp::~HurricaneApp() {
+}
+
+void HurricaneApp::init(MinVR::ConfigMapRef configMap) {
+	PartFlowApp::init(configMap);
+
+	std::string dataDir = configMap->get("DataDir", "../data");
+	int numParticles = configMap->get<int>("NumParticles", 1024*32);
+	int numParticleSteps = configMap->get<int>("NumParticleSteps", 1);
+	float particleSize = configMap->get("ParticleSize", 10.0f);
+	int startTimeStep = configMap->get<int>("StartTimeStep", 0);
+	int numTimeSteps = configMap->get<int>("NumTimeSteps", 1);
+	int sampleInterval = configMap->get<int>("SampleInterval", 10);
+
 	vector<glm::vec3> vertices;
 	//first side
 	vertices.push_back(glm::vec3(-1.0f, 0.0, 0.0));
@@ -81,7 +99,6 @@ HurricaneApp::HurricaneApp() : PartFlowApp () {
 
 	for (int f = 0; f < vertices.size(); f++)
 	{
-		//vertices[f] *= 0.005;
 		vertices[f] *= 10;
 	}
 
@@ -93,80 +110,46 @@ HurricaneApp::HurricaneApp() : PartFlowApp () {
 
 	_mesh = MeshRef(new Mesh(vertices, indices));
 
-	//int numParticles = 1024*512;
-	int numParticles = 1024*32;
-	//int numParticles = 500;
-
 	GpuParticleFactory psetFactory;
 	_localSet = psetFactory.createLocalParticleSet(numParticles, 0, 0, 1, 1);
 	_deviceSet = psetFactory.createParticleSet(0, numParticles, 0, 0, 1, 1);
 
-/*	_localField = psetFactory.createLocalParticleField(0, 1, vec4(-1.0,-1.0,-1.0, 0.0), vec4(2.0, 2.0, 2.0, 1.0), vec4(500,500,100,1));
-	//_deviceField = psetFactory.createLocalParticleField(0, 1, vec4(-1.0,-1.0,-1.0, 0.0), vec4(1.0, 1.0, 1.0, 1.0), vec4(500,500,10,1));
-	_deviceField = psetFactory.createParticleField(0, 0, 1, vec4(-1.0,-1.0,-1.0, 0.0), vec4(2.0, 2.0, 2.0, 1.0), vec4(500,500,100,1));*/
-
-	int start = 20;
-	int numTimeSteps = 10;
-
 	vec4 startField = vec4(0.0f, 0.0f);
-	vec4 lenField = vec4(2139.0f, 2004.0f, 198.0f, numTimeSteps*1.0f);//numTimeSteps*60.0f*60.0);
-	//_localField = psetFactory.createLocalParticleField(0, 1, startField, lenField, vec4(50,50,10,numTimeSteps));
-	//_deviceField = psetFactory.createParticleField(0, 0, 1, startField, lenField, vec4(50,50,10,numTimeSteps));
-	_localField = psetFactory.createLocalParticleField(0, 1, startField, lenField, vec4(50,50,10,numTimeSteps));
-	_deviceField = psetFactory.createParticleField(0, 0, 1, startField, lenField, vec4(50,50,10,numTimeSteps));
-
-	std::cout << "Field size: " << _deviceField->getMemorySize() << std::endl;
+	vec4 lenField = vec4(2139.0f, 2004.0f, 198.0f, numTimeSteps*1.0f);
+	vec4 sizeField = vec4(500/sampleInterval, 500/sampleInterval, 100/sampleInterval, numTimeSteps);
+	_localField = psetFactory.createLocalParticleField(0, 1, startField, lenField, sizeField);
+	_deviceField = psetFactory.createParticleField(0, 0, 1, startField, lenField, sizeField);
 
 	const vec4& fieldSize = _deviceField->getSize();
 
 	std::cout << fieldSize.x*fieldSize.y*fieldSize.z*fieldSize.t << std::endl;
 
-	/*for (int f = 0; f < fieldSize.x*fieldSize.y*fieldSize.z*fieldSize.t; f++)
-	{
-		_localField->getVectors(0)[f] = vec3(float(std::rand())/RAND_MAX, float(std::rand())/RAND_MAX, float(std::rand())/RAND_MAX) - 0.5;//vec3(1.0,1.0,1.0);
-	}*/
-
-	//_deviceField->copy(*_localField);
-	//_deviceSet = psetFactory.createLocalParticleSet(1024*1024, 1);
-
 	GpuEmitterFactory emitterFactory;
-	//_emitter = EmitterRef(emitterFactory.createSphereEmitter((startField + lenField)/2.0f, PFCore::math::length(vec3(lenField)/2.0f), 500));
 	_emitter = EmitterRef(emitterFactory.createBoxEmitter(startField, startField + lenField, 500));
-	//_emitter = EmitterRef(emitterFactory.createSphereEmitter(vec3(0.0f), 0.5f, 500));
 
 	for (int f = 0; f < _deviceSet->getNumSteps(); f++)//for (int f = 0; f < _deviceSet->getNumSteps(); f++)
 	{
 		_emitter->emitParticles(*_deviceSet, f, true);
 	}
 
-	/*AdvectorRef advector = AdvectorRef(new GpuVectorFieldAdvector<EulerAdvector<ConstantField>, ConstantField>(EulerAdvector<ConstantField>(), ConstantField(vec3(1.0f ,0.0f, 0.0f))));
-	float dt = 0.1f;
-	for (int f = 0; f < 10; f++)
-	{
-		advector->advectParticles(*_deviceSet, f, dt*float(f), dt);
-	}*/
-
-	// Copy from device
 	_localSet->copy(*_deviceSet);
 
 	for (int f = 0; f < numTimeSteps; f++)
 	{
 		std::stringstream ss;
-		ss << start + f;
-		DataLoaderRef dataLoader = createVectorLoader("/home/dan/Data", ss.str(), true);
-		dataLoader->load(reinterpret_cast<float*>(&_deviceField->getVectors(0)[(int)(fieldSize.x*fieldSize.y*fieldSize.z*f)]), fieldSize.x*fieldSize.y*fieldSize.z*1);
+		ss << startTimeStep + f;
+		DataLoaderRef dataLoader = createVectorLoader(dataDir, ss.str(), sampleInterval);
+		dataLoader->load(reinterpret_cast<float*>(&_localField->getVectors(0)[(int)(fieldSize.x*fieldSize.y*fieldSize.z*f)]), fieldSize.x*fieldSize.y*fieldSize.z*1);
 	}
+
+	_deviceField->copy(*_localField);
 
 	_currentParticleTime = 0.0f;
 
-	//_updater = ParticleUpdaterRef(new GpuParticleUpdater<MagnitudeUpdater>(MagnitudeUpdater(0,0)));
 	_updater = ParticleUpdaterRef(new GpuParticleUpdater<ParticleFieldUpdater>(ParticleFieldUpdater(ParticleFieldVolume(*_deviceField, 0))));
 	_updater->updateParticles(*_deviceSet, _currentStep, _currentParticleTime);
 
 	_currentStep = 1;
-}
-
-HurricaneApp::~HurricaneApp() {
 }
 
 SceneRef HurricaneApp::createAppScene(int threadId, MinVR::WindowRef window)
@@ -184,49 +167,38 @@ SceneRef HurricaneApp::createAppScene(int threadId, MinVR::WindowRef window)
 }
 
 void HurricaneApp::preDrawComputation(double synchronizedTime) {
-	AdvectorRef advector = AdvectorRef(new GpuVectorFieldAdvector<RungaKutta4<ConstantField>, ConstantField>(RungaKutta4<ConstantField>(), ConstantField(vec3(1.0f ,1.0f, -2.0f))));
-	AdvectorRef advector2 = AdvectorRef(new GpuVectorFieldAdvector<RungaKutta4<ConstantField>, ConstantField>(RungaKutta4<ConstantField>(), ConstantField(vec3(-1.0f ,1.0f, -2.0f))));
-	ParticleSetView set1 = (*_deviceSet).getView().filterBySize(0, _deviceSet->getNumParticles()/2);
-	ParticleSetView set2 = (*_deviceSet).getView().filterBySize(_deviceSet->getNumParticles()/2, _deviceSet->getNumParticles()/2);
-	//float dt = 0.01f;
 	float dt = 1.0/60.0f;
 
-	AdvectorRef advector3 = AdvectorRef(new GpuVectorFieldAdvector<RungaKutta4<ParticleFieldVolume>,ParticleFieldVolume>(
+	AdvectorRef advector = AdvectorRef(new GpuVectorFieldAdvector<RungaKutta4<ParticleFieldVolume>,ParticleFieldVolume>(
 					RungaKutta4<ParticleFieldVolume>(),
 					ParticleFieldVolume(*_deviceField, 0)));
 
 	for (int f = 0; f < 1; f++)
 	{
-		//advector->advectParticles(*_deviceSet, _currentStep, dt*float(f), dt);
-		advector3->advectParticles(*_deviceSet, _currentStep, _currentParticleTime, dt);
+		advector->advectParticles(*_deviceSet, _currentStep, _currentParticleTime, dt);
 		_emitter->emitParticles(*_deviceSet, _currentStep);
-		//advector->advectParticles(set1, _currentStep, dt*float(f), dt);
-		//advector2->advectParticles(set2, _currentStep, dt*float(f), dt);
-		//_emitter->emitParticles(set1, _currentStep);
-		//_emitter->emitParticles(set2, _currentStep);
 		_updater->updateParticles(*_deviceSet, _currentStep, _currentParticleTime);
 		_currentStep++;
 		_currentParticleTime += dt;
 	}
 
-	// Copy from device
 	_localSet->copy(*_deviceSet);
 
 	AppBase::preDrawComputation(synchronizedTime);
 }
 
-DataLoaderRef HurricaneApp::createVectorLoader(const std::string &dataDir, const std::string &timeStep, bool lowRes)
+DataLoaderRef HurricaneApp::createVectorLoader(const std::string &dataDir, const std::string &timeStep, int sampleInterval)
 {
 	DataLoaderRef u, v, w, b;
 
 	b = DataLoaderRef(new BlankLoader());
 	DataLoaderRef c = DataLoaderRef(new BlankLoader(5.0f));
 
-	if (lowRes)
+	if (sampleInterval > 1)
 	{
-		u = DataLoaderRef(new BrickOfFloatLoader(dataDir + "/Uf" + timeStep + ".bin", 500, 500, 100, 0, 10));
-		v = DataLoaderRef(new BrickOfFloatLoader(dataDir + "/Vf" + timeStep + ".bin", 500, 500, 100, 0, 10));
-		w = DataLoaderRef(new BrickOfFloatLoader(dataDir + "/Wf" + timeStep + ".bin", 500, 500, 100, 0, 10));
+		u = DataLoaderRef(new BrickOfFloatLoader(dataDir + "/Uf" + timeStep + ".bin", 500, 500, 100, 0, sampleInterval));
+		v = DataLoaderRef(new BrickOfFloatLoader(dataDir + "/Vf" + timeStep + ".bin", 500, 500, 100, 0, sampleInterval));
+		w = DataLoaderRef(new BrickOfFloatLoader(dataDir + "/Wf" + timeStep + ".bin", 500, 500, 100, 0, sampleInterval));
 	}
 	else
 	{
@@ -238,12 +210,6 @@ DataLoaderRef HurricaneApp::createVectorLoader(const std::string &dataDir, const
 	uvw.push_back(DataLoaderRef(new ScaleLoader(v, -60.0f*60.0f/1000.0f)));
 	uvw.push_back(DataLoaderRef(new ScaleLoader(u, 60.0f*60.0f/1000.0f)));
 	uvw.push_back(DataLoaderRef(new ScaleLoader(w, 60.0f*60.0f/1000.0f)));
-	//uvw.push_back(u);
-	//uvw.push_back(v);
-	//uvw.push_back(w);
-	//uwv.push_back(DataLoaderRef(new ScaleLoader(u, 1.0f)));
-	//uwv.push_back(w);
-	//uwv.push_back(DataLoaderRef(new ScaleLoader(v, -1.0f)));
 	return DataLoaderRef(new VectorLoader(uvw));
 }
 

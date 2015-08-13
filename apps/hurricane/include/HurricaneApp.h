@@ -20,11 +20,12 @@ public:
 	HurricaneApp();
 	virtual ~HurricaneApp();
 
+	void init(MinVR::ConfigMapRef configMap);
 	vrbase::SceneRef createAppScene(int threadId, MinVR::WindowRef window);
 	void preDrawComputation(double synchronizedTime);
 
 private:
-	PFCore::input::DataLoaderRef createVectorLoader(const std::string &dataDir, const std::string &timeStep, bool lowRes);
+	PFCore::input::DataLoaderRef createVectorLoader(const std::string &dataDir, const std::string &timeStep, int sampleInterval = 0);
 	PFCore::input::DataLoaderRef createValueLoader(const std::string &dataDir, const std::string &timeStep, const std::vector<std::string>& params);
 
 	vrbase::MeshRef _mesh;
