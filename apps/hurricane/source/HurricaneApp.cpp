@@ -12,6 +12,7 @@
 #include "PFGpu/partflow/GpuParticleFactory.h"
 #include "PFGpu/partflow/emitters/GpuEmitterFactory.h"
 #include "PFGpu/partflow/advectors/GpuVectorFieldAdvector.h"
+#include "PFCore/partflow/advectors/strategies/EulerAdvector.h"
 #include "PFCore/partflow/advectors/strategies/RungaKutta4.h"
 #include "PFCore/partflow/vectorFields/ConstantField.h"
 #include "PFCore/partflow/vectorFields/ParticleFieldVolume.h"
@@ -99,7 +100,7 @@ void HurricaneApp::init(MinVR::ConfigMapRef configMap) {
 
 	for (int f = 0; f < vertices.size(); f++)
 	{
-		vertices[f] *= 10;
+		vertices[f] *= particleSize;
 	}
 
 	vector<unsigned int> indices;
@@ -113,12 +114,14 @@ void HurricaneApp::init(MinVR::ConfigMapRef configMap) {
 	GpuParticleFactory psetFactory;
 	_localSet = psetFactory.createLocalParticleSet(numParticles, 0, 0, 1, 1);
 	_deviceSet = psetFactory.createParticleSet(0, numParticles, 0, 0, 1, 1);
+	//_deviceSet = psetFactory.createLocalParticleSet(numParticles, 0, 0, 1, 1);
 
 	vec4 startField = vec4(0.0f, 0.0f);
 	vec4 lenField = vec4(2139.0f, 2004.0f, 198.0f, numTimeSteps*1.0f);
 	vec4 sizeField = vec4(500/sampleInterval, 500/sampleInterval, 100/sampleInterval, numTimeSteps);
 	_localField = psetFactory.createLocalParticleField(0, 1, startField, lenField, sizeField);
 	_deviceField = psetFactory.createParticleField(0, 0, 1, startField, lenField, sizeField);
+	//_deviceField = psetFactory.createLocalParticleField(0, 1, startField, lenField, sizeField);
 
 	const vec4& fieldSize = _deviceField->getSize();
 
@@ -169,6 +172,9 @@ SceneRef HurricaneApp::createAppScene(int threadId, MinVR::WindowRef window)
 void HurricaneApp::preDrawComputation(double synchronizedTime) {
 	float dt = 1.0/60.0f;
 
+	/*AdvectorRef advector = AdvectorRef(new GpuVectorFieldAdvector<EulerAdvector<ParticleFieldVolume>,ParticleFieldVolume>(
+						EulerAdvector<ParticleFieldVolume>(),
+						ParticleFieldVolume(*_deviceField, 0)));*/
 	AdvectorRef advector = AdvectorRef(new GpuVectorFieldAdvector<RungaKutta4<ParticleFieldVolume>,ParticleFieldVolume>(
 					RungaKutta4<ParticleFieldVolume>(),
 					ParticleFieldVolume(*_deviceField, 0)));
