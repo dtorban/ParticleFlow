@@ -95,18 +95,18 @@ HurricaneApp::HurricaneApp() : PartFlowApp () {
 
 	//int numParticles = 1024*512;
 	int numParticles = 1024*32;
-	//int numParticles = 10;
+	//int numParticles = 500;
 
 	GpuParticleFactory psetFactory;
-	_localSet = psetFactory.createLocalParticleSet(numParticles, 0, 0, 1);
-	_deviceSet = psetFactory.createParticleSet(0, numParticles, 0, 0, 1);
+	_localSet = psetFactory.createLocalParticleSet(numParticles, 0, 0, 1, 1);
+	_deviceSet = psetFactory.createParticleSet(0, numParticles, 0, 0, 1, 1);
 
 /*	_localField = psetFactory.createLocalParticleField(0, 1, vec4(-1.0,-1.0,-1.0, 0.0), vec4(2.0, 2.0, 2.0, 1.0), vec4(500,500,100,1));
 	//_deviceField = psetFactory.createLocalParticleField(0, 1, vec4(-1.0,-1.0,-1.0, 0.0), vec4(1.0, 1.0, 1.0, 1.0), vec4(500,500,10,1));
 	_deviceField = psetFactory.createParticleField(0, 0, 1, vec4(-1.0,-1.0,-1.0, 0.0), vec4(2.0, 2.0, 2.0, 1.0), vec4(500,500,100,1));*/
 
 	int start = 20;
-	int numTimeSteps = 3;
+	int numTimeSteps = 10;
 
 	vec4 startField = vec4(0.0f, 0.0f);
 	vec4 lenField = vec4(2139.0f, 2004.0f, 198.0f, numTimeSteps*1.0f);//numTimeSteps*60.0f*60.0);
@@ -134,7 +134,7 @@ HurricaneApp::HurricaneApp() : PartFlowApp () {
 	_emitter = EmitterRef(emitterFactory.createBoxEmitter(startField, startField + lenField, 500));
 	//_emitter = EmitterRef(emitterFactory.createSphereEmitter(vec3(0.0f), 0.5f, 500));
 
-	for (int f = 0; f < _deviceSet->getNumSteps(); f++)
+	for (int f = 0; f < _deviceSet->getNumSteps(); f++)//for (int f = 0; f < _deviceSet->getNumSteps(); f++)
 	{
 		_emitter->emitParticles(*_deviceSet, f, true);
 	}

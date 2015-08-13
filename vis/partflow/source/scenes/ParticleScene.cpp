@@ -21,7 +21,7 @@ ParticleScene::~ParticleScene() {
 }
 
 void ParticleScene::init() {
-	int numInstances = _particleSet->getNumParticles();
+	int numInstances = _particleSet->getNumParticles()*_particleSet->getNumSteps();
 
 	getInnerScene()->init();
 
@@ -102,7 +102,7 @@ void ParticleScene::init() {
 }
 
 void ParticleScene::updateFrame() {
-	int numInstances = _particleSet->getNumParticles();
+	int numInstances = _particleSet->getNumParticles()*_particleSet->getNumSteps();
 	glBindBuffer(GL_ARRAY_BUFFER, _vbo);
 	int startPos = 0;
 	glBufferSubData(GL_ARRAY_BUFFER, startPos, sizeof(GLfloat)*numInstances*3, _particleSet->getPositions(0));

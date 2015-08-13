@@ -29,7 +29,9 @@ template<typename VField>
 PF_ENV_API inline void RungaKutta4<VField>::advectParticle(ParticleSetView& particleSet, VField vectorField, int index, int step, int prevStep, float time, float dt)
 {
 	math::vec3& partPos = particleSet.getPosition(index, step);
-	partPos = particleSet.getPosition(index, prevStep);
+	partPos.x = particleSet.getPosition(index, prevStep).x;
+	partPos.y = particleSet.getPosition(index, prevStep).y;
+	partPos.z = particleSet.getPosition(index, prevStep).z;
 
 	math::vec3 k1, k2, k3, k4, v, a;
 	k1 = vectorField.getVelocity(partPos, time);
