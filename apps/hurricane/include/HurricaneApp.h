@@ -39,6 +39,7 @@ private:
 	int _iterationsPerAdvect;
 	int _currentStep;
 	float _currentParticleTime;
+	int _computeThreadId;
 };
 
 #endif /* SOURCE_DIRECTORY__APPS_HURRICANE_INCLUDE_HURRICANEAPP_H_ */

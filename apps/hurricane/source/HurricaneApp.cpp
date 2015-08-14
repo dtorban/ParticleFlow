@@ -55,6 +55,7 @@ void HurricaneApp::init(MinVR::ConfigMapRef configMap) {
 	int numTimeSteps = configMap->get<int>("NumTimeSteps", 1);
 	int sampleInterval = configMap->get<int>("SampleInterval", 10);
 	_iterationsPerAdvect = configMap->get<int>("IterationsPerAdvect", 1);
+	_computeThreadId = configMap->get<int>("ComputeThreadId", -1);
 
 	vector<glm::vec3> vertices;
 	//first side
@@ -183,7 +184,6 @@ public:
 
 	void updateFrame() 
 	{
-		//cout << "hi" << endl;
 		_app->calculate();
 	}
 
@@ -193,7 +193,7 @@ private:
 
 SceneRef HurricaneApp::createAppScene(int threadId, MinVR::WindowRef window)
 {
-	if (threadId == 3)
+	if (threadId == _computeThreadId)
 	{
 		return SceneRef(new ComputeScene(this));
 	}
@@ -214,7 +214,10 @@ SceneRef HurricaneApp::createAppScene(int threadId, MinVR::WindowRef window)
 }
 
 void HurricaneApp::preDrawComputation(double synchronizedTime) {
-	calculate();
+	if (_computeThreadId < 0)
+	{
+		calculate();
+	}
 
 	_localSet->copy(*_deviceSet);
 
