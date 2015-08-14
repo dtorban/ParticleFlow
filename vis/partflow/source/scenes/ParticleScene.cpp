@@ -124,12 +124,12 @@ void ParticleScene::draw(const vrbase::Camera& camera) {
 	int numIndices = _graphicsObject->bindIndices();
 	//glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, 0);
 
-	int numInstances = _particleSet->getNumParticles();
+	int numInstances = _particleSet->getNumParticles()*_particleSet->getNumSteps();
 	glDrawElementsInstancedBaseVertex(GL_TRIANGLES,
 			numIndices,
 			GL_UNSIGNED_INT,
 			(void*)(sizeof(unsigned int) * 0),
-			numInstances,
+			102400,//numInstances,
 			0);
 
 	glBindVertexArray(0);

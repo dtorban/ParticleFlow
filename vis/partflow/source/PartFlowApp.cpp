@@ -21,6 +21,9 @@ PartFlowApp::~PartFlowApp() {
 }
 
 void PartFlowApp::init(MinVR::ConfigMapRef configMap) {
+	float scale = configMap->get<float>("DefaultSceneScale", 1.0);
+	_objectToWorld = glm::mat4(scale);
+
 	addEventListener(vrbase::EventListenerRef(new vrbase::BasicMouseListener(&_objectToWorld)));
 }
 

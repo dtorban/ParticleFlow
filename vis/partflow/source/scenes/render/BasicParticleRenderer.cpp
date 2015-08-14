@@ -81,7 +81,7 @@ vrbase::ShaderRef BasicParticleRenderer::createBasicShader() {
     		//"	FragColor = vec4(1.0,0,0,1.0);\n"
     		"	if (mag < 0.001) discard;\n"
     		"	vec3 lightPos = vec3(0.5, 0.0, 3.0);\n"
-    		"	vec4 color = vec4(mag, 0.0, 0.0, 1.0);\n"//vec4(1.0,0,0,1.0);\n" //vec4(p.y,0.4,1.0,0.3);\n"
+    		"	vec4 color = vec4(mag, 1.0-mag, 0.0, 1.0);\n"//vec4(1.0,0,0,1.0);\n" //vec4(p.y,0.4,1.0,0.3);\n"
     		//"	vec4 color = vec4(1.0-normalize(velocity),1.0);\n"//vec4(1.0,0,0,1.0);\n" //vec4(p.y,0.4,1.0,0.3);\n"
     		//"	vec4 color = vec4(1.0,0,0,1.0);\n" //vec4(p.y,0.4,1.0,0.3);\n"
     		"	vec3 L = normalize(lightPos - v); \n"

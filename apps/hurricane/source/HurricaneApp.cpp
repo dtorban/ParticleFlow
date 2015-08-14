@@ -25,6 +25,7 @@
 #include "PFCore/partflow/updaters/strategies/MagnitudeUpdater.h"
 #include "PFGpu/partflow/GpuParticleUpdater.h"
 #include "PFCore/partflow/updaters/strategies/ParticleFieldUpdater.h"
+#include "vrbase/scenes/BlankScene.h"
 
 using namespace vrbase;
 using namespace PFVis::partflow;
@@ -112,8 +113,8 @@ void HurricaneApp::init(MinVR::ConfigMapRef configMap) {
 	_mesh = MeshRef(new Mesh(vertices, indices));
 
 	GpuParticleFactory psetFactory;
-	_localSet = psetFactory.createLocalParticleSet(numParticles, 0, 0, 1, 1);
-	_deviceSet = psetFactory.createParticleSet(0, numParticles, 0, 0, 1, 1);
+	_localSet = psetFactory.createLocalParticleSet(numParticles, 0, 0, 1, numParticleSteps);
+	_deviceSet = psetFactory.createParticleSet(0, numParticles, 0, 0, 1, numParticleSteps);
 	//_deviceSet = psetFactory.createLocalParticleSet(numParticles, 0, 0, 1, 1);
 
 	vec4 startField = vec4(0.0f, 0.0f);
@@ -128,7 +129,7 @@ void HurricaneApp::init(MinVR::ConfigMapRef configMap) {
 	std::cout << fieldSize.x*fieldSize.y*fieldSize.z*fieldSize.t << std::endl;
 
 	GpuEmitterFactory emitterFactory;
-	_emitter = EmitterRef(emitterFactory.createBoxEmitter(startField, startField + lenField, 500));
+	_emitter = EmitterRef(emitterFactory.createBoxEmitter(startField, startField + lenField, 5000));
 
 	for (int f = 0; f < _deviceSet->getNumSteps(); f++)//for (int f = 0; f < _deviceSet->getNumSteps(); f++)
 	{
@@ -155,29 +156,16 @@ void HurricaneApp::init(MinVR::ConfigMapRef configMap) {
 	_currentStep = 1;
 }
 
-SceneRef HurricaneApp::createAppScene(int threadId, MinVR::WindowRef window)
+void HurricaneApp::calculate()
 {
-	int numTimeSteps = 1;
-
-	vec4 startField = vec4(0.0f, 0.0f);
-	vec4 lenField = vec4(2139.0f, 2004.0f, 198.0f, numTimeSteps);
-
-	MeshScene* mesh = new MeshScene(_mesh);
-	SceneRef scene = SceneRef(mesh);
-	scene = SceneRef(new ParticleScene(scene, mesh, &(*_localSet), Box(glm::vec3(startField.x, startField.y, startField.z), glm::vec3(startField.x, startField.y, startField.z) + glm::vec3(lenField.x, lenField.y, lenField.z))));
-	scene = SceneRef(new BasicParticleRenderer(scene));
-	return scene;
-}
-
-void HurricaneApp::preDrawComputation(double synchronizedTime) {
-	float dt = 1.0/60.0f;
+	float dt = 1.0 / 60.0f;
 
 	/*AdvectorRef advector = AdvectorRef(new GpuVectorFieldAdvector<EulerAdvector<ParticleFieldVolume>,ParticleFieldVolume>(
-						EulerAdvector<ParticleFieldVolume>(),
-						ParticleFieldVolume(*_deviceField, 0)));*/
-	AdvectorRef advector = AdvectorRef(new GpuVectorFieldAdvector<RungaKutta4<ParticleFieldVolume>,ParticleFieldVolume>(
-					RungaKutta4<ParticleFieldVolume>(),
-					ParticleFieldVolume(*_deviceField, 0)));
+		EulerAdvector<ParticleFieldVolume>(),
+		ParticleFieldVolume(*_deviceField, 0)));*/
+	AdvectorRef advector = AdvectorRef(new GpuVectorFieldAdvector<RungaKutta4<ParticleFieldVolume>, ParticleFieldVolume>(
+		RungaKutta4<ParticleFieldVolume>(),
+		ParticleFieldVolume(*_deviceField, 0)));
 
 	for (int f = 0; f < 1; f++)
 	{
@@ -187,6 +175,48 @@ void HurricaneApp::preDrawComputation(double synchronizedTime) {
 		_currentStep++;
 		_currentParticleTime += dt;
 	}
+}
+
+class ComputeScene : public vrbase::SceneAdapter
+{
+public:
+	ComputeScene(HurricaneApp* app) : SceneAdapter(BlankScene::instance()), _app(app) {}
+	~ComputeScene() {}
+
+	void updateFrame() 
+	{
+		//cout << "hi" << endl;
+		_app->calculate();
+	}
+
+private:
+	HurricaneApp* _app;
+};
+
+SceneRef HurricaneApp::createAppScene(int threadId, MinVR::WindowRef window)
+{
+	if (threadId == 3)
+	{
+		return SceneRef(new ComputeScene(this));
+	}
+	else
+	{
+		int numTimeSteps = 1;
+
+		vec4 startField = vec4(0.0f, 0.0f);
+		vec4 lenField = vec4(2139.0f, 2004.0f, 198.0f, numTimeSteps);
+
+		MeshScene* mesh = new MeshScene(_mesh);
+		SceneRef scene = SceneRef(mesh);
+		scene = SceneRef(new ParticleScene(scene, mesh, &(*_localSet), Box(glm::vec3(startField.x, startField.y, startField.z), glm::vec3(startField.x, startField.y, startField.z) + glm::vec3(lenField.x, lenField.y, lenField.z))));
+		scene = SceneRef(new BasicParticleRenderer(scene));
+		return scene;
+	}
+
+}
+
+void HurricaneApp::preDrawComputation(double synchronizedTime) {
+	//calculate();
 
 	_localSet->copy(*_deviceSet);
 
@@ -213,9 +243,9 @@ DataLoaderRef HurricaneApp::createVectorLoader(const std::string &dataDir, const
 		w = DataLoaderRef(new BrickOfFloatLoader(dataDir + "/Wf" + timeStep + ".bin"));
 	}
 	std::vector<DataLoaderRef> uvw;
-	uvw.push_back(DataLoaderRef(new ScaleLoader(v, -60.0f*60.0f/1000.0f)));
-	uvw.push_back(DataLoaderRef(new ScaleLoader(u, 60.0f*60.0f/1000.0f)));
-	uvw.push_back(DataLoaderRef(new ScaleLoader(w, 60.0f*60.0f/1000.0f)));
+	uvw.push_back(DataLoaderRef(new ScaleLoader(v, -60.0f*60.0f / 1000.0f)));
+	uvw.push_back(DataLoaderRef(new ScaleLoader(u, 60.0f*60.0f / 1000.0f)));
+	uvw.push_back(DataLoaderRef(new ScaleLoader(w, 60.0f*60.0f / 1000.0f)));
 	return DataLoaderRef(new VectorLoader(uvw));
 }
 

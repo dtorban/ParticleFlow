@@ -63,7 +63,7 @@ void BasicMouseListener::handleEvents(
 			*(_transformation) = glm::scale(*(_transformation), glm::vec3(zoom));
 		}
 		else {
-			std::cout << events[f]->getName() << " " << _lastPosition.x << " " << _lastPosition.y << std::endl;
+			//std::cout << events[f]->getName() << " " << _lastPosition.x << " " << _lastPosition.y << std::endl;
 		}
 	}
 }
