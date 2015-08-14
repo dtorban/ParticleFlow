@@ -36,6 +36,7 @@ private:
 	PFCore::partflow::ParticleFieldRef _deviceField;
 	PFCore::partflow::EmitterRef _emitter;
 	PFCore::partflow::ParticleUpdaterRef _updater;
+	int _iterationsPerAdvect;
 	int _currentStep;
 	float _currentParticleTime;
 };

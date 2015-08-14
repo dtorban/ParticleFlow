@@ -18,7 +18,7 @@ class Advector {
 public:
 	virtual ~Advector() {}
 
-	virtual void advectParticles(ParticleSetView& particleSet, int step, float time, float dt) = 0;
+	virtual void advectParticles(ParticleSetView& particleSet, int step, float time, float dt, int iterations = 1) = 0;
 };
 
 } /* namespace partflow */

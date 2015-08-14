@@ -45,7 +45,7 @@ inline CudaVectorFieldAdvector<Strategy, VField>::~CudaVectorFieldAdvector() {
 }
 
 template<typename Strategy, typename VField>
-__global__ void CudaVectorFieldAdvector_advectParticle(Strategy strategy, VField vectorField, ParticleSetView particleSet, int step, int prevStep, float time, float dt)
+__global__ void CudaVectorFieldAdvector_advectParticle(Strategy strategy, VField vectorField, ParticleSetView particleSet, int step, int prevStep, float time, float dt, int iterations)
 {
 	int i = (blockIdx.x * blockDim.x) + threadIdx.x;
 	if (i < particleSet.getNumParticles())
@@ -56,10 +56,10 @@ __global__ void CudaVectorFieldAdvector_advectParticle(Strategy strategy, VField
 
 
 template<typename Strategy, typename VField>
-void CudaVectorFieldAdvector<Strategy, VField>::advectParticles(ParticleSetView& particleSet, int step, float time, float dt) {
+void CudaVectorFieldAdvector<Strategy, VField>::advectParticles(ParticleSetView& particleSet, int step, float time, float dt, int iterations) {
 	//std::cout << "Advect cuda!" << std::endl;
 	int prevStep = (particleSet.getNumSteps() + step - 1) % particleSet.getNumSteps();
-	CudaVectorFieldAdvector_advectParticle<Strategy, VField><<<1024, particleSet.getNumParticles()/1024>>>(_strategy, _vectorField, particleSet, step, prevStep, time, dt);
+	CudaVectorFieldAdvector_advectParticle<Strategy, VField><<<1024, particleSet.getNumParticles()/1024>>>(_strategy, _vectorField, particleSet, step, prevStep, time, dt, iterations);
 }
 
 template<typename VField>

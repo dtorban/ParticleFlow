@@ -129,7 +129,7 @@ void ParticleScene::draw(const vrbase::Camera& camera) {
 			numIndices,
 			GL_UNSIGNED_INT,
 			(void*)(sizeof(unsigned int) * 0),
-			102400,//numInstances,
+			numInstances,
 			0);
 
 	glBindVertexArray(0);

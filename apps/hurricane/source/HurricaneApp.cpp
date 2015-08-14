@@ -54,6 +54,7 @@ void HurricaneApp::init(MinVR::ConfigMapRef configMap) {
 	int startTimeStep = configMap->get<int>("StartTimeStep", 0);
 	int numTimeSteps = configMap->get<int>("NumTimeSteps", 1);
 	int sampleInterval = configMap->get<int>("SampleInterval", 10);
+	_iterationsPerAdvect = configMap->get<int>("IterationsPerAdvect", 1);
 
 	vector<glm::vec3> vertices;
 	//first side
@@ -129,7 +130,7 @@ void HurricaneApp::init(MinVR::ConfigMapRef configMap) {
 	std::cout << fieldSize.x*fieldSize.y*fieldSize.z*fieldSize.t << std::endl;
 
 	GpuEmitterFactory emitterFactory;
-	_emitter = EmitterRef(emitterFactory.createBoxEmitter(startField, startField + lenField, 5000));
+	_emitter = EmitterRef(emitterFactory.createBoxEmitter(startField, startField + lenField, 500));
 
 	for (int f = 0; f < _deviceSet->getNumSteps(); f++)//for (int f = 0; f < _deviceSet->getNumSteps(); f++)
 	{
@@ -167,14 +168,11 @@ void HurricaneApp::calculate()
 		RungaKutta4<ParticleFieldVolume>(),
 		ParticleFieldVolume(*_deviceField, 0)));
 
-	for (int f = 0; f < 1; f++)
-	{
-		advector->advectParticles(*_deviceSet, _currentStep, _currentParticleTime, dt);
-		_emitter->emitParticles(*_deviceSet, _currentStep);
-		_updater->updateParticles(*_deviceSet, _currentStep, _currentParticleTime);
-		_currentStep++;
-		_currentParticleTime += dt;
-	}
+	advector->advectParticles(*_deviceSet, _currentStep, _currentParticleTime, dt, _iterationsPerAdvect);
+	_emitter->emitParticles(*_deviceSet, _currentStep);
+	_updater->updateParticles(*_deviceSet, _currentStep, _currentParticleTime);
+	_currentStep++;
+	_currentParticleTime += dt;
 }
 
 class ComputeScene : public vrbase::SceneAdapter
@@ -216,7 +214,7 @@ SceneRef HurricaneApp::createAppScene(int threadId, MinVR::WindowRef window)
 }
 
 void HurricaneApp::preDrawComputation(double synchronizedTime) {
-	//calculate();
+	calculate();
 
 	_localSet->copy(*_deviceSet);
 

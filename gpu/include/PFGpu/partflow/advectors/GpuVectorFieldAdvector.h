@@ -26,7 +26,7 @@ public:
 	GpuVectorFieldAdvector(Strategy strategy, VField field);
 	virtual ~GpuVectorFieldAdvector();
 
-	void advectParticles(ParticleSetView& particleSet, int step, float time, float dt);
+	void advectParticles(ParticleSetView& particleSet, int step, float time, float dt, int iterations);
 
 private:
 	VectorFieldAdvector<Strategy, VField> _localAdvector;
@@ -51,17 +51,17 @@ inline GpuVectorFieldAdvector<Strategy, VField>::~GpuVectorFieldAdvector() {
 }
 
 template<typename Strategy, typename VField>
-inline void GpuVectorFieldAdvector<Strategy, VField>::advectParticles(ParticleSetView& particleSet, int step, float time, float dt)
+inline void GpuVectorFieldAdvector<Strategy, VField>::advectParticles(ParticleSetView& particleSet, int step, float time, float dt, int iterations)
 {
 #ifdef USE_CUDA
 	if (particleSet.getDeviceId() >= 0)
 	{
-		_innerAdvector->advectParticles(particleSet, step, time, dt);
+		_innerAdvector->advectParticles(particleSet, step, time, dt, iterations);
 		return;
 	}
 #endif
 
-	_localAdvector.advectParticles(particleSet, step, time, dt);
+	_localAdvector.advectParticles(particleSet, step, time, dt, iterations);
 }
 
 }

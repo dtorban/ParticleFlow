@@ -20,7 +20,7 @@ public:
 	VectorFieldAdvector(const Strategy& strategy, const VField& vectorField) : _strategy(strategy), _vectorField(vectorField) {}
 	virtual ~VectorFieldAdvector() {}
 
-	virtual void advectParticles(ParticleSetView& particleSet, int step, float time, float dt);
+	virtual void advectParticles(ParticleSetView& particleSet, int step, float time, float dt, int iterations);
 
 	void setVectorField(VField vectorField) {
 		_vectorField = vectorField;
@@ -32,13 +32,13 @@ private:
 };
 
 template<typename Strategy, typename VField>
-void VectorFieldAdvector<Strategy, VField>::advectParticles(ParticleSetView& particleSet, int step, float time, float dt)
+void VectorFieldAdvector<Strategy, VField>::advectParticles(ParticleSetView& particleSet, int step, float time, float dt, int iterations)
 {
 	int prevStep = (particleSet.getNumSteps() + step - 1) % particleSet.getNumSteps();
 
 	for (int index = 0; index < particleSet.getNumParticles(); index++)
 	{
-		_strategy.advectParticle(particleSet, _vectorField, index, step, prevStep, time, dt);
+		_strategy.advectParticle(particleSet, _vectorField, index, step, prevStep, time, dt, iterations);
 	}
 
 }

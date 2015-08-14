@@ -21,24 +21,31 @@ public:
 	PF_ENV_API EulerAdvector() {}
 	PF_ENV_API ~EulerAdvector() {}
 
-	PF_ENV_API void advectParticle(ParticleSetView& particleSet, VField vectorField, int index, int step, int prevStep, float time, float dt);
+	PF_ENV_API void advectParticle(ParticleSetView& particleSet, VField vectorField, int index, int step, int prevStep, float time, float dt, int iterations);
 	std::string getTypeId() { return "Euler"; }
 };
 
 template<typename VField>
-PF_ENV_API inline void EulerAdvector<VField>::advectParticle(ParticleSetView& particleSet, VField vectorField, int index, int step, int prevStep, float time, float dt)
+PF_ENV_API inline void EulerAdvector<VField>::advectParticle(ParticleSetView& particleSet, VField vectorField, int index, int step, int prevStep, float time, float dt, int iterations)
 {
 	math::vec3& partPos = particleSet.getPosition(index, step);
-	partPos = particleSet.getPosition(index, prevStep);
+	partPos.x = particleSet.getPosition(index, prevStep).x;
+	partPos.y = particleSet.getPosition(index, prevStep).y;
+	partPos.z = particleSet.getPosition(index, prevStep).z;
 
-	math::vec3 velocity = vectorField.getVelocity(partPos, time);
-	partPos += velocity*dt;
-
-	if (particleSet.getNumVectors() > 0)
+	for (int f = 0; f < iterations; f++)
 	{
-		math::vec3& vel = particleSet.getVector(0, index, step);
-		vel = velocity;
 
+
+		math::vec3 velocity = vectorField.getVelocity(partPos, time);
+		partPos += velocity*dt;
+
+		if (particleSet.getNumVectors() > 0)
+		{
+			math::vec3& vel = particleSet.getVector(0, index, step);
+			vel = velocity;
+
+		}
 	}
 }
 

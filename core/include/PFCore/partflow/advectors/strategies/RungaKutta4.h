@@ -21,12 +21,12 @@ public:
 	PF_ENV_API RungaKutta4() {}
 	PF_ENV_API ~RungaKutta4() {}
 
-	PF_ENV_API void advectParticle(ParticleSetView& particleSet, VField vectorField, int index, int step, int prevStep, float time, float dt);
+	PF_ENV_API void advectParticle(ParticleSetView& particleSet, VField vectorField, int index, int step, int prevStep, float time, float dt, int iterations);
 	std::string getTypeId() { return "RungaKutta4"; }
 };
 
 template<typename VField>
-PF_ENV_API inline void RungaKutta4<VField>::advectParticle(ParticleSetView& particleSet, VField vectorField, int index, int step, int prevStep, float time, float dt)
+PF_ENV_API inline void RungaKutta4<VField>::advectParticle(ParticleSetView& particleSet, VField vectorField, int index, int step, int prevStep, float time, float dt, int iterations)
 {
 	math::vec3& partPos = particleSet.getPosition(index, step);
 	partPos.x = particleSet.getPosition(index, prevStep).x;
@@ -34,18 +34,22 @@ PF_ENV_API inline void RungaKutta4<VField>::advectParticle(ParticleSetView& part
 	partPos.z = particleSet.getPosition(index, prevStep).z;
 
 	math::vec3 k1, k2, k3, k4, v, a;
-	k1 = vectorField.getVelocity(partPos, time);
-	k2 = vectorField.getVelocity(partPos + (k1 * 0.5), time+0.5*dt);
-	k3 = vectorField.getVelocity(partPos + (k2 * 0.5), time+0.5*dt);
-	k4 = vectorField.getVelocity(partPos + k3, time);
 
-	v = (k1/6.0) + (k2/3.0) + (k3/3.0) + (k4/6.0);
-
-	partPos += v*dt;
-
-	if (particleSet.getNumVectors() > 0)
+	for (int f = 0; f < iterations; f++)
 	{
-		particleSet.getVector(0, index, step) = v;
+		k1 = vectorField.getVelocity(partPos, time);
+		k2 = vectorField.getVelocity(partPos + (k1 * 0.5), time+0.5*dt);
+		k3 = vectorField.getVelocity(partPos + (k2 * 0.5), time+0.5*dt);
+		k4 = vectorField.getVelocity(partPos + k3, time);
+
+		v = (k1/6.0) + (k2/3.0) + (k3/3.0) + (k4/6.0);
+
+		partPos += v*dt;
+
+		if (particleSet.getNumVectors() > 0)
+		{
+			particleSet.getVector(0, index, step) = v;
+		}
 	}
 }
 
