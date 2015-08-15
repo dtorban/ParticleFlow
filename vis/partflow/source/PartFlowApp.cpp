@@ -9,6 +9,7 @@
 #include "GL/glew.h"
 #include "vrbase/EventListener.h"
 #include "vrbase/events/BasicMouseListener.h"
+#include "vrbase/events/BasicTouchListener.h"
 #include "vrbase/scenes/CenteredScene.h"
 
 namespace PFVis {
@@ -25,6 +26,7 @@ void PartFlowApp::init(MinVR::ConfigMapRef configMap) {
 	_objectToWorld = glm::mat4(scale);
 
 	addEventListener(vrbase::EventListenerRef(new vrbase::BasicMouseListener(&_objectToWorld)));
+	addEventListener(vrbase::EventListenerRef(new vrbase::BasicTouchListener(&_objectToWorld)));
 }
 
 void PartFlowApp::initializeContext(int threadId,

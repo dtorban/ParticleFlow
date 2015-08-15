@@ -17,7 +17,7 @@
 
 namespace vrbase {
 
-BasicMouseListener::BasicMouseListener(glm::mat4* transformation) : _transformation(transformation), _rotating(false) {
+BasicMouseListener::BasicMouseListener(glm::mat4* transformation) : _transformation(transformation), _rotating(false), _translating(false) {
 }
 
 BasicMouseListener::~BasicMouseListener() {
@@ -32,28 +32,38 @@ void BasicMouseListener::handleEvents(
 			_rotating = true;
 			_lastPosition = glm::vec2(events[f]->get2DData());
 		}
-		else if (events[f]->getName() == "mouse_btn_left_up")
+		if (events[f]->getName() == "mouse_btn_middle_down")
 		{
-			_rotating = false;
+			_translating = true;
+			_lastPosition = glm::vec2(events[f]->get2DData());
 		}
 		else if (events[f]->getName() == "mouse_btn_left_up")
 		{
 			_rotating = false;
+		}
+		if (events[f]->getName() == "mouse_btn_middle_up")
+		{
+			_translating = false;
 		}
 		else if (events[f]->getName() == "mouse_pointer")
 		{
-			if (_rotating)
+			std::cout << events[f]->getName() << " " << _lastPosition.x << " " << _lastPosition.y << std::endl;
+			MinVR::WindowRef window = events[f]->getWindow();
+			glm::vec2 res(window->getWidth(), window->getHeight());
+			glm::vec2 pos(events[f]->get2DData());
+			glm::vec2 percentMove = (_lastPosition - pos)/res;
+
+			if (_translating)
 			{
-				std::cout << events[f]->getName() << " " << _lastPosition.x << " " << _lastPosition.y << std::endl;
-				MinVR::WindowRef window = events[f]->getWindow();
-				glm::vec2 res(window->getWidth(), window->getHeight());
-				glm::vec2 pos(events[f]->get2DData());
-				glm::vec2 percentMove = (_lastPosition - pos)/res;
+				*(_transformation) = glm::translate(*(_transformation), glm::vec3(percentMove.x, percentMove.y, 0.0f));
+			}
+			else if (_rotating)
+			{
 				glm::vec2 norm = glm::normalize(percentMove);
 				*(_transformation) = glm::rotate(*(_transformation), -glm::length(percentMove)*360.0f, glm::vec3(norm.y, norm.x, 0.0f));
-
-				_lastPosition = glm::vec2(pos);
 			}
+
+			_lastPosition = glm::vec2(pos);
 		}
 		else if (events[f]->getName() == "mouse_scroll")
 		{

@@ -6,27 +6,24 @@
  * 		Dan Orban (dtorban)
  */
 
-#ifndef BASICMOUSELISTENER_H_
-#define BASICMOUSELISTENER_H_
+#ifndef BASICTOUCHLISTENER_H_
+#define BASICTOUCHLISTENER_H_
 
 #include "vrbase/EventListener.h"
 
 namespace vrbase {
 
-class BasicMouseListener : public EventListener {
+class BasicTouchListener : public EventListener {
 public:
-	BasicMouseListener(glm::mat4* transformation);
-	virtual ~BasicMouseListener();
+	BasicTouchListener(glm::mat4* transformation);
+	virtual ~BasicTouchListener();
 
 	void handleEvents(const std::vector<MinVR::EventRef> &events, double synchronizedTime);
 
 private:
 	glm::mat4* _transformation;
-	bool _rotating;
-	bool _translating;
-	glm::vec2 _lastPosition;
 };
 
 } /* namespace vrbase */
 
-#endif /* BASICMOUSELISTENER_H_ */
+#endif /* BASICTOUCHLISTENER_H_ */

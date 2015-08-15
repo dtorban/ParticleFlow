@@ -19,6 +19,7 @@ set (SOURCEFILES
 source/cameras/OffAxisCamera.cpp
 source/cameras/WorldCamera.cpp
 source/events/BasicMouseListener.cpp
+source/events/BasicTouchListener.cpp
 source/scenes/render/BasicRenderedScene.cpp
 source/scenes/BlankScene.cpp
 source/scenes/CenteredScene.cpp
@@ -35,6 +36,7 @@ set (HEADERFILES
 include/vrbase/cameras/OffAxisCamera.h
 include/vrbase/cameras/WorldCamera.h
 include/vrbase/events/BasicMouseListener.h
+include/vrbase/events/BasicTouchListener.h
 include/vrbase/scenes/render/BasicRenderedScene.h
 include/vrbase/scenes/BlankScene.h
 include/vrbase/scenes/CenteredScene.h
