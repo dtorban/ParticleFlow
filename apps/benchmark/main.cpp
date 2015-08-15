@@ -18,6 +18,7 @@
 #include "PFCore/partflow/advectors/VectorFieldAdvector.h"
 #include "PFGpu/partflow/advectors/GpuVectorFieldAdvector.h"
 #include "PFCore/partflow/advectors/strategies/EulerAdvector.h"
+#include "PFCore/partflow/advectors/strategies/RungaKutta4.h"
 #include "PFCore/partflow/vectorFields/ConstantField.h"
 #include "PFCore/partflow/updaters/BasicUpdater.h"
 #include "PFCore/partflow/updaters/strategies/MagnitudeUpdater.h"
@@ -28,14 +29,41 @@ using namespace PFCore::input;
 using namespace PFCore::partflow;
 using namespace std;
 
-void printParticleSet(const ParticleSetView& view, bool printVelocity = false);
+void printParticleSet(const ParticleSetView& view, bool printVelocity = false, int step = 0);
+
+void testParticleSystem();
 
 int main(int argc, char** argv) {
-
 	GpuParticleFactory psetFactory;
-	ParticleSetRef localSet = psetFactory.createLocalParticleSet(10, 1);
-	ParticleSetRef updatedSet = psetFactory.createLocalParticleSet(10, 1);
-	ParticleSetRef deviceSet = psetFactory.createParticleSet(0, 10, 1);
+	ParticleSetRef localSet = psetFactory.createLocalParticleSet(1000, 0, 0, 1, 10);
+	ParticleSetRef copySet = psetFactory.createLocalParticleSet(1000, 0, 0, 1, 10);
+
+	GpuEmitterFactory emitterFactory;
+	EmitterRef emitter = EmitterRef(emitterFactory.createSphereEmitter(vec3(0.0f), 1.0f, 1));
+
+	emitter->emitParticles(*localSet, 4, true);
+
+	GpuVectorFieldAdvector<RungaKutta4<ConstantField>, ConstantField> advector(RungaKutta4<ConstantField>(), ConstantField(vec3(-1.0)));
+	advector.advectParticles(*localSet, 5, 0.0, 0.5, 2);
+
+	printParticleSet(*localSet, true, 5);
+
+//	copySet->copy(*localSet);
+	copySet->copy(localSet->getView().filterByStep(5, 1));
+
+	printParticleSet(*copySet, true, 4);
+	printParticleSet(*copySet, true, 5);
+	printParticleSet(*copySet, true, 6);
+
+	return 0;
+}
+
+void testParticleSystem()
+{
+	GpuParticleFactory psetFactory;
+	ParticleSetRef localSet = psetFactory.createLocalParticleSet(10, 0, 1);
+	ParticleSetRef updatedSet = psetFactory.createLocalParticleSet(10, 0, 1);
+	ParticleSetRef deviceSet = psetFactory.createParticleSet(0, 10, 0, 1);
 
 	GpuEmitterFactory emitterFactory;
 	EmitterRef emitter = EmitterRef(emitterFactory.createSphereEmitter(vec3(0.0f), 1.0f, 1));
@@ -89,30 +117,25 @@ int main(int argc, char** argv) {
 	cout << "Device advected: " << endl;
 	updatedSet->copy(*deviceSet);
 	printParticleSet(*updatedSet, true);
-
-	return 0;
 }
 
-void printParticleSet(const ParticleSetView& view, bool printVelocity)
+void printParticleSet(const ParticleSetView& view, bool printVelocity, int step)
 {
-	for (int f = 0; f < view.getNumParticles(); f++)
+	cout << "-------- Step ";
+	cout << step << " ---------" << endl;
+
+	for (int f = 0; f < 10; f++)//view.getNumParticles(); f++)
 	{
-		const vec3& pos = view.getPosition(f);
+		const vec3& pos = view.getPosition(f, step);
 		cout << pos.x << "," << pos.y << "," << pos.z << endl;
 	}
 
 	if (printVelocity)
 	{
-		for (int f = 0; f < view.getNumParticles(); f++)
+		for (int f = 0; f < 10; f++)//view.getNumParticles(); f++)
 		{
-			const vec3& vel = view.getVector(0,f,0);
+			const vec3& vel = view.getVector(0,f,step);
 			cout << "Vel: " << vel.x << "," << vel.y << "," << vel.z << endl;
-		}
-
-		for (int f = 0; f < view.getNumParticles(); f++)
-		{
-			const float& mag = view.getValue(0,f,0);
-			cout << "Mag: " << mag << endl;
 		}
 	}
 }

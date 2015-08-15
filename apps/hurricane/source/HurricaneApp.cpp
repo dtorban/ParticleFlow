@@ -26,6 +26,7 @@
 #include "PFGpu/partflow/GpuParticleUpdater.h"
 #include "PFCore/partflow/updaters/strategies/ParticleFieldUpdater.h"
 #include "vrbase/scenes/BlankScene.h"
+#include "vrbase/scenes/CompositeScene.h"
 
 using namespace vrbase;
 using namespace PFVis::partflow;
@@ -148,12 +149,13 @@ void HurricaneApp::init(MinVR::ConfigMapRef configMap) {
 		dataLoader->load(reinterpret_cast<float*>(&_localField->getVectors(0)[(int)(fieldSize.x*fieldSize.y*fieldSize.z*f)]), fieldSize.x*fieldSize.y*fieldSize.z*1);
 	}
 
-	_deviceField->copy(*_localField);
 
 	_currentParticleTime = 0.0f;
 
 	_updater = ParticleUpdaterRef(new GpuParticleUpdater<ParticleFieldUpdater>(ParticleFieldUpdater(ParticleFieldVolume(*_deviceField, 0))));
 	_updater->updateParticles(*_deviceSet, _currentStep, _currentParticleTime);
+
+	_deviceField->copy(*_localField);
 
 	_currentStep = 1;
 }
@@ -204,10 +206,17 @@ SceneRef HurricaneApp::createAppScene(int threadId, MinVR::WindowRef window)
 		vec4 startField = vec4(0.0f, 0.0f);
 		vec4 lenField = vec4(2139.0f, 2004.0f, 198.0f, numTimeSteps);
 
+		CompositeScene* world = new CompositeScene();
+
 		MeshScene* mesh = new MeshScene(_mesh);
-		SceneRef scene = SceneRef(mesh);
-		scene = SceneRef(new ParticleScene(scene, mesh, &(*_localSet), Box(glm::vec3(startField.x, startField.y, startField.z), glm::vec3(startField.x, startField.y, startField.z) + glm::vec3(lenField.x, lenField.y, lenField.z))));
+		SceneRef meshScene = SceneRef(mesh);
+		SceneRef scene = SceneRef(new ParticleScene(meshScene, mesh, &(*_localSet), Box(glm::vec3(startField.x, startField.y, startField.z), glm::vec3(startField.x, startField.y, startField.z) + glm::vec3(lenField.x, lenField.y, lenField.z))));
 		scene = SceneRef(new BasicParticleRenderer(scene));
+
+		world->addScene(scene);
+//		world->addScene(SceneRef(new BasicRenderedScene(meshScene)));
+		scene = SceneRef(world);
+
 		return scene;
 	}
 
@@ -219,6 +228,7 @@ void HurricaneApp::preDrawComputation(double synchronizedTime) {
 		calculate();
 	}
 
+	//_localSet->copy(_deviceSet->getView().filterByStep(_currentStep-1, 1));
 	_localSet->copy(*_deviceSet);
 
 	AppBase::preDrawComputation(synchronizedTime);
