@@ -26,7 +26,7 @@ void BasicTouchListener::handleEvents(
 		{
 		}
 		else {//mouse_btn_middle_up
-			std::cout << events[f]->getName() << std::endl;
+			//std::cout << events[f]->getName() << std::endl;
 		}
 	}
 }

@@ -27,7 +27,7 @@ public:
 	CudaVectorFieldAdvector(void* strategy, void* vectorField);
 	virtual ~CudaVectorFieldAdvector();
 	
-	void advectParticles(ParticleSetView& particleSet, int step, float time, float dt);
+	void advectParticles(ParticleSetView& particleSet, int step, float time, float dt, int iterations);
 	
 private:
 	Strategy _strategy;
@@ -50,7 +50,7 @@ __global__ void CudaVectorFieldAdvector_advectParticle(Strategy strategy, VField
 	int i = (blockIdx.x * blockDim.x) + threadIdx.x;
 	if (i < particleSet.getNumParticles())
 	{
-		strategy.advectParticle(particleSet, vectorField, i, step, prevStep, time, dt);
+		strategy.advectParticle(particleSet, vectorField, i, step, prevStep, time, dt, iterations);
 	}
 }
 

@@ -92,7 +92,7 @@ void HeightMapScene::init() {
 	std::cout << "Size!!!!!!!!! " << sizeof(vertices) << " " << sizeof(indices) << std::endl;
 
 	_shader->init();
-	_shadowShader->init();
+	//_shadowShader->init();
 
 	delete[] vertices;
 	delete[] indices;

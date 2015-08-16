@@ -10,6 +10,6 @@ out vec3 txcoord;
 void main() {
 	vec3 pos = vposition;
 	txcoord = pos;
-	pos.z = pos.z + texture2D(height, vec2(txcoord.x+0.5, 1.0-txcoord.y+0.5)).x/5.0;
+	pos.z = pos.z + texture2D(height, txcoord.xy+0.5).x/5.0;
     gl_Position = Projection*View*Model*vec4(pos,1.0);
 }

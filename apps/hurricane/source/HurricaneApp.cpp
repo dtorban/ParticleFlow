@@ -179,7 +179,7 @@ void HurricaneApp::calculate()
 	_emitter->emitParticles(*_deviceSet, _currentStep);
 	_updater->updateParticles(*_deviceSet, _currentStep, _currentParticleTime);
 	_currentStep++;
-	_currentParticleTime += dt;
+	_currentParticleTime += dt*_iterationsPerAdvect;
 }
 
 class ComputeScene : public vrbase::SceneAdapter
