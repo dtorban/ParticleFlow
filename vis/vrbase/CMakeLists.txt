@@ -26,11 +26,13 @@ source/scenes/CenteredScene.cpp
 source/scenes/CompositeScene.cpp
 source/scenes/MeshScene.cpp
 source/scenes/SceneAdapter.cpp
+source/textures/DataTexture.cpp
 source/AppBase.cpp
 source/Box.cpp
 source/main.cpp
 source/Mesh.cpp
 source/Shader.cpp
+source/Texture.cpp
 )
 
 set (HEADERFILES
@@ -44,6 +46,7 @@ include/vrbase/scenes/CenteredScene.h
 include/vrbase/scenes/CompositeScene.h
 include/vrbase/scenes/MeshScene.h
 include/vrbase/scenes/SceneAdapter.h
+include/vrbase/textures/DataTexture.h
 include/vrbase/AppBase.h
 include/vrbase/Box.h
 include/vrbase/Camera.h
@@ -51,6 +54,7 @@ include/vrbase/EventListener.h
 include/vrbase/GraphicsObject.h
 include/vrbase/Mesh.h
 include/vrbase/Shader.h
+include/vrbase/Texture.h
 )
 
 source_group("Header Files" FILES ${HEADERFILES})

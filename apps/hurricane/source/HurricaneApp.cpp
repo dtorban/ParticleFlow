@@ -27,6 +27,7 @@
 #include "PFCore/partflow/updaters/strategies/ParticleFieldUpdater.h"
 #include "vrbase/scenes/BlankScene.h"
 #include "vrbase/scenes/CompositeScene.h"
+#include "scenes/HeightMapScene.h"
 
 using namespace vrbase;
 using namespace PFVis::partflow;
@@ -49,6 +50,7 @@ void HurricaneApp::init(MinVR::ConfigMapRef configMap) {
 	PartFlowApp::init(configMap);
 
 	std::string dataDir = configMap->get("DataDir", "../data");
+	_shaderDir = configMap->get("ShaderDir", "../shaders");
 	int numParticles = configMap->get<int>("NumParticles", 1024*32);
 	int numParticleSteps = configMap->get<int>("NumParticleSteps", 1);
 	float particleSize = configMap->get("ParticleSize", 10.0f);
@@ -149,6 +151,8 @@ void HurricaneApp::init(MinVR::ConfigMapRef configMap) {
 		dataLoader->load(reinterpret_cast<float*>(&_localField->getVectors(0)[(int)(fieldSize.x*fieldSize.y*fieldSize.z*f)]), fieldSize.x*fieldSize.y*fieldSize.z*1);
 	}
 
+	DataLoaderRef height = DataLoaderRef(new BrickOfFloatLoader(dataDir + "/HGTdata.bin"));
+	height->load(&_heightData[0], 500*500);
 
 	_currentParticleTime = 0.0f;
 
@@ -213,6 +217,9 @@ SceneRef HurricaneApp::createAppScene(int threadId, MinVR::WindowRef window)
 		SceneRef scene = SceneRef(new ParticleScene(meshScene, mesh, &(*_localSet), Box(glm::vec3(startField.x, startField.y, startField.z), glm::vec3(startField.x, startField.y, startField.z) + glm::vec3(lenField.x, lenField.y, lenField.z))));
 		scene = SceneRef(new BasicParticleRenderer(scene));
 
+		SceneRef land = SceneRef(new HeightMapScene(NULL, &_heightData[0], _shaderDir));
+
+		world->addScene(land);
 		world->addScene(scene);
 //		world->addScene(SceneRef(new BasicRenderedScene(meshScene)));
 		scene = SceneRef(world);

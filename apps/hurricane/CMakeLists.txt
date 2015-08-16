@@ -16,11 +16,13 @@ project (hurricane)
 #------------------------------------------
 
 set (SOURCEFILES
+source/scenes/HeightMapScene.cpp
 source/HurricaneApp.cpp
 source/main.cpp
 )
 
 set (HEADERFILES
+include/scenes/HeightMapScene.h
 include/HurricaneApp.h
 )
 

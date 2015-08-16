@@ -40,6 +40,8 @@ private:
 	int _currentStep;
 	float _currentParticleTime;
 	int _computeThreadId;
+	float _heightData[500*500];
+	std::string _shaderDir;
 };
 
 #endif /* SOURCE_DIRECTORY__APPS_HURRICANE_INCLUDE_HURRICANEAPP_H_ */
