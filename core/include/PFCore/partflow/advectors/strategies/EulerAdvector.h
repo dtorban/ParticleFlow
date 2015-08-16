@@ -33,11 +33,11 @@ PF_ENV_API inline void EulerAdvector<VField>::advectParticle(ParticleSetView& pa
 	partPos.y = particleSet.getPosition(index, prevStep).y;
 	partPos.z = particleSet.getPosition(index, prevStep).z;
 
+	float advectTime = time;
+
 	for (int f = 0; f < iterations; f++)
 	{
-
-
-		math::vec3 velocity = vectorField.getVelocity(partPos, time);
+		math::vec3 velocity = vectorField.getVelocity(partPos, advectTime);
 		partPos += velocity*dt;
 
 		if (particleSet.getNumVectors() > 0)
@@ -46,6 +46,8 @@ PF_ENV_API inline void EulerAdvector<VField>::advectParticle(ParticleSetView& pa
 			vel = velocity;
 
 		}
+
+		advectTime += dt;
 	}
 }
 

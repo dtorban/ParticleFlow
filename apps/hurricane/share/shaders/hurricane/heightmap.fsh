@@ -5,7 +5,7 @@ uniform sampler2D height;
 in vec3 txcoord;
 
 void main() {
-	vec4 val = texture2D(height, txcoord.xy+0.5);
+	vec4 val = texture2D(height, txcoord.yx+0.5);
 	if (val.x > 0.0)
 	{
 		FragColor = vec4(val.x,0.0,0.0,1.0);

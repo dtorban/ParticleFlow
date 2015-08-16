@@ -11,6 +11,8 @@
 #include "vrbase/events/BasicMouseListener.h"
 #include "vrbase/events/BasicTouchListener.h"
 #include "vrbase/scenes/CenteredScene.h"
+#include <glm/gtc/matrix_access.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 namespace PFVis {
 namespace partflow {
@@ -22,8 +24,12 @@ PartFlowApp::~PartFlowApp() {
 }
 
 void PartFlowApp::init(MinVR::ConfigMapRef configMap) {
-	float scale = configMap->get<float>("DefaultSceneScale", 1.0);
-	_objectToWorld = glm::mat4(scale);
+	glm::dvec3 scale = configMap->get("DefaultSceneScale", glm::dvec3(1.0));
+	float rotationAngle = configMap->get<float>("DefaultSceneRotation", 0.0);
+	glm::dvec3 rotationAxis = configMap->get("DefaultRotationAxis", glm::dvec3(1.0));
+
+	_objectToWorld = glm::scale(_objectToWorld, glm::vec3(scale));
+	_objectToWorld = glm::rotate(_objectToWorld, rotationAngle, glm::vec3(rotationAxis));
 
 	addEventListener(vrbase::EventListenerRef(new vrbase::BasicMouseListener(&_objectToWorld)));
 	addEventListener(vrbase::EventListenerRef(new vrbase::BasicTouchListener(&_objectToWorld)));
@@ -77,6 +83,7 @@ void PartFlowApp::initializeContext(int threadId,
 
 vrbase::SceneRef PartFlowApp::createScene(int threadId,
 		MinVR::WindowRef window) {
+
 	vrbase::SceneRef scene = createAppScene(threadId, window);
 	scene = vrbase::SceneRef(new vrbase::CenteredScene(scene, &_objectToWorld));
 	return scene;

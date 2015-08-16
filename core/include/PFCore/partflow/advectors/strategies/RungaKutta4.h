@@ -34,13 +34,14 @@ PF_ENV_API inline void RungaKutta4<VField>::advectParticle(ParticleSetView& part
 	partPos.z = particleSet.getPosition(index, prevStep).z;
 
 	math::vec3 k1, k2, k3, k4, v, a;
+	float advectTime = time;
 
 	for (int f = 0; f < iterations; f++)
 	{
-		k1 = vectorField.getVelocity(partPos, time);
-		k2 = vectorField.getVelocity(partPos + (k1 * 0.5), time+0.5*dt);
-		k3 = vectorField.getVelocity(partPos + (k2 * 0.5), time+0.5*dt);
-		k4 = vectorField.getVelocity(partPos + k3, time);
+		k1 = vectorField.getVelocity(partPos, advectTime);
+		k2 = vectorField.getVelocity(partPos + (k1 * 0.5), advectTime+0.5*dt);
+		k3 = vectorField.getVelocity(partPos + (k2 * 0.5), advectTime+0.5*dt);
+		k4 = vectorField.getVelocity(partPos + k3, advectTime);
 
 		v = (k1/6.0) + (k2/3.0) + (k3/3.0) + (k4/6.0);
 
@@ -50,6 +51,8 @@ PF_ENV_API inline void RungaKutta4<VField>::advectParticle(ParticleSetView& part
 		{
 			particleSet.getVector(0, index, step) = v;
 		}
+
+		advectTime+=dt;
 	}
 }
 
