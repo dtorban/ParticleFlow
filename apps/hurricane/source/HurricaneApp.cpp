@@ -214,7 +214,7 @@ SceneRef HurricaneApp::createAppScene(int threadId, MinVR::WindowRef window)
 
 		MeshScene* mesh = new MeshScene(_mesh);
 		SceneRef meshScene = SceneRef(mesh);
-		SceneRef scene = SceneRef(new ParticleScene(meshScene, mesh, &(*_localSet), Box(glm::vec3(startField.x, startField.y, startField.z), glm::vec3(startField.x, startField.y, startField.z) + glm::vec3(lenField.x, lenField.y, lenField.z))));
+		SceneRef scene = SceneRef(new ParticleScene(meshScene, mesh, &(*_localSet), this, Box(glm::vec3(startField.x, startField.y, startField.z), glm::vec3(startField.x, startField.y, startField.z) + glm::vec3(lenField.x, lenField.y, lenField.z))));
 		scene = SceneRef(new BasicParticleRenderer(scene));
 
 		SceneRef land = SceneRef(new HeightMapScene(NULL, &_heightData[0], _shaderDir));
@@ -230,13 +230,13 @@ SceneRef HurricaneApp::createAppScene(int threadId, MinVR::WindowRef window)
 }
 
 void HurricaneApp::preDrawComputation(double synchronizedTime) {
-	if (_computeThreadId < 0)
+	/*if (_computeThreadId < 0)
 	{
 		calculate();
-	}
+	}*/
 
 	//_localSet->copy(_deviceSet->getView().filterByStep(_currentStep-1, 1));
-	_localSet->copy(*_deviceSet);
+	//_localSet->copy(*_deviceSet);
 
 	AppBase::preDrawComputation(synchronizedTime);
 }
@@ -277,4 +277,22 @@ DataLoaderRef HurricaneApp::createValueLoader(const std::string &dataDir, const 
 	}
 
 	return DataLoaderRef(new CompositeDataLoader(values));
+}
+
+void HurricaneApp::updateParticleSet(
+		PFCore::partflow::ParticleSetRef particleSet) {
+	float dt = 1.0 / 60.0f;
+
+	/*AdvectorRef advector = AdvectorRef(new GpuVectorFieldAdvector<EulerAdvector<ParticleFieldVolume>,ParticleFieldVolume>(
+		EulerAdvector<ParticleFieldVolume>(),
+		ParticleFieldVolume(*_deviceField, 0)));*/
+	AdvectorRef advector = AdvectorRef(new GpuVectorFieldAdvector<RungaKutta4<ParticleFieldVolume>, ParticleFieldVolume>(
+		RungaKutta4<ParticleFieldVolume>(),
+		ParticleFieldVolume(*_deviceField, 0)));
+
+	advector->advectParticles(*particleSet, _currentStep, _currentParticleTime, dt, _iterationsPerAdvect);
+	_emitter->emitParticles(*particleSet, _currentStep);
+	_updater->updateParticles(*particleSet, _currentStep, _currentParticleTime);
+	_currentStep++;
+	_currentParticleTime += dt*_iterationsPerAdvect;
 }

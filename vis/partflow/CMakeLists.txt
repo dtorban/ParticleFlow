@@ -25,6 +25,7 @@ source/scenes/render/BasicParticleRenderer.cpp
 set (HEADERFILES
 include/PFVis/PartFlowApp.h
 include/PFVis/scenes/ParticleScene.h
+include/PFVis/scenes/update/ParticleSceneUpdater.h
 include/PFVis/scenes/render/BasicParticleRenderer.h
 )
 

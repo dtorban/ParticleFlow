@@ -14,8 +14,8 @@
 namespace PFVis {
 namespace partflow {
 
-ParticleScene::ParticleScene(vrbase::SceneRef scene, vrbase::GraphicsObject* graphicsObject, PFCore::partflow::ParticleSetView* particleSet, const vrbase::Box& boundingBox) : vrbase::SceneAdapter(scene), _graphicsObject(graphicsObject),
-			_vbo(0), _vao(0), _particleSet(particleSet), _boundingBox(boundingBox) {
+ParticleScene::ParticleScene(vrbase::SceneRef scene, vrbase::GraphicsObject* graphicsObject, PFCore::partflow::ParticleSetView* particleSet, ParticleSceneUpdater* sceneUpdater, const vrbase::Box& boundingBox) : vrbase::SceneAdapter(scene), _graphicsObject(graphicsObject),
+			_vbo(0), _vao(0), _particleSet(particleSet), _sceneUpdater(sceneUpdater), _boundingBox(boundingBox) {
 }
 
 ParticleScene::~ParticleScene() {
@@ -144,13 +144,14 @@ void ParticleScene::updateFrame() {
 		PFCore::partflow::GpuParticleFactory factory;
 		PFCore::partflow::ParticleSetRef resourceParticleSet = factory.createParticleSet(_gpuResource, _particleSet->getNumParticles(), _particleSet->getNumAttributes(), _particleSet->getNumValues(), _particleSet->getNumVectors(), _particleSet->getNumSteps());
 
-		resourceParticleSet->copy(*_particleSet);
+		//resourceParticleSet->copy(*_particleSet);
+		_sceneUpdater->updateParticleSet(resourceParticleSet);
 
 		_gpuResource->unmap();
 	}
 	else
 	{
-		/*int numInstances = _particleSet->getNumParticles()*_particleSet->getNumSteps();
+		int numInstances = _particleSet->getNumParticles()*_particleSet->getNumSteps();
 		glBindBuffer(GL_ARRAY_BUFFER, _vbo);
 		int startPos = 0;
 		glBufferSubData(GL_ARRAY_BUFFER, startPos, sizeof(GLfloat)*numInstances*3, _particleSet->getPositions(0));
@@ -159,7 +160,7 @@ void ParticleScene::updateFrame() {
 		startPos += sizeof(GLint)*numInstances*_particleSet->getNumAttributes();
 		glBufferSubData(GL_ARRAY_BUFFER, startPos, sizeof(GLfloat)*numInstances*_particleSet->getNumValues(), _particleSet->getValues(0));
 		startPos += sizeof(GLfloat)*numInstances*_particleSet->getNumValues();
-		glBufferSubData(GL_ARRAY_BUFFER, startPos, sizeof(GLfloat)*numInstances*_particleSet->getNumVectors()*3, _particleSet->getVectors(0));*/
+		glBufferSubData(GL_ARRAY_BUFFER, startPos, sizeof(GLfloat)*numInstances*_particleSet->getNumVectors()*3, _particleSet->getVectors(0));
 	}
 
 

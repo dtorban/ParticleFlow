@@ -14,8 +14,9 @@
 #include "vrbase/Mesh.h"
 #include "PFCore/partflow/PartflowRef.h"
 #include "PFCore/input/DataLoader.h"
+#include "PFVis/scenes/update/ParticleSceneUpdater.h"
 
-class HurricaneApp : public PFVis::partflow::PartFlowApp {
+class HurricaneApp : public PFVis::partflow::PartFlowApp, public PFVis::partflow::ParticleSceneUpdater {
 public:
 	HurricaneApp();
 	virtual ~HurricaneApp();
@@ -24,6 +25,7 @@ public:
 	vrbase::SceneRef createAppScene(int threadId, MinVR::WindowRef window);
 	void preDrawComputation(double synchronizedTime);
 	void calculate();
+	void updateParticleSet(PFCore::partflow::ParticleSetRef particleSet);
 
 private:
 	PFCore::input::DataLoaderRef createVectorLoader(const std::string &dataDir, const std::string &timeStep, int sampleInterval = 0);
