@@ -10,6 +10,7 @@
 #define CUDAPARTICLESETFACTORY_H_
 
 #include "PFCore/partflow/ParticleFactory.h"
+#include "PFGpu/GpuResource.h"
 
 #include <iostream>
 
@@ -19,9 +20,8 @@ namespace partflow {
 #ifdef USE_CUDA
 extern "C"
 ParticleSet* createCudaParticleSet(int deviceId, int numParticles, int numAttributes, int numValues, int numVectors, int numSteps);
-#endif
-
-#ifdef USE_CUDA
+extern "C"
+ParticleSet* createCudaParticleSetFromResource(GpuResource* resource, int numParticles, int numAttributes, int numValues, int numVectors, int numSteps);
 extern "C"
 ParticleField* createCudaParticleField(int deviceId, int numValues, int numVectors, math::vec4 start, math::vec4 length, math::vec4 size);
 #endif
@@ -39,6 +39,17 @@ public:
 #else
 		std::cout << "Use cpu particle set" << std::endl;
 		return ParticleFactory::createParticleSet(deviceId, numParticles, numAttributes, numValues, numVectors, numSteps);
+#endif
+	}
+
+	ParticleSetRef createParticleSet(GpuResource* resource, int numParticles, int numAttributes, int numValues, int numVectors, int numSteps)
+	{
+#ifdef USE_CUDA
+		//std::cout << "Use cuda particle set" << std::endl;
+		return ParticleSetRef(createCudaParticleSetFromResource(resource, numParticles, numAttributes, numValues, numVectors, numSteps));
+#else
+		std::cout << "Use cpu particle set" << std::endl;
+		return ParticleFactory::createParticleSet(resource->getDeviceId(), numParticles, numAttributes, numValues, numVectors, numSteps);
 #endif
 	}
 

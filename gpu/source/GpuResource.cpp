@@ -23,12 +23,23 @@ GpuResource::GpuResource() {
 GpuResource::~GpuResource() {
 }
 
-void GpuResource::map(void*& data)
+bool GpuResource::map()
 {
+	return false;
+}
+
+int GpuResource::getData(void** data)
+{
+	return 0;
 }
 
 void GpuResource::unmap()
 {
+}
+
+int GpuResource::getDeviceId()
+{
+	return -1;
 }
 
 } /* namespace PFCore */

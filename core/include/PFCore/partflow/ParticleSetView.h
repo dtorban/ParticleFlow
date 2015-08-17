@@ -48,6 +48,11 @@ public:
 	PF_ENV_API inline float* getValues(int valueIndex = 0, int step = 0) const;
 	PF_ENV_API inline const math::vec3* getVectors(int valueIndex = 0, int step = 0) const;
 
+//	PF_ENV_API inline void setPositions(math::vec3* positions) { _positions = positions; }
+//	PF_ENV_API inline void setAttributes(int* attributes) { _attributes = attributes; }
+//	PF_ENV_API inline void setValues(float* values) { _values = values; }
+//	PF_ENV_API inline void setVectors(math::vec3* vectors) { _vectors = vectors; }
+
 	PF_ENV_API inline math::vec3& getPosition(int index, int step = 0);
 	PF_ENV_API inline math::vec3& getPosition(int index, int step = 0) const;
 	PF_ENV_API inline int& getAttribute(int valueIndex, int index, int step = 0);

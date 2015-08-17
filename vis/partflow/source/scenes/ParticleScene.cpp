@@ -7,6 +7,9 @@
  */
 
 #include <PFVis/scenes/ParticleScene.h>
+#include <PFGpu/GpuResourceFactory.h>
+#include <PFGpu/partflow/GpuParticleFactory.h>
+#include <iostream>
 
 namespace PFVis {
 namespace partflow {
@@ -18,6 +21,7 @@ ParticleScene::ParticleScene(vrbase::SceneRef scene, vrbase::GraphicsObject* gra
 ParticleScene::~ParticleScene() {
 	glDeleteVertexArrays(1, &_vao);
 	glDeleteBuffers(1, &_vbo);
+	delete _gpuResource;
 }
 
 void ParticleScene::init() {
@@ -99,9 +103,13 @@ void ParticleScene::init() {
 	glBufferSubData(GL_ARRAY_BUFFER, startPos, sizeof(GLfloat)*numInstances*_particleSet->getNumVectors()*3, _particleSet->getVectors(0));
 
 	delete[] verts;
+
+	PFCore::GpuResourceFactory factory(0);
+	_gpuResource = factory.registerResource(_vbo);
 }
 
 void ParticleScene::updateFrame() {
+	/*
 	int numInstances = _particleSet->getNumParticles()*_particleSet->getNumSteps();
 	glBindBuffer(GL_ARRAY_BUFFER, _vbo);
 	int startPos = 0;
@@ -112,6 +120,48 @@ void ParticleScene::updateFrame() {
 	glBufferSubData(GL_ARRAY_BUFFER, startPos, sizeof(GLfloat)*numInstances*_particleSet->getNumValues(), _particleSet->getValues(0));
 	startPos += sizeof(GLfloat)*numInstances*_particleSet->getNumValues();
 	glBufferSubData(GL_ARRAY_BUFFER, startPos, sizeof(GLfloat)*numInstances*_particleSet->getNumVectors()*3, _particleSet->getVectors(0));
+	*/
+
+	//char *data;
+	//PFCore::partflow::ParticleSetView pset = *_particleSet;
+
+	if (_gpuResource->map())
+	{
+		//int size = _gpuResource->getData((void **)(&data));
+		//std::cout << size << " ----------------------------------------------------" << _particleSet->getSize() << std::endl;
+		//if (size > 0)
+		//{
+			/*int numInstances = _particleSet->getNumParticles()*_particleSet->getNumSteps();
+			int startPos = 0;
+			pset.setPositions(reinterpret_cast<PFCore::math::vec3*>(&data[startPos]));
+			startPos += sizeof(PFCore::math::vec3)*numInstances;
+			pset.setAttributes(reinterpret_cast<int*>(&data[startPos]));
+			startPos += sizeof(int)*numInstances*_particleSet->getNumAttributes();
+			pset.setValues(reinterpret_cast<float*>(&data[startPos]));
+			startPos += sizeof(float)*numInstances*_particleSet->getNumValues();
+			pset.setVectors(reinterpret_cast<PFCore::math::vec3*>(&data[startPos]));*/
+		//}
+		PFCore::partflow::GpuParticleFactory factory;
+		PFCore::partflow::ParticleSetRef resourceParticleSet = factory.createParticleSet(_gpuResource, _particleSet->getNumParticles(), _particleSet->getNumAttributes(), _particleSet->getNumValues(), _particleSet->getNumVectors(), _particleSet->getNumSteps());
+
+		resourceParticleSet->copy(*_particleSet);
+
+		_gpuResource->unmap();
+	}
+	else
+	{
+		/*int numInstances = _particleSet->getNumParticles()*_particleSet->getNumSteps();
+		glBindBuffer(GL_ARRAY_BUFFER, _vbo);
+		int startPos = 0;
+		glBufferSubData(GL_ARRAY_BUFFER, startPos, sizeof(GLfloat)*numInstances*3, _particleSet->getPositions(0));
+		startPos += sizeof(GLfloat)*numInstances*3;
+		glBufferSubData(GL_ARRAY_BUFFER, startPos, sizeof(GLint)*numInstances*_particleSet->getNumAttributes(), _particleSet->getAttributes(0));
+		startPos += sizeof(GLint)*numInstances*_particleSet->getNumAttributes();
+		glBufferSubData(GL_ARRAY_BUFFER, startPos, sizeof(GLfloat)*numInstances*_particleSet->getNumValues(), _particleSet->getValues(0));
+		startPos += sizeof(GLfloat)*numInstances*_particleSet->getNumValues();
+		glBufferSubData(GL_ARRAY_BUFFER, startPos, sizeof(GLfloat)*numInstances*_particleSet->getNumVectors()*3, _particleSet->getVectors(0));*/
+	}
+
 
 }
 

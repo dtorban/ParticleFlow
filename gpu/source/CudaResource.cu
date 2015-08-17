@@ -28,13 +28,21 @@ CudaResource::~CudaResource() {
 	cudaGraphicsUnregisterResource(resource);
 }
 
-void CudaResource::map(void*& data)
+bool CudaResource::map()
 {
 	cudaSetDevice(_deviceId);
 	cudaGLSetGLDevice(_deviceId);
 	cudaGraphicsMapResources(1, &resource);
+	return true;
+}
+
+int CudaResource::getData(void** data)
+{
+	cudaSetDevice(_deviceId);
+	cudaGLSetGLDevice(_deviceId);
 	size_t size;
-	cudaGraphicsResourceGetMappedPointer((void **)(&data), &size, resource);
+	cudaGraphicsResourceGetMappedPointer(data, &size, resource);
+	return size;
 }
 
 void CudaResource::unmap()
@@ -42,6 +50,11 @@ void CudaResource::unmap()
 	cudaSetDevice(_deviceId);
 	cudaGLSetGLDevice(_deviceId);
 	cudaGraphicsUnmapResources(1, &resource);
+}
+
+int CudaResource::getDeviceId()
+{
+	return _deviceId;
 }
 
 } /* namespace PFCore */

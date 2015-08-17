@@ -13,6 +13,7 @@
 #include "vrbase/GraphicsObject.h"
 #include "GL/glew.h"
 #include "PFCore/partflow/ParticleSetView.h"
+#include "PFGpu/GpuResource.h"
 
 namespace PFVis {
 namespace partflow {
@@ -35,6 +36,7 @@ private:
 	GLuint _vbo;
 
 	PFCore::partflow::ParticleSetView* _particleSet;
+	PFCore::GpuResource* _gpuResource;
 };
 
 }}

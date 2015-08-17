@@ -123,7 +123,7 @@ endforeach(CONF CMAKE_CONFIGURATION_TYPES)
 #------------------------------------------
 
 add_executable(${PROJECT_NAME} ${HEADERFILES} ${SOURCEFILES})
-target_link_libraries(${PROJECT_NAME} partflow partflow_gpu partflow_vis vrbase ${MinVR_LIBRARIES} ${All_LIB})
+target_link_libraries(${PROJECT_NAME} partflow partflow_vis vrbase ${MinVR_LIBRARIES} ${All_LIB})
 
 #------------------------------------------
 # Install Target

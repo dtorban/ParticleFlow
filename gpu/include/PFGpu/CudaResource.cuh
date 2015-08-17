@@ -17,8 +17,11 @@ public:
 	CudaResource(int deviceId, int resourceId);
 	virtual ~CudaResource();
 	
-	void map(void*& data);
+	bool map();
+	int getData(void** data);
 	void unmap();
+	
+	int getDeviceId();
 	
 private:
 	int _deviceId;

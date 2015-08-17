@@ -11,6 +11,7 @@
 
 #include "PFCore/env_cuda.h"
 #include "PFCore/partflow/ParticleSet.h"
+#include "PFGpu/GpuResource.h"
 
 namespace PFCore {
 namespace partflow {
@@ -19,10 +20,14 @@ class CudaParticleSet : public ParticleSet {
 public:
 	CudaParticleSet(int numParticles, int numAttributes, int numValues, int numVectors, int numSteps);
 	CudaParticleSet(int _deviceId, int numParticles, int numAttributes, int numValues, int numVectors, int numSteps);
+	CudaParticleSet(GpuResource* resource, int numParticles, int numAttributes, int numValues, int numVectors, int numSteps);
 	virtual ~CudaParticleSet();
 
 protected:
 	void copy(const ParticleSetView& particleSet, void* dst, const void* src, size_t size);
+	
+private:
+	bool _createdArrays;
 };
 
 } /* namespace partflow */

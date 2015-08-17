@@ -15,8 +15,11 @@ public:
 	GpuResource();
 	virtual ~GpuResource();
 
-	virtual void map(void*& data);
+	virtual bool map();
+	virtual int getData(void** data);
 	virtual void unmap();
+
+	virtual int getDeviceId();
 };
 
 } /* namespace PFCore */
