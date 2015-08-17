@@ -34,6 +34,7 @@ source/partflow/emitters/CudaEmitterFactory.cu
 source/partflow/vectorFields/CudaParticleField.cu
 source/partflow/CudaParticleSet.cu
 source/partflow/updaters/CudaParticleUpdater.cu
+source/CudaResource.cu
 )
 
 set (CUDA_HEADERFILES 
@@ -45,16 +46,21 @@ include/PFGpu/partflow/vectorFields/CudaParticleField.cuh
 include/PFGpu/partflow/CudaParticleSet.cuh
 include/PFGpu/partflow/updaters/CudaParticleUpdater.cuh
 include/PFGpu/CudaHelper.cuh
+include/PFGpu/CudaResource.cuh
 )
 
 set (SOURCEFILES 
 source/main.cpp
+source/GpuResource.cpp
+source/GpuResourceFactory.cpp
 )
 
 set (HEADERFILES 
 include/PFGpu/partflow/advectors/GpuVectorFieldAdvector.h
 include/PFGpu/partflow/emitters/GpuEmitterFactory.h
 include/PFGpu/partflow/GpuParticleUpdater.h
+include/PFGpu/GpuResource.h
+include/PFGpu/GpuResourceFactory.h
 )
 
 if (USE_CUDA)
