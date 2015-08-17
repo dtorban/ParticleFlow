@@ -14,8 +14,8 @@
 namespace PFVis {
 namespace partflow {
 
-ParticleScene::ParticleScene(vrbase::SceneRef scene, vrbase::GraphicsObject* graphicsObject, PFCore::partflow::ParticleSetView* particleSet, ParticleSceneUpdater* sceneUpdater, const vrbase::Box& boundingBox) : vrbase::SceneAdapter(scene), _graphicsObject(graphicsObject),
-			_vbo(0), _vao(0), _particleSet(particleSet), _sceneUpdater(sceneUpdater), _boundingBox(boundingBox) {
+ParticleScene::ParticleScene(vrbase::SceneRef scene, vrbase::GraphicsObject* graphicsObject, PFCore::partflow::ParticleSetView* particleSet, ParticleSceneUpdater* sceneUpdater, const vrbase::Box& boundingBox, int deviceId) : vrbase::SceneAdapter(scene), _graphicsObject(graphicsObject),
+			_vbo(0), _vao(0), _particleSet(particleSet), _sceneUpdater(sceneUpdater), _boundingBox(boundingBox), _deviceId(deviceId) {
 }
 
 ParticleScene::~ParticleScene() {
@@ -104,7 +104,7 @@ void ParticleScene::init() {
 
 	delete[] verts;
 
-	PFCore::GpuResourceFactory factory(0);
+	PFCore::GpuResourceFactory factory(_deviceId);
 	_gpuResource = factory.registerResource(_vbo);
 }
 

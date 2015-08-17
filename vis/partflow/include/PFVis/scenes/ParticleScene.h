@@ -21,7 +21,7 @@ namespace partflow {
 
 class ParticleScene : public vrbase::SceneAdapter {
 public:
-	ParticleScene(vrbase::SceneRef scene, vrbase::GraphicsObject* graphicsObject, PFCore::partflow::ParticleSetView* particleSet, ParticleSceneUpdater* sceneUpdater, const vrbase::Box& boundingBox);
+	ParticleScene(vrbase::SceneRef scene, vrbase::GraphicsObject* graphicsObject, PFCore::partflow::ParticleSetView* particleSet, ParticleSceneUpdater* sceneUpdater, const vrbase::Box& boundingBox, int deviceId = -1);
 	virtual ~ParticleScene();
 
 	void init();
@@ -36,6 +36,7 @@ private:
 	GLuint _vao;
 	GLuint _vbo;
 
+	int _deviceId;
 	PFVis::partflow::ParticleSceneUpdater* _sceneUpdater;
 
 	PFCore::partflow::ParticleSetView* _particleSet;

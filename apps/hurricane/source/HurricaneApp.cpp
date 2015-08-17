@@ -59,6 +59,8 @@ void HurricaneApp::init(MinVR::ConfigMapRef configMap) {
 	int sampleInterval = configMap->get<int>("SampleInterval", 10);
 	_iterationsPerAdvect = configMap->get<int>("IterationsPerAdvect", 1);
 	_computeThreadId = configMap->get<int>("ComputeThreadId", -1);
+	_dt = configMap->get("dt", 1.0f / 60.0f);
+	_noCopy = configMap->get<bool>("NoCopy", false);
 
 	vector<glm::vec3> vertices;
 	//first side
@@ -161,25 +163,13 @@ void HurricaneApp::init(MinVR::ConfigMapRef configMap) {
 
 	_deviceField->copy(*_localField);
 
-	_currentStep = 1;
+	//_currentStep = 1;
+	_currentParticleTime -= _dt*_iterationsPerAdvect;
 }
 
 void HurricaneApp::calculate()
 {
-	float dt = 1.0 / 60.0f;
-
-	/*AdvectorRef advector = AdvectorRef(new GpuVectorFieldAdvector<EulerAdvector<ParticleFieldVolume>,ParticleFieldVolume>(
-		EulerAdvector<ParticleFieldVolume>(),
-		ParticleFieldVolume(*_deviceField, 0)));*/
-	AdvectorRef advector = AdvectorRef(new GpuVectorFieldAdvector<RungaKutta4<ParticleFieldVolume>, ParticleFieldVolume>(
-		RungaKutta4<ParticleFieldVolume>(),
-		ParticleFieldVolume(*_deviceField, 0)));
-
-	advector->advectParticles(*_deviceSet, _currentStep, _currentParticleTime, dt, _iterationsPerAdvect);
-	_emitter->emitParticles(*_deviceSet, _currentStep);
-	_updater->updateParticles(*_deviceSet, _currentStep, _currentParticleTime);
-	_currentStep++;
-	_currentParticleTime += dt*_iterationsPerAdvect;
+	calculateParticleSet(_deviceSet);
 }
 
 class ComputeScene : public vrbase::SceneAdapter
@@ -214,7 +204,12 @@ SceneRef HurricaneApp::createAppScene(int threadId, MinVR::WindowRef window)
 
 		MeshScene* mesh = new MeshScene(_mesh);
 		SceneRef meshScene = SceneRef(mesh);
-		SceneRef scene = SceneRef(new ParticleScene(meshScene, mesh, &(*_localSet), this, Box(glm::vec3(startField.x, startField.y, startField.z), glm::vec3(startField.x, startField.y, startField.z) + glm::vec3(lenField.x, lenField.y, lenField.z))));
+		SceneRef scene = SceneRef(new ParticleScene(meshScene,
+				mesh,
+				&(*_localSet),
+				this,
+				Box(glm::vec3(startField.x, startField.y, startField.z), glm::vec3(startField.x, startField.y, startField.z) + glm::vec3(lenField.x, lenField.y, lenField.z))
+				, _noCopy ? 0 : -1));
 		scene = SceneRef(new BasicParticleRenderer(scene));
 
 		SceneRef land = SceneRef(new HeightMapScene(NULL, &_heightData[0], _shaderDir));
@@ -230,13 +225,21 @@ SceneRef HurricaneApp::createAppScene(int threadId, MinVR::WindowRef window)
 }
 
 void HurricaneApp::preDrawComputation(double synchronizedTime) {
-	/*if (_computeThreadId < 0)
+	_currentStep++;
+	_currentParticleTime += _dt*_iterationsPerAdvect;
+
+	if (_computeThreadId < 0 && !_noCopy)
 	{
 		calculate();
-	}*/
+	}
 
 	//_localSet->copy(_deviceSet->getView().filterByStep(_currentStep-1, 1));
 	//_localSet->copy(*_deviceSet);
+	if (!_noCopy)
+	{
+		_localSet->copy(*_deviceSet);
+	}
+
 
 	AppBase::preDrawComputation(synchronizedTime);
 }
@@ -279,9 +282,9 @@ DataLoaderRef HurricaneApp::createValueLoader(const std::string &dataDir, const 
 	return DataLoaderRef(new CompositeDataLoader(values));
 }
 
-void HurricaneApp::updateParticleSet(
-		PFCore::partflow::ParticleSetRef particleSet) {
-	float dt = 1.0 / 60.0f;
+void HurricaneApp::calculateParticleSet(PFCore::partflow::ParticleSetRef particleSet)
+{
+
 
 	/*AdvectorRef advector = AdvectorRef(new GpuVectorFieldAdvector<EulerAdvector<ParticleFieldVolume>,ParticleFieldVolume>(
 		EulerAdvector<ParticleFieldVolume>(),
@@ -290,9 +293,20 @@ void HurricaneApp::updateParticleSet(
 		RungaKutta4<ParticleFieldVolume>(),
 		ParticleFieldVolume(*_deviceField, 0)));
 
-	advector->advectParticles(*particleSet, _currentStep, _currentParticleTime, dt, _iterationsPerAdvect);
+	advector->advectParticles(*particleSet, _currentStep, _currentParticleTime, _dt, _iterationsPerAdvect);
 	_emitter->emitParticles(*particleSet, _currentStep);
 	_updater->updateParticles(*particleSet, _currentStep, _currentParticleTime);
-	_currentStep++;
-	_currentParticleTime += dt*_iterationsPerAdvect;
+
+}
+
+void HurricaneApp::updateParticleSet(
+		PFCore::partflow::ParticleSetRef particleSet) {
+	if (_noCopy)
+	{
+		calculateParticleSet(particleSet);
+	}
+	else if (_computeThreadId >= 0)
+	{
+		particleSet->copy(*_deviceSet);
+	}
 }

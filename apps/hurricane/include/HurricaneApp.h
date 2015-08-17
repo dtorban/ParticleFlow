@@ -30,6 +30,7 @@ public:
 private:
 	PFCore::input::DataLoaderRef createVectorLoader(const std::string &dataDir, const std::string &timeStep, int sampleInterval = 0);
 	PFCore::input::DataLoaderRef createValueLoader(const std::string &dataDir, const std::string &timeStep, const std::vector<std::string>& params);
+	void calculateParticleSet(PFCore::partflow::ParticleSetRef particleSet);
 
 	vrbase::MeshRef _mesh;
 	PFCore::partflow::ParticleSetRef _localSet;
@@ -44,6 +45,8 @@ private:
 	int _computeThreadId;
 	float _heightData[500*500];
 	std::string _shaderDir;
+	float _dt;
+	bool _noCopy;
 };
 
 #endif /* SOURCE_DIRECTORY__APPS_HURRICANE_INCLUDE_HURRICANEAPP_H_ */
