@@ -137,11 +137,16 @@ void HurricaneApp::init(MinVR::ConfigMapRef configMap) {
 	std::cout << fieldSize.x*fieldSize.y*fieldSize.z*fieldSize.t << std::endl;
 
 	GpuEmitterFactory emitterFactory;
-	_emitter = EmitterRef(emitterFactory.createBoxEmitter(startField, startField + lenField, 500));
+	EmitterRef emitter = EmitterRef(emitterFactory.createBoxEmitter(startField, startField + lenField, 500));
+	_emitters.push_back(emitter);
+	//emitter = EmitterRef(emitterFactory.createSphereEmitter(vec3(0.0f), 50, 500));
+	//_emitters.push_back(emitter);
+	//emitter = EmitterRef(emitterFactory.createSphereEmitter(vec3(200.0f), 100, 500));
+	//_emitters.push_back(emitter);
 
 	for (int f = 0; f < _deviceSet->getNumSteps(); f++)//for (int f = 0; f < _deviceSet->getNumSteps(); f++)
 	{
-		_emitter->emitParticles(*_deviceSet, f, true);
+		_emitters[0]->emitParticles(*_deviceSet, f, true);
 	}
 
 	_localSet->copy(*_deviceSet);
@@ -305,7 +310,14 @@ void HurricaneApp::calculateParticleSet(PFCore::partflow::ParticleSetRef particl
 		ParticleFieldVolume(*_deviceField, 0)));
 
 	advector->advectParticles(*particleSet, _currentStep, _currentParticleTime, _dt, _iterationsPerAdvect);
-	_emitter->emitParticles(*particleSet, _currentStep);
+
+	for (int f = 0; f < _emitters.size(); f++)
+	{
+		int emitterParticles = particleSet->getNumParticles()/_emitters.size();
+		ParticleSetView view = particleSet->getView().filterBySize(f*emitterParticles, emitterParticles);
+		_emitters[f]->emitParticles(view, _currentStep);
+	}
+
 	_updater->updateParticles(*particleSet, _currentStep, _currentParticleTime);
 
 }

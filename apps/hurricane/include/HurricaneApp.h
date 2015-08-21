@@ -15,6 +15,7 @@
 #include "PFCore/partflow/PartflowRef.h"
 #include "PFCore/input/DataLoader.h"
 #include "PFVis/scenes/update/ParticleSceneUpdater.h"
+#include <vector>
 
 class HurricaneApp : public PFVis::partflow::PartFlowApp, public PFVis::partflow::ParticleSceneUpdater {
 public:
@@ -37,7 +38,6 @@ private:
 	PFCore::partflow::ParticleSetRef _deviceSet;
 	PFCore::partflow::ParticleFieldRef _localField;
 	PFCore::partflow::ParticleFieldRef _deviceField;
-	PFCore::partflow::EmitterRef _emitter;
 	PFCore::partflow::ParticleUpdaterRef _updater;
 	int _iterationsPerAdvect;
 	int _currentStep;
@@ -47,6 +47,7 @@ private:
 	std::string _shaderDir;
 	float _dt;
 	bool _noCopy;
+	std::vector<PFCore::partflow::EmitterRef> _emitters;
 };
 
 #endif /* SOURCE_DIRECTORY__APPS_HURRICANE_INCLUDE_HURRICANEAPP_H_ */
