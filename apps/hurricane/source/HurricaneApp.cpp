@@ -28,6 +28,7 @@
 #include "vrbase/scenes/BlankScene.h"
 #include "vrbase/scenes/CompositeScene.h"
 #include "scenes/HeightMapScene.h"
+#include "vrbase/scenes/BufferedScene.h"
 
 using namespace vrbase;
 using namespace PFVis::partflow;
@@ -206,22 +207,27 @@ SceneRef HurricaneApp::createAppScene(int threadId, MinVR::WindowRef window)
 
 		MeshScene* mesh = new MeshScene(_mesh);
 		SceneRef meshScene = SceneRef(mesh);
-		SceneRef scene = SceneRef(new ParticleScene(meshScene,
-				mesh,
-				&(*_localSet),
-				this,
-				Box(glm::vec3(startField.x, startField.y, startField.z), glm::vec3(startField.x, startField.y, startField.z) + glm::vec3(lenField.x, lenField.y, lenField.z))
-				, _noCopy ? 0 : -1));
-		scene = SceneRef(new BasicParticleRenderer(scene));
+
+		SceneRef bufferedScenes[2];
+		for (int f = 0; f < 2; f++)
+		{
+			SceneRef scene = SceneRef(new ParticleScene(meshScene,
+					mesh,
+					&(*_localSet),
+					this,
+					Box(glm::vec3(startField.x, startField.y, startField.z), glm::vec3(startField.x, startField.y, startField.z) + glm::vec3(lenField.x, lenField.y, lenField.z))
+					, _noCopy ? 0 : -1));
+			scene = SceneRef(new BasicParticleRenderer(scene));
+			bufferedScenes[f] = scene;
+		}
 
 		SceneRef land = SceneRef(new HeightMapScene(NULL, &_heightData[0], _shaderDir));
 
 		world->addScene(land);
-		world->addScene(scene);
+		world->addScene(SceneRef(new BufferedScene(bufferedScenes[0], bufferedScenes[1])));
 //		world->addScene(SceneRef(new BasicRenderedScene(meshScene)));
-		scene = SceneRef(world);
 
-		return scene;
+		return SceneRef(world);
 	}
 
 }

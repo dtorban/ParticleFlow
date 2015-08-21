@@ -22,6 +22,7 @@ source/events/BasicMouseListener.cpp
 source/events/BasicTouchListener.cpp
 source/scenes/render/BasicRenderedScene.cpp
 source/scenes/BlankScene.cpp
+source/scenes/BufferedScene.cpp
 source/scenes/CenteredScene.cpp
 source/scenes/CompositeScene.cpp
 source/scenes/MeshScene.cpp
@@ -42,6 +43,7 @@ include/vrbase/events/BasicMouseListener.h
 include/vrbase/events/BasicTouchListener.h
 include/vrbase/scenes/render/BasicRenderedScene.h
 include/vrbase/scenes/BlankScene.h
+include/vrbase/scenes/BufferedScene.h
 include/vrbase/scenes/CenteredScene.h
 include/vrbase/scenes/CompositeScene.h
 include/vrbase/scenes/MeshScene.h
