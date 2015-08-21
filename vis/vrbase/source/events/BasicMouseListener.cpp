@@ -55,12 +55,12 @@ void BasicMouseListener::handleEvents(
 
 			if (_translating)
 			{
-				*(_transformation) = glm::translate(*(_transformation), glm::vec3(percentMove.x, percentMove.y, 0.0f));
+				*(_transformation) = glm::translate(glm::mat4(1.0f), glm::vec3(-percentMove.x, percentMove.y, 0.0f))*(*(_transformation));
 			}
 			else if (_rotating)
 			{
 				glm::vec2 norm = glm::normalize(percentMove);
-				*(_transformation) = glm::rotate(*(_transformation), -glm::length(percentMove)*360.0f, glm::vec3(norm.y, norm.x, 0.0f));
+				*(_transformation) =glm::rotate(glm::mat4(1.0f), -glm::length(percentMove)*360.0f, glm::vec3(norm.y, norm.x, 0.0f))*(*(_transformation));
 			}
 
 			_lastPosition = glm::vec2(pos);
