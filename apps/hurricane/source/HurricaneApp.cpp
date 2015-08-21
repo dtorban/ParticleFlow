@@ -158,10 +158,12 @@ void HurricaneApp::init(MinVR::ConfigMapRef configMap) {
 
 	_currentParticleTime = 0.0f;
 
+	_deviceField->copy(*_localField);
+
 	_updater = ParticleUpdaterRef(new GpuParticleUpdater<ParticleFieldUpdater>(ParticleFieldUpdater(ParticleFieldVolume(*_deviceField, 0))));
 	_updater->updateParticles(*_deviceSet, _currentStep, _currentParticleTime);
 
-	_deviceField->copy(*_localField);
+	_localSet->copy(*_deviceSet);
 
 	//_currentStep = 1;
 	_currentParticleTime -= _dt*_iterationsPerAdvect;
@@ -237,8 +239,11 @@ void HurricaneApp::preDrawComputation(double synchronizedTime) {
 	//_localSet->copy(*_deviceSet);
 	if (!_noCopy)
 	{
-		_localSet->copy(*_deviceSet);
+		_localSet->copy(_deviceSet->getView().filterByStep(_currentStep,1));
+		//_localSet->copy(*_deviceSet);
 	}
+
+	//std::cout << GL_MAX_VERTEX_ATTRIBS << std::endl;
 
 
 	AppBase::preDrawComputation(synchronizedTime);

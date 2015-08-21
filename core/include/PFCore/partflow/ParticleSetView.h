@@ -200,7 +200,7 @@ PF_ENV_API inline ParticleSetView& ParticleSetView::filterBySize(int startIndex,
 
 PF_ENV_API inline ParticleSetView& ParticleSetView::filterByStep(int startStep, int length) {
 	_startStep += startStep;
-	int len = getStepLength() - startStep;
+	int len = getStepLength() - calcStep(_startStep);
 	_stepLength = length < len ? length : len;
 	return *this;
 }
