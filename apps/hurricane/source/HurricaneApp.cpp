@@ -48,6 +48,7 @@ HurricaneApp::~HurricaneApp() {
 }
 
 void HurricaneApp::init(MinVR::ConfigMapRef configMap) {
+
 	PartFlowApp::init(configMap);
 
 	std::string dataDir = configMap->get("DataDir", "../data");
@@ -137,14 +138,14 @@ void HurricaneApp::init(MinVR::ConfigMapRef configMap) {
 	std::cout << fieldSize.x*fieldSize.y*fieldSize.z*fieldSize.t << std::endl;
 
 	GpuEmitterFactory emitterFactory;
-	EmitterRef emitter = EmitterRef(emitterFactory.createBoxEmitter(startField, startField + lenField, 500));
+	EmitterRef emitter = EmitterRef(emitterFactory.createBoxEmitter(startField, startField + lenField, numParticles));
 	_emitters.push_back(emitter);
 	//emitter = EmitterRef(emitterFactory.createSphereEmitter(vec3(0.0f), 50, 500));
 	//_emitters.push_back(emitter);
 	//emitter = EmitterRef(emitterFactory.createSphereEmitter(vec3(200.0f), 100, 500));
 	//_emitters.push_back(emitter);
 
-	for (int f = 0; f < _deviceSet->getNumSteps(); f++)//for (int f = 0; f < _deviceSet->getNumSteps(); f++)
+	for (int f = 0; f < _deviceSet->getNumSteps(); f++)
 	{
 		_emitters[0]->emitParticles(*_deviceSet, f, true);
 	}
@@ -197,6 +198,13 @@ private:
 
 SceneRef HurricaneApp::createAppScene(int threadId, MinVR::WindowRef window)
 {
+
+	int max_attribs;
+	glGetIntegerv (GL_MAX_VERTEX_ATTRIBS, &max_attribs);
+	int max_other;
+	glGetIntegerv (GL_MAX_VARYING_COMPONENTS, &max_other);
+	std::cout << "Varying: " << max_attribs << " " << max_other << std::endl;//>
+
 	if (threadId == _computeThreadId)
 	{
 		return SceneRef(new ComputeScene(this));
@@ -222,15 +230,16 @@ SceneRef HurricaneApp::createAppScene(int threadId, MinVR::WindowRef window)
 					this,
 					Box(glm::vec3(startField.x, startField.y, startField.z), glm::vec3(startField.x, startField.y, startField.z) + glm::vec3(lenField.x, lenField.y, lenField.z))
 					, _noCopy ? 0 : -1));
-			scene = SceneRef(new BasicParticleRenderer(scene));
+			scene = SceneRef(new BasicParticleRenderer(scene, *_localSet));
 			bufferedScenes[f] = scene;
 		}
 
 		SceneRef land = SceneRef(new HeightMapScene(NULL, &_heightData[0], _shaderDir));
 
 		world->addScene(land);
-		world->addScene(SceneRef(new BufferedScene(bufferedScenes[0], bufferedScenes[1])));
-//		world->addScene(SceneRef(new BasicRenderedScene(meshScene)));
+		//world->addScene(SceneRef(new BufferedScene(bufferedScenes[0], bufferedScenes[1])));
+		world->addScene(bufferedScenes[0]);
+		world->addScene(SceneRef(new BasicRenderedScene(meshScene)));
 
 		return SceneRef(world);
 	}

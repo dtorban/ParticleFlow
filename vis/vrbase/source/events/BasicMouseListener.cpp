@@ -7,7 +7,6 @@
  */
 
 #include <vrbase/events/BasicMouseListener.h>
-#include <iostream>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_access.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -47,7 +46,6 @@ void BasicMouseListener::handleEvents(
 		}
 		else if (events[f]->getName() == "mouse_pointer")
 		{
-			std::cout << events[f]->getName() << " " << _lastPosition.x << " " << _lastPosition.y << std::endl;
 			MinVR::WindowRef window = events[f]->getWindow();
 			glm::vec2 res(window->getWidth(), window->getHeight());
 			glm::vec2 pos(events[f]->get2DData());
@@ -68,12 +66,11 @@ void BasicMouseListener::handleEvents(
 		else if (events[f]->getName() == "mouse_scroll")
 		{
 			glm::vec2 scroll(events[f]->get2DData());
-			std::cout << scroll.x << " " << scroll.y << std::endl;
 			float zoom = scroll.y > 0 ? 1.5 : 1.0f/1.5;
 			*(_transformation) = glm::scale(*(_transformation), glm::vec3(zoom));
 		}
 		else {
-			//std::cout << events[f]->getName() << " " << _lastPosition.x << " " << _lastPosition.y << std::endl;
+			//std::cout << events[f]->getName() << std::endl;
 		}
 	}
 }

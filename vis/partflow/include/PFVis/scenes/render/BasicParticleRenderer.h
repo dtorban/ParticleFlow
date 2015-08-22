@@ -10,21 +10,22 @@
 #define BASICPARTICLERENDERER_H_
 
 #include "vrbase/scenes/render/BasicRenderedScene.h"
+#include "PFVis/scenes/ParticleScene.h"
 
-namespace PFCore {
+namespace PFVis {
 namespace partflow {
 
 class BasicParticleRenderer : public vrbase::BasicRenderedScene {
 public:
-	BasicParticleRenderer(vrbase::SceneRef scene);
+	BasicParticleRenderer(vrbase::SceneRef scene, const PFCore::partflow::ParticleSetView& particleSet);
 	BasicParticleRenderer(vrbase::SceneRef scene, vrbase::ShaderRef shader);
 	virtual ~BasicParticleRenderer();
 
 private:
-	vrbase::ShaderRef createBasicShader();
+	vrbase::ShaderRef createBasicShader(const PFCore::partflow::ParticleSetView& particleSet);
 };
 
 } /* namespace partflow */
-} /* namespace PFCore */
+} /* namespace PFVis */
 
 #endif /* BASICPARTICLERENDERER_H_ */

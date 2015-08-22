@@ -7,11 +7,14 @@
  */
 
 #include <PFVis/scenes/render/BasicParticleRenderer.h>
+#include <sstream>
 
-namespace PFCore {
+using namespace PFCore::partflow;
+
+namespace PFVis {
 namespace partflow {
 
-BasicParticleRenderer::BasicParticleRenderer(vrbase::SceneRef scene) : vrbase::BasicRenderedScene(scene, createBasicShader()) {
+BasicParticleRenderer::BasicParticleRenderer(vrbase::SceneRef scene, const PFCore::partflow::ParticleSetView& particleSet) : vrbase::BasicRenderedScene(scene, createBasicShader(particleSet)) {
 }
 
 BasicParticleRenderer::BasicParticleRenderer(vrbase::SceneRef scene, vrbase::ShaderRef shader) : vrbase::BasicRenderedScene(scene, shader) {
@@ -21,12 +24,72 @@ BasicParticleRenderer::~BasicParticleRenderer() {
 	// TODO Auto-generated destructor stub
 }
 
-vrbase::ShaderRef BasicParticleRenderer::createBasicShader() {
-	std::string vs_text =
-			"#version 330\n"
+vrbase::ShaderRef BasicParticleRenderer::createBasicShader(const PFCore::partflow::ParticleSetView& particleSet) {
+	int numSteps = particleSet.getNumSteps();
+
+	int loc = 0;
+
+	std::stringstream ss;
+	ss << "#version 330\n";
+	ss << "layout(location = 0) in vec3 pos;\n";
+	ss << "layout(location = 1) in vec3 normal;\n";
+	loc = 2;
+	ss << "layout(location = " << loc << ") in vec3 loc[];\n";
+	loc += numSteps;
+	if (particleSet.getNumAttributes() > 0)
+	{
+		ss << "layout(location = " << loc << ") in int attributes[];\n";
+		loc += numSteps*particleSet.getNumAttributes();
+	}
+	if (particleSet.getNumValues() > 0)
+	{
+		ss << "layout(location = " << loc << ") in float values[];\n";
+		loc += numSteps*particleSet.getNumValues();
+	}
+	if (particleSet.getNumVectors() > 0)
+	{
+		ss << "layout(location = " << loc << ") in vec3 vectors[];\n";
+	}
+	ss << "uniform mat4 Model;\n" <<
+			"uniform mat4 View;\n" <<
+			"uniform mat4 Projection;\n" <<
+			"\n" <<
+			"out vec3 p;\n" <<
+			"out vec3 v;\n" <<
+			"out vec3 N;\n" <<
+			"out float mag;\n" <<
+			"out vec3 velocity;\n" <<
+			"\n" <<
+			"void main() {\n" <<
+			"mag = length(vectors[0])/90.0;\n" <<
+			"velocity = vectors[0];\n" <<
+			"v = (View * Model * vec4((pos)*mag+loc[0],1.0)).xyz;\n";
+	if (numSteps > 1)
+	{
+		ss << "if (pos.x < 0.0) {v = (View * Model * vec4((pos)*mag+loc[0],1.0)).xyz;}\n" <<
+				"else if (pos.x > 0.0) {v = (View * Model * vec4((pos)*mag+loc[1],1.0)).xyz;}\n";
+	}
+	//ss << "gl_Position = Projection*View*Model*vec4((pos)*mag+loc[0],1.0);\n";
+	if (numSteps > 1)
+	{
+		ss << "if (pos.x < 0.0) {gl_Position = Projection*View*Model*vec4((pos)*mag+loc[0],1.0);}\n" <<
+				"else if (pos.x > 0.0) {gl_Position = Projection*View*Model*vec4((pos)*mag+loc[1],1.0);}\n" <<
+				"else {\n";
+	}
+	ss << "gl_Position = Projection*View*Model*vec4((pos)*mag+loc[0],1.0);\n";
+	if (numSteps > 1)
+	{
+		ss << "}\n";
+	}
+	ss << "N = normalize((View*Model*vec4(normal,0)).xyz);\n" <<
+			"}\n";
+
+	std::string vs_text = ss.str();
+			/*"#version 330\n"
 			"layout(location = 0) in vec3 pos;\n"
 			"layout(location = 1) in vec3 normal;\n"
 			"layout(location = 2) in vec3 loc;\n"
+			//"layout(location = 3) in float attributes[];\n"
 			//"layout(location = 3) in float values[];\n"
 			"layout(location = 3) in vec3 vectors[];\n"
 			"uniform mat4 Model;\n"
@@ -40,31 +103,12 @@ vrbase::ShaderRef BasicParticleRenderer::createBasicShader() {
 			"out vec3 velocity;\n"
 			"\n"
 			"void main() {\n"
-			"	//p = (Model * vec4(pos,1.0)).xyz;\n"
-			"p = pos*25.0;\n"
-			//"mag = values[0];\n"
 			"mag = length(vectors[0])/90.0;\n"
 			"velocity = vectors[0];\n"
-			//"v = (View * Model * vec4(pos,1.0)).xyz;\n"
-			//"gl_Position = Projection*View*Model*vec4(pos,1.0);\n"
 			"v = (View * Model * vec4((pos)*mag+loc,1.0)).xyz;\n"
 			"gl_Position = Projection*View*Model*vec4((pos)*mag+loc,1.0);\n"
 			"N = normalize((View*Model*vec4(normal,0)).xyz);\n"
-			"}\n";
-			/*
-    "#version 330\n"
-    "layout(location = 0) in vec3 position;"
-    "layout(location = 1) in vec3 normal;"
-    "uniform mat4 model;"
-    "uniform mat4 view;"
-    "uniform mat4 proj;"
-    "out vec3 fragColor, fragPosition, fragNormal;\n"
-    "void main() {\n"
-    "  fragColor = vec4(1.0,0.0,0.0,1.0);\n"
-    "  gl_Position = proj * view * model * vec4(position,1.0);\n"
-    "  fragPosition = (model * vec4(position,1.0)).xyz;\n"
-    "  fragNormal = normalize((transpose(inverse(model)) * vec4(normal,1.0)).xyz);\n"
-    "}\n";*/
+			"}\n";*/
 
     std::string fs_text =
     		"#version 330\n"
@@ -78,12 +122,9 @@ vrbase::ShaderRef BasicParticleRenderer::createBasicShader() {
 			"in vec3 velocity;\n"
     		"\n"
     		"void main() {\n"
-    		//"	FragColor = vec4(1.0,0,0,1.0);\n"
     		"	if (mag < 0.001) discard;\n"
     		"	vec3 lightPos = vec3(0.5, 0.0, 3.0);\n"
-    		"	vec4 color = vec4(mag, 1.0-mag, 0.0, 1.0);\n"//vec4(1.0,0,0,1.0);\n" //vec4(p.y,0.4,1.0,0.3);\n"
-    		//"	vec4 color = vec4(1.0-normalize(velocity),1.0);\n"//vec4(1.0,0,0,1.0);\n" //vec4(p.y,0.4,1.0,0.3);\n"
-    		//"	vec4 color = vec4(1.0,0,0,1.0);\n" //vec4(p.y,0.4,1.0,0.3);\n"
+    		"	vec4 color = vec4(mag, 1.0-mag, 0.0, 1.0);\n"
     		"	vec3 L = normalize(lightPos - v); \n"
     		"\n"
     		"    //calculate Ambient Term:\n"
@@ -98,4 +139,4 @@ vrbase::ShaderRef BasicParticleRenderer::createBasicShader() {
 }
 
 } /* namespace partflow */
-} /* namespace PFCore */
+} /* namespace PFVis */

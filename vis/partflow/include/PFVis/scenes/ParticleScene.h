@@ -30,6 +30,8 @@ public:
 	void draw(const vrbase::Camera& camera);
 
 private:
+	void updateVao();
+
 	vrbase::GraphicsObject* _graphicsObject;
 	vrbase::Box _boundingBox;
 
@@ -41,6 +43,8 @@ private:
 
 	PFCore::partflow::ParticleSetView* _particleSet;
 	PFCore::GpuResource* _gpuResource;
+	int _currentStep;
+	int _startLocation;
 };
 
 }}
