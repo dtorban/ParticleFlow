@@ -17,12 +17,16 @@ namespace partflow {
 
 class BasicParticleRenderer : public vrbase::BasicRenderedScene {
 public:
-	BasicParticleRenderer(vrbase::SceneRef scene, const PFCore::partflow::ParticleSetView& particleSet);
-	BasicParticleRenderer(vrbase::SceneRef scene, vrbase::ShaderRef shader);
+	BasicParticleRenderer(vrbase::SceneRef scene, const PFCore::partflow::ParticleSetView& particleSet, int *currentStep);
+	BasicParticleRenderer(vrbase::SceneRef scene, vrbase::ShaderRef shader, int *currentStep);
 	virtual ~BasicParticleRenderer();
+
+	void setShaderParameters(const vrbase::Camera& camera, vrbase::ShaderRef shader);
 
 private:
 	vrbase::ShaderRef createBasicShader(const PFCore::partflow::ParticleSetView& particleSet);
+	int *_currentStep;
+	int _numSteps;
 };
 
 } /* namespace partflow */

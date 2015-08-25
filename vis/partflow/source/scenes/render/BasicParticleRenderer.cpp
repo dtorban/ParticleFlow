@@ -14,10 +14,10 @@ using namespace PFCore::partflow;
 namespace PFVis {
 namespace partflow {
 
-BasicParticleRenderer::BasicParticleRenderer(vrbase::SceneRef scene, const PFCore::partflow::ParticleSetView& particleSet) : vrbase::BasicRenderedScene(scene, createBasicShader(particleSet)) {
+BasicParticleRenderer::BasicParticleRenderer(vrbase::SceneRef scene, const PFCore::partflow::ParticleSetView& particleSet, int *currentStep) : vrbase::BasicRenderedScene(scene, createBasicShader(particleSet)), _currentStep(currentStep) {
 }
 
-BasicParticleRenderer::BasicParticleRenderer(vrbase::SceneRef scene, vrbase::ShaderRef shader) : vrbase::BasicRenderedScene(scene, shader) {
+BasicParticleRenderer::BasicParticleRenderer(vrbase::SceneRef scene, vrbase::ShaderRef shader, int *currentStep) : vrbase::BasicRenderedScene(scene, shader), _currentStep(currentStep) {
 }
 
 BasicParticleRenderer::~BasicParticleRenderer() {
@@ -25,7 +25,8 @@ BasicParticleRenderer::~BasicParticleRenderer() {
 }
 
 vrbase::ShaderRef BasicParticleRenderer::createBasicShader(const PFCore::partflow::ParticleSetView& particleSet) {
-	int numSteps = particleSet.getNumSteps();
+	_numSteps = particleSet.getNumSteps();
+	int numSteps = 2;//particleSet.getNumSteps()-1;
 
 	int loc = 0;
 
@@ -53,30 +54,39 @@ vrbase::ShaderRef BasicParticleRenderer::createBasicShader(const PFCore::partflo
 	ss << "uniform mat4 Model;\n" <<
 			"uniform mat4 View;\n" <<
 			"uniform mat4 Projection;\n" <<
+			"uniform int currentStep;\n" <<
+			//"uniform int numParticles;\n" <<
 			"\n" <<
 			"out vec3 p;\n" <<
 			"out vec3 v;\n" <<
 			"out vec3 N;\n" <<
 			"out float mag;\n" <<
 			"out vec3 velocity;\n" <<
+			"flat out int InstanceID;\n" <<
 			"\n" <<
 			"void main() {\n" <<
-			"mag = length(vectors[0])/90.0;\n" <<
+			"int numParticles = " << particleSet.getNumParticles() << ";\n" <<
+			"int numSteps = " << particleSet.getNumSteps() << ";\n" <<
+			"InstanceID = gl_InstanceID;\n" <<
+			"vec3 vertLoc = loc[0]-(loc[0]-loc[1])/2.0;\n" <<
+			//"if (InstanceID < numParticles) { vertLoc = loc[1]-(loc[1]-loc[2])/2.0;}\n" <<
+			"mag = length((vectors[0]+vectors[1])/2.0)/90.0;\n" <<
 			"velocity = vectors[0];\n" <<
-			"v = (View * Model * vec4((pos)*mag+loc[0],1.0)).xyz;\n";
+			"v = (View * Model * vec4((pos)*mag+vertLoc,1.0)).xyz;\n";
 	if (numSteps > 1)
 	{
-		ss << "if (pos.x < 0.0) {v = (View * Model * vec4((pos)*mag+loc[0],1.0)).xyz;}\n" <<
-				"else if (pos.x > 0.0) {v = (View * Model * vec4((pos)*mag+loc[1],1.0)).xyz;}\n";
+		ss << "if (pos.x < 0.0) {v = (View * Model * vec4((pos)*mag+vertLoc,1.0)).xyz;}\n" <<
+				//"else if (pos.x > 0.0) {v = (View * Model * vec4((pos)*mag+loc[1],1.0)).xyz;}\n";
+				"";
 	}
 	//ss << "gl_Position = Projection*View*Model*vec4((pos)*mag+loc[0],1.0);\n";
 	if (numSteps > 1)
 	{
-		ss << "if (pos.x < 0.0) {gl_Position = Projection*View*Model*vec4((pos)*mag+loc[0],1.0);}\n" <<
-				"else if (pos.x > 0.0) {gl_Position = Projection*View*Model*vec4((pos)*mag+loc[1],1.0);}\n" <<
+		ss << "if (pos.x < 0.0) {gl_Position = Projection*View*Model*vec4((pos)*mag+vertLoc,1.0);}\n" <<
+				//"else if (pos.x > 0.0) {gl_Position = Projection*View*Model*vec4((pos)*mag+loc[1],1.0);}\n" <<
 				"else {\n";
 	}
-	ss << "gl_Position = Projection*View*Model*vec4((pos)*mag+loc[0],1.0);\n";
+	ss << "gl_Position = Projection*View*Model*vec4((pos)*mag+vertLoc,1.0);\n";
 	if (numSteps > 1)
 	{
 		ss << "}\n";
@@ -115,16 +125,20 @@ vrbase::ShaderRef BasicParticleRenderer::createBasicShader(const PFCore::partflo
     		"layout(location = 0) out vec4 FragColor;\n"
     		"\n"
     		"uniform mat4 View;\n"
+			"uniform int currentStep;\n"
     		"in vec3 N;\n"
     		"in vec3 v;\n"
     		"in vec3 p;\n"
     		"in float mag;\n"
 			"in vec3 velocity;\n"
+    		"flat in int InstanceID;\n"
     		"\n"
     		"void main() {\n"
     		"	if (mag < 0.001) discard;\n"
     		"	vec3 lightPos = vec3(0.5, 0.0, 3.0);\n"
     		"	vec4 color = vec4(mag, 1.0-mag, 0.0, 1.0);\n"
+    		//"   if (InstanceID < 10240) { color = vec4(0.0, 0.0, 1.0, 1.0); }\n"
+    		//"   if (InstanceID < 10240) { color = vec4(0.0, 0.0, 1.0, 1.0); }\n"
     		"	vec3 L = normalize(lightPos - v); \n"
     		"\n"
     		"    //calculate Ambient Term:\n"
@@ -136,6 +150,13 @@ vrbase::ShaderRef BasicParticleRenderer::createBasicShader(const PFCore::partflo
     		"}\n";
 
     return vrbase::ShaderRef(new vrbase::Shader(vs_text, fs_text));
+}
+
+void BasicParticleRenderer::setShaderParameters(const vrbase::Camera& camera,
+		vrbase::ShaderRef shader) {
+	vrbase::BasicRenderedScene::setShaderParameters(camera, shader);
+
+	shader->setParameter("currentStep", (*_currentStep)%_numSteps);
 }
 
 } /* namespace partflow */

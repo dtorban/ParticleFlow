@@ -30,12 +30,12 @@ public:
 	void draw(const vrbase::Camera& camera);
 
 private:
-	void updateVao();
+	void updateVao(int positionOffset);
 
 	vrbase::GraphicsObject* _graphicsObject;
 	vrbase::Box _boundingBox;
 
-	GLuint _vao;
+	GLuint _vao[2];
 	GLuint _vbo;
 
 	int _deviceId;

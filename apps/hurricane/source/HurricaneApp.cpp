@@ -230,7 +230,7 @@ SceneRef HurricaneApp::createAppScene(int threadId, MinVR::WindowRef window)
 					this,
 					Box(glm::vec3(startField.x, startField.y, startField.z), glm::vec3(startField.x, startField.y, startField.z) + glm::vec3(lenField.x, lenField.y, lenField.z))
 					, _noCopy ? 0 : -1));
-			scene = SceneRef(new BasicParticleRenderer(scene, *_localSet));
+			scene = SceneRef(new BasicParticleRenderer(scene, *_localSet, &_currentStep));
 			bufferedScenes[f] = scene;
 		}
 

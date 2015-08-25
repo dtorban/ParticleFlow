@@ -15,13 +15,13 @@ namespace PFVis {
 namespace partflow {
 
 ParticleScene::ParticleScene(vrbase::SceneRef scene, vrbase::GraphicsObject* graphicsObject, PFCore::partflow::ParticleSetView* particleSet, ParticleSceneUpdater* sceneUpdater, const vrbase::Box& boundingBox, int deviceId) : vrbase::SceneAdapter(scene), _graphicsObject(graphicsObject),
-			_vbo(0), _vao(0), _particleSet(particleSet), _sceneUpdater(sceneUpdater), _boundingBox(boundingBox), _deviceId(deviceId), _gpuResource(0) {
+			_vbo(0), _particleSet(particleSet), _sceneUpdater(sceneUpdater), _boundingBox(boundingBox), _deviceId(deviceId), _gpuResource(0) {
 }
 
 ParticleScene::~ParticleScene() {
 	if (_gpuResource != 0)
 	{
-		glDeleteVertexArrays(1, &_vao);
+		glDeleteVertexArrays(2, _vao);
 		glDeleteBuffers(1, &_vbo);
 		delete _gpuResource;
 	}
@@ -34,7 +34,7 @@ void ParticleScene::init() {
 
 	getInnerScene()->init();
 
-	glGenVertexArrays(1, &_vao);
+	glGenVertexArrays(2, _vao);
 	glGenBuffers(1, &_vbo);
 
 	glBindBuffer(GL_ARRAY_BUFFER, _vbo);
@@ -43,13 +43,17 @@ void ParticleScene::init() {
 			+ sizeof(GLfloat)*_particleSet->getNumValues()
 			+ sizeof(GLfloat)*3*_particleSet->getNumVectors()), 0, GL_DYNAMIC_DRAW);
 
-	int loc = 0;
-	glBindVertexArray(_vao);
-	_graphicsObject->generateVaoAttributes(loc);
+	for (int f = 0; f < 2; f++)
+	{
+		int loc = 0;
+		glBindVertexArray(_vao[f]);
+		_graphicsObject->generateVaoAttributes(loc);
 
-	glBindBuffer(GL_ARRAY_BUFFER, _vbo);
-	_startLocation = ++loc;
-	updateVao();
+		glBindBuffer(GL_ARRAY_BUFFER, _vbo);
+		_startLocation = ++loc;
+		updateVao(f);
+	}
+
 	/*glEnableVertexAttribArray(_startLocation);
 	glVertexAttribPointer(loc, 3, GL_FLOAT, GL_FALSE, 3*sizeof(GLfloat), (char*)0 + 0*sizeof(GLfloat)*3);
 	glVertexAttribDivisorARB(loc, 1);
@@ -132,41 +136,51 @@ const vrbase::Box ParticleScene::getBoundingBox() {
 }
 
 void ParticleScene::draw(const vrbase::Camera& camera) {
-	glBindVertexArray(_vao);
+	for (int f = 0; f < 2; f++)
+	{
+		glBindVertexArray(_vao[f]);
 
-	updateVao();
+		int numIndices = _graphicsObject->bindIndices();
 
-	int numIndices = _graphicsObject->bindIndices();
+		int numInstances = f == 0 ? _particleSet->getNumParticles() : _particleSet->getNumParticles()*(_particleSet->getNumSteps()-1);
 
-	int numInstances = _particleSet->getNumParticles();
-	glDrawElementsInstancedBaseVertex(GL_TRIANGLES,
-			numIndices,
-			GL_UNSIGNED_INT,
-			(void*)(sizeof(unsigned int) * 0),
-			numInstances,
-			0);
+		if (numInstances > 0)
+		{
+			glDrawElementsInstancedBaseVertex(GL_TRIANGLES,
+					numIndices,
+					GL_UNSIGNED_INT,
+					(void*)(sizeof(unsigned int) * 0),
+					numInstances,
+					0);
+		}
 
-	glBindVertexArray(0);
+		glBindVertexArray(0);
+	}
 }
 
-void ParticleScene::updateVao() {
+void ParticleScene::updateVao(int positionOffset) {
+
+	_currentStep = 0;
+
 	int loc = _startLocation-1;
 	glBindBuffer(GL_ARRAY_BUFFER, _vbo);
-	for (int i = 0; i < _particleSet->getNumSteps(); i++)
+	for (int i = 0; i < 2; i++)
 	{
+		int step = (_particleSet->getNumSteps()+positionOffset-i)%_particleSet->getNumSteps();
 		glEnableVertexAttribArray(++loc);
-		glVertexAttribPointer(loc, 3, GL_FLOAT, GL_FALSE, 3*sizeof(GLfloat), (char*)0 + ((_currentStep-i+_particleSet->getNumSteps())%_particleSet->getNumSteps())*_particleSet->getNumParticles()*sizeof(GLfloat)*3);
+		glVertexAttribPointer(loc, 3, GL_FLOAT, GL_FALSE, 3*sizeof(GLfloat), (char*)0 + step*_particleSet->getNumParticles()*sizeof(GLfloat)*3);
 		glVertexAttribDivisorARB(loc, 1);
 	}
 
 	int startPos = _particleSet->getNumSteps()*_particleSet->getNumParticles()*3*sizeof(GLfloat);
 
-	for (int i = 0; i < _particleSet->getNumSteps(); i++)
+	for (int i = 0; i < 2; i++)
 	{
+		int step = (_particleSet->getNumSteps()+positionOffset-i)%_particleSet->getNumSteps();
 		for (int f = 0; f < _particleSet->getNumVectors(); f++)
 		{
 			glEnableVertexAttribArray(++loc);
-			glVertexAttribPointer(loc, 3, GL_FLOAT, GL_FALSE, 3*sizeof(GLfloat), (char*)0 + startPos + 3*sizeof(GLfloat)*(((_currentStep-i+_particleSet->getNumSteps())%_particleSet->getNumSteps())*_particleSet->getNumParticles()*_particleSet->getNumVectors() + _particleSet->getNumParticles()*f));
+			glVertexAttribPointer(loc, 3, GL_FLOAT, GL_FALSE, 3*sizeof(GLfloat), (char*)0 + startPos + 3*sizeof(GLfloat)*(step*_particleSet->getNumParticles()*_particleSet->getNumVectors() + _particleSet->getNumParticles()*f));
 			glVertexAttribDivisorARB(loc, 1);
 		}
 	}
