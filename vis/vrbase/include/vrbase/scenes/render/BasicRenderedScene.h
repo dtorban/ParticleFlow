@@ -21,7 +21,7 @@ public:
 	virtual ~BasicRenderedScene();
 
 	void init();
-	virtual void draw(const Camera& camera);
+	virtual void draw(const SceneContext& context);
 
 	void setShader(ShaderRef shader);
 

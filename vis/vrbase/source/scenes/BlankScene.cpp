@@ -19,7 +19,7 @@ const Box BlankScene::getBoundingBox() {
 	return Box();
 }
 
-void BlankScene::draw(const Camera& camera) {
+void BlankScene::draw(const SceneContext& context) {
 }
 
 SceneRef BlankScene::instance() {

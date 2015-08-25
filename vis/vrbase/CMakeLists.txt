@@ -27,6 +27,7 @@ source/scenes/CenteredScene.cpp
 source/scenes/CompositeScene.cpp
 source/scenes/MeshScene.cpp
 source/scenes/SceneAdapter.cpp
+source/scenes/SceneContext.cpp
 source/textures/DataTexture.cpp
 source/AppBase.cpp
 source/Box.cpp
@@ -48,6 +49,7 @@ include/vrbase/scenes/CenteredScene.h
 include/vrbase/scenes/CompositeScene.h
 include/vrbase/scenes/MeshScene.h
 include/vrbase/scenes/SceneAdapter.h
+include/vrbase/scenes/SceneContext.h
 include/vrbase/textures/DataTexture.h
 include/vrbase/AppBase.h
 include/vrbase/Box.h

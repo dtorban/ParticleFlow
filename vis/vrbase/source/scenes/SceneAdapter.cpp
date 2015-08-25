@@ -32,8 +32,8 @@ const Box SceneAdapter::getBoundingBox() {
 	return _scene->getBoundingBox();
 }
 
-void SceneAdapter::draw(const Camera& camera) {
-	return _scene->draw(camera);
+void SceneAdapter::draw(const SceneContext& context) {
+	return _scene->draw(context);
 }
 
 SceneRef SceneAdapter::getInnerScene()

@@ -34,8 +34,8 @@ const Box BufferedScene::getBoundingBox() {
 	return _scenes[_currentBuffer%2]->getBoundingBox();
 }
 
-void BufferedScene::draw(const Camera& camera) {
-	_scenes[_currentBuffer%2]->draw(camera);
+void BufferedScene::draw(const SceneContext& context) {
+	_scenes[_currentBuffer%2]->draw(context);
 }
 
 } /* namespace vrbase */

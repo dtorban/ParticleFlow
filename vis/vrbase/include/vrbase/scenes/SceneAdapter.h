@@ -23,7 +23,7 @@ public:
 	virtual int getVersion() const;
 
 	virtual const Box getBoundingBox();
-	virtual void draw(const Camera& camera);
+	virtual void draw(const SceneContext& context);
 
 protected:
 	SceneRef getInnerScene();

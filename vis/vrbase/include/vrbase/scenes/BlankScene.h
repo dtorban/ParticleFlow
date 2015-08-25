@@ -18,7 +18,7 @@ public:
 	virtual ~BlankScene();
 
 	const Box getBoundingBox();
-	void draw(const Camera& camera);
+	void draw(const SceneContext& context);
 
 	static SceneRef instance();
 };

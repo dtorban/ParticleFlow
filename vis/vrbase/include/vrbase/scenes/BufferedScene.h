@@ -22,7 +22,7 @@ public:
 	void updateFrame();
 
 	const Box getBoundingBox();
-	void draw(const Camera& camera);
+	void draw(const SceneContext& context);
 
 private:
 	SceneRef _scenes[2];

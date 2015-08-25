@@ -10,7 +10,7 @@
 #define SCENE_H_
 
 #include "vrbase/Box.h"
-#include "vrbase/Camera.h"
+#include "vrbase/scenes/SceneContext.h"
 #include <memory>
 
 namespace vrbase {
@@ -27,7 +27,7 @@ public:
 	virtual int getVersion() const { return 0; }
 
 	virtual const Box getBoundingBox() = 0;
-	virtual void draw(const Camera& camera) = 0;
+	virtual void draw(const SceneContext& context) = 0;
 
 };
 

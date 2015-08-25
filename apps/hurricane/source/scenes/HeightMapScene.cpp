@@ -101,15 +101,15 @@ void HeightMapScene::init() {
 void HeightMapScene::updateFrame() {
 }
 
-void HeightMapScene::draw(const vrbase::Camera& camera) {
+void HeightMapScene::draw(const vrbase::SceneContext& context) {
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, _texture->getId());
 
 
 
-	glm::mat4 projection = glm::mat4(camera.getProjetionMatrix());
-	glm::mat4 view = glm::mat4(camera.getViewMatrix());
+	glm::mat4 projection = glm::mat4(context.getCamera().getProjetionMatrix());
+	glm::mat4 view = glm::mat4(context.getCamera().getViewMatrix());
 
 	/*_shadowShader->useProgram();
 	glm::mat4 shadow = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 0.0f, 1.0f));
@@ -128,7 +128,7 @@ void HeightMapScene::draw(const vrbase::Camera& camera) {
 	model = glm::scale(model, glm::vec3(1.5f, 1.5f, 1.5f));
 	model = glm::scale(model, glm::vec3(4.0f, 4.0f, 4.0f));*/
 
-	glm::mat4 model = camera.getObjectToWorldMatrix();
+	glm::mat4 model = context.getCamera().getObjectToWorldMatrix();
 	model = glm::translate(model, glm::vec3(0.0, 0.0f, -_boundingBox->getHigh().z/2.0));
 	model = glm::scale(model, _boundingBox->getHigh());
 	model = glm::translate(model, glm::vec3(0.5));

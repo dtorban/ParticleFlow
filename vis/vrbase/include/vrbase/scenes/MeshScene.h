@@ -26,7 +26,7 @@ public:
 	int getVersion() const;
 
 	const Box getBoundingBox();
-	void draw(const Camera& camera);
+	void draw(const SceneContext& context);
 
 	void generateVaoAttributes(int &location);
 	int bindIndices();

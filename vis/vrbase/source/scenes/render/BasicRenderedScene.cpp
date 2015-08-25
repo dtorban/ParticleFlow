@@ -87,10 +87,12 @@ void BasicRenderedScene::init() {
     _shader->init();
 }
 
-void BasicRenderedScene::draw(const Camera& camera) {
+void BasicRenderedScene::draw(const SceneContext& context) {
 	_shader->useProgram();
-	setShaderParameters(camera, _shader);
-	getInnerScene()->draw(camera);
+	setShaderParameters(context.getCamera(), _shader);
+	SceneContext newContext(context);
+	newContext.setShader(*_shader);
+	getInnerScene()->draw(newContext);
 }
 
 void BasicRenderedScene::setShader(ShaderRef shader) {

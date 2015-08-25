@@ -125,7 +125,7 @@ void MeshScene::deleteVBO() {
 	}
 }
 
-void  MeshScene::draw(const Camera& camera) {
+void  MeshScene::draw(const SceneContext& context) {
 	glBindVertexArray(_vao);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexVbo);
 

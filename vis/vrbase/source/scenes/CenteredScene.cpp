@@ -21,8 +21,8 @@ CenteredScene::~CenteredScene() {
 	// TODO Auto-generated destructor stub
 }
 
-void CenteredScene::draw(const Camera& camera) {
-	glm::mat4 objectToWorld = camera.getObjectToWorldMatrix();
+void CenteredScene::draw(const SceneContext& context) {
+	glm::mat4 objectToWorld = context.getCamera().getObjectToWorldMatrix();
 
 	const Box box = getInnerScene()->getBoundingBox();
 	float size = glm::length((box.getHigh()-box.getLow()));
@@ -35,7 +35,10 @@ void CenteredScene::draw(const Camera& camera) {
 	objectToWorld = glm::scale(objectToWorld, glm::vec3(1.0f/size));
 	objectToWorld = glm::translate(objectToWorld, -box.center());
 
-	getInnerScene()->draw(WorldCamera(camera, objectToWorld));
+	SceneContext newContext(context);
+	WorldCamera newCamera(context.getCamera(), objectToWorld);
+	newContext.setCamera(newCamera);
+	getInnerScene()->draw(newContext);
 }
 
 } /* namespace vrbase */

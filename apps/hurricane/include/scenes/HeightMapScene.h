@@ -22,7 +22,7 @@ public:
 	void init();
 	void updateFrame();
 	const vrbase::Box getBoundingBox();
-	void draw(const vrbase::Camera& camera);
+	void draw(const vrbase::SceneContext& context);
 
 
 private:

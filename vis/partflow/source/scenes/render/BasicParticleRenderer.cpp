@@ -61,12 +61,14 @@ vrbase::ShaderRef BasicParticleRenderer::createBasicShader(const PFCore::partflo
 			"out vec3 v;\n" <<
 			"out vec3 N;\n" <<
 			"out float mag;\n" <<
+			"flat out int numSteps;\n" <<
 			"out vec3 velocity;\n" <<
 			"flat out int InstanceID;\n" <<
+			"flat out int numParticles;\n" <<
 			"\n" <<
 			"void main() {\n" <<
-			"int numParticles = " << particleSet.getNumParticles() << ";\n" <<
-			"int numSteps = " << particleSet.getNumSteps() << ";\n" <<
+			"numParticles = " << particleSet.getNumParticles() << ";\n" <<
+			"numSteps = " << particleSet.getNumSteps() << ";\n" <<
 			"InstanceID = gl_InstanceID;\n" <<
 			"vec3 vertLoc = loc[0]-(loc[0]-loc[1])/2.0;\n" <<
 			//"if (InstanceID < numParticles) { vertLoc = loc[1]-(loc[1]-loc[2])/2.0;}\n" <<
@@ -130,11 +132,15 @@ vrbase::ShaderRef BasicParticleRenderer::createBasicShader(const PFCore::partflo
     		"in vec3 v;\n"
     		"in vec3 p;\n"
     		"in float mag;\n"
+    		"flat in int numSteps;\n"
 			"in vec3 velocity;\n"
     		"flat in int InstanceID;\n"
+			"flat in int numParticles;\n"
     		"\n"
     		"void main() {\n"
     		"	if (mag < 0.001) discard;\n"
+    		"   int step = InstanceID/numParticles;\n"
+    		"	if (mod(currentStep, numSteps) == step) discard;\n"
     		"	vec3 lightPos = vec3(0.5, 0.0, 3.0);\n"
     		"	vec4 color = vec4(mag, 1.0-mag, 0.0, 1.0);\n"
     		//"   if (InstanceID < 10240) { color = vec4(0.0, 0.0, 1.0, 1.0); }\n"

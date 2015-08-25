@@ -6,24 +6,19 @@
  * 		Dan Orban (dtorban)
  */
 
-#ifndef CENTEREDSCENE_H_
-#define CENTEREDSCENE_H_
-
-#include "vrbase/scenes/SceneAdapter.h"
+#include <vrbase/scenes/SceneContext.h>
 
 namespace vrbase {
 
-class CenteredScene : public SceneAdapter {
-public:
-	CenteredScene(SceneRef scene, glm::mat4* transformation = 0);
-	virtual ~CenteredScene();
+SceneContext::SceneContext() : _camera(0), _shader(0) {
+}
 
-	void draw(const SceneContext& context);
+SceneContext::SceneContext(const SceneContext& context) {
+	_camera = context._camera;
+	_shader = context._shader;
+}
 
-private:
-	glm::mat4* _transformation;
-};
+SceneContext::~SceneContext() {
+}
 
 } /* namespace vrbase */
-
-#endif /* CENTEREDSCENE_H_ */

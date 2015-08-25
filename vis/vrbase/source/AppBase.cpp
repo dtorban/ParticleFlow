@@ -66,7 +66,10 @@ void AppBase::preDrawComputation(double synchronizedTime) {
 void AppBase::drawGraphics(int threadId, MinVR::AbstractCameraRef camera,
 		MinVR::WindowRef window) {
 	MinVR::CameraOffAxis* offAxisCamera = dynamic_cast<MinVR::CameraOffAxis*>(camera.get());
-	_threadScenes[threadId]->draw(OffAxisCamera(*offAxisCamera));
+	SceneContext context;
+	OffAxisCamera contextCamera(*offAxisCamera);
+	context.setCamera(contextCamera);
+	_threadScenes[threadId]->draw(context);
 }
 
 void AppBase::initializeContext(int threadId, MinVR::WindowRef window) {

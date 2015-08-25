@@ -135,7 +135,7 @@ const vrbase::Box ParticleScene::getBoundingBox() {
 	return _boundingBox;
 }
 
-void ParticleScene::draw(const vrbase::Camera& camera) {
+void ParticleScene::draw(const vrbase::SceneContext& context) {
 	for (int f = 0; f < 2; f++)
 	{
 		glBindVertexArray(_vao[f]);

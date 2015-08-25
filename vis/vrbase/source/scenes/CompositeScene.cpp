@@ -55,10 +55,10 @@ const Box CompositeScene::getBoundingBox() {
 	return box;
 }
 
-void CompositeScene::draw(const Camera& camera) {
+void CompositeScene::draw(const SceneContext& context) {
 	for (int f = 0; f < _scenes.size(); f++)
 	{
-		_scenes[f]->draw(camera);
+		_scenes[f]->draw(context);
 	}
 }
 
