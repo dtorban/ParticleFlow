@@ -29,6 +29,7 @@
 #include "vrbase/scenes/CompositeScene.h"
 #include "scenes/HeightMapScene.h"
 #include "vrbase/scenes/BufferedScene.h"
+#include <math.h>
 
 using namespace vrbase;
 using namespace PFVis::partflow;
@@ -64,6 +65,54 @@ void HurricaneApp::init(MinVR::ConfigMapRef configMap) {
 	_dt = configMap->get("dt", 1.0f / 60.0f);
 	_noCopy = configMap->get<bool>("NoCopy", false);
 
+#define PI 3.14159265
+
+	float n = 20.0f;
+	float k = 3.0f;
+
+	//cout << "SIN: " << cos(2.0f*PI*k/n) << " " << sin(2.0f*PI*k/n) << endl;
+
+	//exit(0);
+
+	vector<glm::vec3> vertices;
+	//streamline
+
+	for (int k = 0; k < n; k++)
+	{
+			vertices.push_back(glm::vec3(cos(2.0f*PI*k/n), sin(2.0f*PI*k/n), 0.0f));
+			vertices.push_back(glm::vec3(cos(2.0f*PI*k/n), sin(2.0f*PI*k/n), 1.0f));
+			vertices.push_back(glm::vec3(cos(2.0f*PI*(k+1)/n), sin(2.0f*PI*(k+1)/n), 0.0f));
+			vertices.push_back(glm::vec3(cos(2.0f*PI*(k+1)/n), sin(2.0f*PI*(k+1)/n), 0.0f));
+			vertices.push_back(glm::vec3(cos(2.0f*PI*k/n), sin(2.0f*PI*k/n), 1.0f));
+			vertices.push_back(glm::vec3(cos(2.0f*PI*(k+1)/n), sin(2.0f*PI*(k+1)/n), 1.0f));
+	}
+
+	vector<unsigned int> indices;
+	for (int f = 0; f < vertices.size(); f++)
+	{
+		indices.push_back(f);
+	}
+
+	/*for (int f = 0; f < 2; f++)
+	{
+		for (int k = 0; k < n; k++)
+		{
+			vertices.push_back(glm::vec3(cos(2.0f*PI*k/n), sin(2.0f*PI*k/n), 1.0f*f));
+		}
+	}
+
+	vector<unsigned int> indices;
+	for (int f = 0; f < n; f++)
+	{
+		indices.push_back(f);
+		indices.push_back(f+1);
+		indices.push_back(2*n+f);
+		indices.push_back(f+1);
+		indices.push_back(2*n+f+1);
+		indices.push_back(2*n+f);
+	}*/
+
+	/*
 	vector<glm::vec3> vertices;
 	//first side
 	vertices.push_back(glm::vec3(-1.0f, 0.0, 0.0));
@@ -98,6 +147,7 @@ void HurricaneApp::init(MinVR::ConfigMapRef configMap) {
 	vertices.push_back(glm::vec3(0.0f, 0.0, -1.0));
 	vertices.push_back(glm::vec3(0.0f, 1.0, 0.0));
 	vertices.push_back(glm::vec3(-1.0f, 0.0, 0.0));
+	*/
 
 	// quad
 	/*vertices.push_back(glm::vec3(-1.0f, -1.0, 0.0));
@@ -113,11 +163,11 @@ void HurricaneApp::init(MinVR::ConfigMapRef configMap) {
 		vertices[f] *= particleSize;
 	}
 
-	vector<unsigned int> indices;
+	/*vector<unsigned int> indices;
 	for (int f = 0; f < vertices.size(); f++)
 	{
 		indices.push_back(f);
-	}
+	}*/
 
 	_mesh = MeshRef(new Mesh(vertices, indices));
 
@@ -138,7 +188,7 @@ void HurricaneApp::init(MinVR::ConfigMapRef configMap) {
 	std::cout << fieldSize.x*fieldSize.y*fieldSize.z*fieldSize.t << std::endl;
 
 	GpuEmitterFactory emitterFactory;
-	EmitterRef emitter = EmitterRef(emitterFactory.createBoxEmitter(startField, startField + lenField, numParticles));
+	EmitterRef emitter = EmitterRef(emitterFactory.createBoxEmitter(startField, startField + lenField, 500));//numParticles));
 	_emitters.push_back(emitter);
 	//emitter = EmitterRef(emitterFactory.createSphereEmitter(vec3(0.0f), 50, 500));
 	//_emitters.push_back(emitter);

@@ -144,6 +144,8 @@ void ParticleScene::draw(const vrbase::SceneContext& context) {
 
 		int numInstances = f == 0 ? _particleSet->getNumParticles() : _particleSet->getNumParticles()*(_particleSet->getNumSteps()-1);
 
+		context.getShader().setParameter("positionOffset", f);
+
 		if (numInstances > 0)
 		{
 			glDrawElementsInstancedBaseVertex(GL_TRIANGLES,
