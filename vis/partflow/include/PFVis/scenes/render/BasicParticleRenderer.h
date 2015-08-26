@@ -17,8 +17,8 @@ namespace partflow {
 
 class BasicParticleRenderer : public vrbase::BasicRenderedScene {
 public:
-	BasicParticleRenderer(vrbase::SceneRef scene, const PFCore::partflow::ParticleSetView& particleSet, int *currentStep);
-	BasicParticleRenderer(vrbase::SceneRef scene, vrbase::ShaderRef shader, int *currentStep);
+	BasicParticleRenderer(vrbase::SceneRef scene, const PFCore::partflow::ParticleSetView& particleSet, int *currentStep, float* shape);
+	BasicParticleRenderer(vrbase::SceneRef scene, vrbase::ShaderRef shader, int *currentStep, float* shape);
 	virtual ~BasicParticleRenderer();
 
 	void setShaderParameters(const vrbase::Camera& camera, vrbase::ShaderRef shader);
@@ -27,6 +27,7 @@ private:
 	vrbase::ShaderRef createBasicShader(const PFCore::partflow::ParticleSetView& particleSet);
 	int *_currentStep;
 	int _numSteps;
+	float* _shape;
 };
 
 } /* namespace partflow */

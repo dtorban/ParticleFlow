@@ -30,6 +30,7 @@ public:
 	void setParameter(const std::string& name, glm::mat4 matrix);
 	void setParameter(const std::string& name, glm::vec3 vector);
 	void setParameter(const std::string& name, GLuint id);
+	void setParameter(const std::string& name, float* values, int numValues);
 
 private:
 	std::string loadFile(const std::string &fileName);

@@ -46,6 +46,7 @@ HurricaneApp::HurricaneApp() : PartFlowApp () {
 }
 
 HurricaneApp::~HurricaneApp() {
+	delete[] _shape;
 }
 
 void HurricaneApp::init(MinVR::ConfigMapRef configMap) {
@@ -92,6 +93,74 @@ void HurricaneApp::init(MinVR::ConfigMapRef configMap) {
 	{
 		indices.push_back(f);
 	}
+
+
+	string shapeType = configMap->get("ShapeType", "normal");
+	_shape = new float[numParticleSteps];
+
+
+	if (shapeType == "decreasing")
+	{
+		// decreasing
+		for (int f = 0; f < numParticleSteps; f++)
+		{
+			_shape[f] = 1.0f - 1.0f*f/numParticleSteps;
+		}
+	}
+	else if (shapeType == "swordfish")
+	{
+		// swordfish
+		for (int f = 0; f < numParticleSteps; f++)
+		{
+			if (f < 4)
+			{
+				_shape[f] = 1.0f*f*f/(numParticleSteps*numParticleSteps);
+			}
+			else
+			{
+				_shape[f] = 1.0f - 1.0f*f/numParticleSteps;
+			}
+		}
+	}
+	else if (shapeType == "commet")
+	{
+		// commet
+		for (int f = 0; f < numParticleSteps; f++)
+		{
+			if (f < numParticleSteps/4)
+			{
+				_shape[f] = sqrt(4.0f*f/(numParticleSteps));
+			}
+			else
+			{
+				_shape[f] = 1.0f - 1.0f*f/numParticleSteps;
+			}
+		}
+	}
+	else if (shapeType == "arrow")
+	{// arrow
+		for (int f = 0; f < numParticleSteps; f++)
+		{
+			if (f < numParticleSteps/2)
+			{
+				_shape[f] = 2.0f*f/5;
+			}
+			else
+			{
+				_shape[f] = 0.2;
+			}
+		}
+	}
+	else
+	{
+		// normal
+		for (int f = 0; f < numParticleSteps; f++)
+		{
+			_shape[f] = 1.0f;
+		}
+	}
+
+
 
 	/*for (int f = 0; f < 2; f++)
 	{
@@ -280,7 +349,7 @@ SceneRef HurricaneApp::createAppScene(int threadId, MinVR::WindowRef window)
 					this,
 					Box(glm::vec3(startField.x, startField.y, startField.z), glm::vec3(startField.x, startField.y, startField.z) + glm::vec3(lenField.x, lenField.y, lenField.z))
 					, _noCopy ? 0 : -1));
-			scene = SceneRef(new BasicParticleRenderer(scene, *_localSet, &_currentStep));
+			scene = SceneRef(new BasicParticleRenderer(scene, *_localSet, &_currentStep, _shape));
 			bufferedScenes[f] = scene;
 		}
 

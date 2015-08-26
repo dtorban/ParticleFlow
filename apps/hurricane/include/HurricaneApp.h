@@ -48,6 +48,7 @@ private:
 	float _dt;
 	bool _noCopy;
 	std::vector<PFCore::partflow::EmitterRef> _emitters;
+	float* _shape;
 };
 
 #endif /* SOURCE_DIRECTORY__APPS_HURRICANE_INCLUDE_HURRICANEAPP_H_ */
