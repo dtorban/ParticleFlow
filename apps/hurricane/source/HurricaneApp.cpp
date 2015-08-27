@@ -380,7 +380,6 @@ SceneRef HurricaneApp::createAppScene(int threadId, MinVR::WindowRef window)
 		world->addScene(land);
 		//world->addScene(SceneRef(new BufferedScene(bufferedScenes[0], bufferedScenes[1])));
 		world->addScene(bufferedScenes[0]);
-		world->addScene(SceneRef(new BasicRenderedScene(meshScene)));
 
 		return SceneRef(world);
 	}
@@ -491,7 +490,7 @@ void HurricaneApp::calculateParticleSet(PFCore::partflow::ParticleSetRef particl
 	partFlowCounterStop("EmitParticles" + deviceId);
 
 	partFlowCounterStart("UpdateParticles" + deviceId);
-	_updater->updateParticles(*particleSet, _currentStep, _currentParticleTime);
+	_updater->updateParticles(*particleSet, _currentStep, _currentParticleTime + _dt*_iterationsPerAdvect);
 	partFlowCounterStop("UpdateParticles" + deviceId);
 
 	partFlowCounterStop("CaluculateParticles" + deviceId);
