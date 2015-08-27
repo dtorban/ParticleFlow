@@ -128,9 +128,9 @@ void HurricaneApp::init(MinVR::ConfigMapRef configMap) {
 			}
 		}
 	}
-	else if (shapeType == "commet")
+	else if (shapeType == "comet")
 	{
-		// commet
+		// comet
 		for (int f = 0; f < numShapeSteps; f++)
 		{
 			if (f < numShapeSteps/4)
@@ -466,15 +466,16 @@ DataLoaderRef HurricaneApp::createValueLoader(const std::string &dataDir, const 
 
 void HurricaneApp::calculateParticleSet(PFCore::partflow::ParticleSetRef particleSet)
 {
+	AdvectorRef advector = AdvectorRef(new GpuVectorFieldAdvector<RungaKutta4<ParticleFieldVolume>, ParticleFieldVolume>(
+		RungaKutta4<ParticleFieldVolume>(),
+		ParticleFieldVolume(*_deviceField, 0)));
+
 	std::string deviceId = std::to_string(particleSet->getDeviceId());
 	partFlowCounterStart("CaluculateParticles" + deviceId);
 
 	/*AdvectorRef advector = AdvectorRef(new GpuVectorFieldAdvector<EulerAdvector<ParticleFieldVolume>,ParticleFieldVolume>(
 		EulerAdvector<ParticleFieldVolume>(),
 		ParticleFieldVolume(*_deviceField, 0)));*/
-	AdvectorRef advector = AdvectorRef(new GpuVectorFieldAdvector<RungaKutta4<ParticleFieldVolume>, ParticleFieldVolume>(
-		RungaKutta4<ParticleFieldVolume>(),
-		ParticleFieldVolume(*_deviceField, 0)));
 
 	partFlowCounterStart("AvectParticles" + deviceId);
 	advector->advectParticles(*particleSet, _currentStep, _currentParticleTime, _dt, _iterationsPerAdvect);
