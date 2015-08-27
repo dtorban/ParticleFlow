@@ -21,6 +21,8 @@ source/input/loaders/BrickOfFloatLoader.cpp
 source/input/loaders/CompositeDataLoader.cpp
 source/input/loaders/ScaleLoader.cpp
 source/input/loaders/VectorLoader.cpp
+source/stats/PerformanceCounter.cpp
+source/stats/PerformanceTracker.cpp
 )
 
 set (HEADERFILES
@@ -55,6 +57,8 @@ include/PFCore/partflow/ParticleSetView.h
 include/PFCore/partflow/ParticleSet.h
 include/PFCore/partflow/PartflowRef.h
 include/PFCore/partflow/ParticleUpdater.h
+include/PFCore/stats/PerformanceCounter.h
+include/PFCore/stats/PerformanceTracker.h
 include/PFCore/env_cuda.h
 include/PFCore/env.h
 )

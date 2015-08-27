@@ -31,6 +31,7 @@
 #include "vrbase/scenes/BufferedScene.h"
 #include <math.h>
 #include "events/ShapeEventListener.h"
+#include "PFCore/stats/PerformanceTracker.h"
 
 using namespace vrbase;
 using namespace PFVis::partflow;
@@ -373,6 +374,14 @@ SceneRef HurricaneApp::createAppScene(int threadId, MinVR::WindowRef window)
 }
 
 void HurricaneApp::preDrawComputation(double synchronizedTime) {
+	partFlowCounterStop("FrameRate");
+	if (_currentStep%10 == 0)
+	{
+		cout << "Frame rate: " << 1.0/(partFlowCounterGetCounter("FrameRate")->getAverage()/1000.0) << endl;
+	}
+
+	partFlowCounterStart("FrameRate");
+
 	_currentStep++;
 	_currentParticleTime += _dt*_iterationsPerAdvect;
 
