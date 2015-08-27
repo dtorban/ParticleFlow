@@ -39,6 +39,7 @@ using namespace std;
 using namespace PFCore::input;
 using namespace PFCore::math;
 using namespace PFCore::partflow;
+using namespace PFCore::stats;
 
 HurricaneApp::HurricaneApp() : PartFlowApp () {
 	AppBase::init();
@@ -374,13 +375,16 @@ SceneRef HurricaneApp::createAppScene(int threadId, MinVR::WindowRef window)
 }
 
 void HurricaneApp::preDrawComputation(double synchronizedTime) {
-	partFlowCounterStop("FrameRate");
-	if (_currentStep%10 == 0)
+	partFlowCounterStop("CurrentFrameRate");
+	partFlowCounterStop("AverageFrameRate");
+	if (_currentStep%15 == 0)
 	{
-		cout << "Frame rate: " << 1.0/(partFlowCounterGetCounter("FrameRate")->getAverage()/1000.0) << endl;
+		cout << "Frame rate: " << 1.0/(partFlowCounterGetCounter("CurrentFrameRate")->getAverage()/1000.0) << endl;
+		partFlowCounterGetCounter("CurrentFrameRate")->reset();
 	}
 
-	partFlowCounterStart("FrameRate");
+	partFlowCounterStart("CurrentFrameRate");
+	partFlowCounterStart("AverageFrameRate");
 
 	_currentStep++;
 	_currentParticleTime += _dt*_iterationsPerAdvect;
@@ -401,7 +405,7 @@ void HurricaneApp::preDrawComputation(double synchronizedTime) {
 	//std::cout << GL_MAX_VERTEX_ATTRIBS << std::endl;
 
 
-	AppBase::preDrawComputation(synchronizedTime);
+	//AppBase::preDrawComputation(synchronizedTime);
 }
 
 DataLoaderRef HurricaneApp::createVectorLoader(const std::string &dataDir, const std::string &timeStep, int sampleInterval)
@@ -475,5 +479,17 @@ void HurricaneApp::updateParticleSet(
 	else if (_computeThreadId >= 0)
 	{
 		particleSet->copy(*_deviceSet);
+	}
+}
+
+void HurricaneApp::doUserInput(const std::vector<MinVR::EventRef>& events,
+		double synchronizedTime) {
+	for (int f = 0; f < events.size(); f++)
+	{
+		if (events[f]->getName() == "kbd_P_down")
+		{
+			cout << *(PerformanceTracker::instance()) << endl;
+
+		}
 	}
 }

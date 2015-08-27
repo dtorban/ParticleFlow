@@ -27,6 +27,7 @@ public:
 	void preDrawComputation(double synchronizedTime);
 	void calculate();
 	void updateParticleSet(PFCore::partflow::ParticleSetRef particleSet);
+	void doUserInput(const std::vector<MinVR::EventRef> &events, double synchronizedTime);
 
 private:
 	PFCore::input::DataLoaderRef createVectorLoader(const std::string &dataDir, const std::string &timeStep, int sampleInterval = 0);

@@ -14,17 +14,17 @@
 namespace PFCore {
 namespace stats {
 
-PerformanceCounter::PerformanceCounter(const std::string& key, const std::string& name) : _key(key), _name(name), _total(0.0f), _num(0), _start(0.0f), _started(false) {
+PerformanceCounter::PerformanceCounter(const std::string& key, const std::string& name) : _key(key), _name(name), _total(0.0f), _num(0), _start(0), _started(false) {
 }
 
 PerformanceCounter::~PerformanceCounter() {
 }
 
-double PerformanceCounter::getTotal() {
+double PerformanceCounter::getTotal() const {
 	return _total;
 }
 
-double PerformanceCounter::getAverage() {
+double PerformanceCounter::getAverage() const {
 	return _num > 0 ? _total/_num : 0.0f;
 }
 
@@ -46,6 +46,25 @@ void PerformanceCounter::stop() {
 		add(end-_start);
 		_started = false;
 	}
+}
+
+std::string PerformanceCounter::getKey() const {
+	return _key;
+}
+
+std::string PerformanceCounter::getName() const {
+	return _name;
+}
+
+double PerformanceCounter::getNumValues() const {
+	return _num;
+}
+
+void PerformanceCounter::reset() {
+	_start = 0;
+	_started = false;
+	_total = 0.0f;
+	_num = 0;
 }
 
 } /* namespace stats */

@@ -11,6 +11,9 @@
 
 #include <string>
 #include <memory>
+#include <iostream>
+
+
 
 namespace PFCore {
 namespace stats {
@@ -23,13 +26,16 @@ public:
 	PerformanceCounter(const std::string& key, const std::string& name);
 	virtual ~PerformanceCounter();
 
-	double getTotal();
-	double getAverage();
-	double getNumValues();
+	std::string getKey() const;
+	std::string getName() const;
+	double getTotal() const;
+	double getAverage() const;
+	double getNumValues() const;
 
 	void add(double val);
 	void start();
 	void stop();
+	void reset();
 
 private:
 	std::string _key;
@@ -39,6 +45,12 @@ private:
 	unsigned long _start;
 	bool _started;
 };
+
+inline std::ostream& operator<<(std::ostream& os, const PerformanceCounter& counter)
+{
+    os << counter.getKey() << ", " << counter.getTotal() << ", " << counter.getNumValues() << ", " << counter.getAverage();
+    return os;
+}
 
 } /* namespace stats */
 } /* namespace PFCore */

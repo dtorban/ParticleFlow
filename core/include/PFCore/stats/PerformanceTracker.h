@@ -13,6 +13,7 @@
 #include <map>
 #include "PFCore/stats/PerformanceCounter.h"
 #include <mutex>
+#include <iostream>
 
 #define partFlowCounterStart(counter) PFCore::stats::PerformanceTracker().instance()->start(counter)
 #define partFlowCounterStop(counter) PFCore::stats::PerformanceTracker().instance()->stop(counter)
@@ -35,11 +36,21 @@ public:
 	static PerformanceTrackerRef instance();
 
 	PerformanceCounterRef getCounter(const std::string& counter);
+	friend std::ostream& operator<<(std::ostream& os, const PerformanceTracker& performanceTracker);
 
 private:
 	std::map<std::string, PerformanceCounterRef> _counters;
 	std::mutex _counterMutex;
 };
+
+inline std::ostream& operator<<(std::ostream& os, const PerformanceTracker& performanceTracker)
+{
+	for(std::map<std::string,PerformanceCounterRef>::const_iterator it = performanceTracker._counters.begin(); it != performanceTracker._counters.end(); it++) {
+	    os << *(it->second) << std::endl;
+	}
+
+    return os;
+}
 
 } /* namespace stats */
 } /* namespace PFCore */

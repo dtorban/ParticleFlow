@@ -30,6 +30,7 @@ public:
 	virtual void init(MinVR::ConfigMapRef configMap);
 	virtual void postInitialization();
 	virtual void initializeContext(int threadId, MinVR::WindowRef window);
+	virtual void doUserInput(const std::vector<MinVR::EventRef> &events, double synchronizedTime);
 	virtual void preDrawComputation(double synchronizedTime);
 	virtual SceneRef createScene(int threadId, MinVR::WindowRef window);
 

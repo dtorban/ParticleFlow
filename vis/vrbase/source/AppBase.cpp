@@ -21,6 +21,8 @@ AppBase::~AppBase() {
 
 void AppBase::doUserInputAndPreDrawComputation(
 		const std::vector<MinVR::EventRef>& events, double synchronizedTime) {
+	doUserInput(events, synchronizedTime);
+
 	for (int f = 0; f < _eventListeners.size(); f++)
 	{
 		_eventListeners[f]->handleEvents(events, synchronizedTime);
@@ -92,3 +94,6 @@ void AppBase::addEventListener(EventListenerRef eventListener) {
 
 } /* namespace vrbase */
 
+void vrbase::AppBase::doUserInput(const std::vector<MinVR::EventRef>& events,
+		double synchronizedTime) {
+}
