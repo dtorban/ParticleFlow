@@ -190,6 +190,7 @@ vrbase::ShaderRef BasicParticleRenderer::createBasicShader(const PFCore::partflo
     		"    vec4 Iamb = vec4(0.2, 0.2, 0.2, 1.0);\n"
     		"    //calculate Diffuse Term:\n"
     		"    vec4 Idiff = max(dot(N,-L), 0.0) * vec4(0.7, 0.7, 0.7, 1.0);\n"
+    		//"    vec4 Ispec = max(dot(N,-L), 0.0) * vec4(0.7, 0.7, 0.7, 1.0);\n"
     		"    // write Total Color:\n"
     		"    FragColor = (Idiff + Iamb) * color;\n"
     		"}\n";

@@ -16,12 +16,14 @@ project (hurricane)
 #------------------------------------------
 
 set (SOURCEFILES
+source/events/ShapeEventListener.cpp
 source/scenes/HeightMapScene.cpp
 source/HurricaneApp.cpp
 source/main.cpp
 )
 
 set (HEADERFILES
+include/events/ShapeEventListener.h
 include/scenes/HeightMapScene.h
 include/HurricaneApp.h
 )

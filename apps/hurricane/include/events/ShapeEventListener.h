@@ -9,16 +9,20 @@
 #ifndef SHAPEEVENTLISTENER_H_
 #define SHAPEEVENTLISTENER_H_
 
-namespace PFCore {
-namespace partflow {
+#include "vrbase/EventListener.h"
 
-class ShapeEventListener {
+class ShapeEventListener : public vrbase::EventListener {
 public:
-	ShapeEventListener();
+	ShapeEventListener(float *shape, int size);
 	virtual ~ShapeEventListener();
+
+	void handleEvents(const std::vector<MinVR::EventRef> &events, double synchronizedTime);
+
+private:
+	float* _shape;
+	int _size;
+	bool _shaping;
 };
 
-} /* namespace partflow */
-} /* namespace PFCore */
 
 #endif /* SHAPEEVENTLISTENER_H_ */

@@ -7,11 +7,12 @@
  */
 
 #include <events/ShapeEventListener.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_access.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include "MVRCore/AbstractWindow.H"
 
-namespace PFCore {
-namespace partflow {
-
-ShapeEventListener::ShapeEventListener() {
+ShapeEventListener::ShapeEventListener(float *shape, int size) : _shape(shape), _size(size), _shaping(false) {
 	// TODO Auto-generated constructor stub
 
 }
@@ -20,5 +21,30 @@ ShapeEventListener::~ShapeEventListener() {
 	// TODO Auto-generated destructor stub
 }
 
-} /* namespace partflow */
-} /* namespace PFCore */
+void ShapeEventListener::handleEvents(
+		const std::vector<MinVR::EventRef>& events, double synchronizedTime) {
+	for (int f = 0; f < events.size(); f++)
+	{
+		if (events[f]->getName() == "mouse_btn_right_down")
+		{
+			_shaping = true;
+		}
+		else if (events[f]->getName() == "mouse_btn_right_up")
+		{
+			_shaping = false;
+		}
+
+		if (events[f]->getName() == "mouse_pointer" || events[f]->getName() == "mouse_btn_right_down")
+		{
+			if (_shaping)
+			{
+				MinVR::WindowRef window = events[f]->getWindow();
+				glm::vec2 res(window->getWidth(), window->getHeight());
+				glm::vec2 pos(events[f]->get2DData());
+				glm::vec2 percentLoc = pos/res;
+
+				_shape[int(percentLoc.x*_size)] = (1.0-percentLoc.y)*2.0;
+			}
+		}
+	}
+}

@@ -30,6 +30,7 @@
 #include "scenes/HeightMapScene.h"
 #include "vrbase/scenes/BufferedScene.h"
 #include <math.h>
+#include "events/ShapeEventListener.h"
 
 using namespace vrbase;
 using namespace PFVis::partflow;
@@ -98,6 +99,7 @@ void HurricaneApp::init(MinVR::ConfigMapRef configMap) {
 	string shapeType = configMap->get("ShapeType", "normal");
 	_shape = new float[numParticleSteps];
 
+	addEventListener(EventListenerRef(new ShapeEventListener(_shape, numParticleSteps)));
 
 	if (shapeType == "decreasing")
 	{
