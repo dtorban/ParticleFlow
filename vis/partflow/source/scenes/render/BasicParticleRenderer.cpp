@@ -16,61 +16,12 @@ namespace PFVis {
 namespace partflow {
 
 BasicParticleRenderer::BasicParticleRenderer(vrbase::SceneRef scene, const PFCore::partflow::ParticleSetView& particleSet, int *currentStep, float* shape) : vrbase::BasicRenderedScene(scene, createBasicShader(particleSet)), _currentStep(currentStep), _shape(shape) {
-
-	//_shape = new float[_numSteps];
-	/*
-	// decreasing
-	for (int f = 0; f < _numSteps; f++)
-	{
-		_shape[f] = 1.0f - 1.0f*f/_numSteps;
-	}
-
-	// swordfish
-	for (int f = 0; f < _numSteps; f++)
-	{
-		if (f < 4)
-		{
-			_shape[f] = 1.0f*f*f/(_numSteps*_numSteps);
-		}
-		else
-		{
-			_shape[f] = 1.0f - 1.0f*f/_numSteps;
-		}
-	}
-
-	// commet
-	for (int f = 0; f < _numSteps; f++)
-	{
-		if (f < _numSteps/4)
-		{
-			_shape[f] = sqrt(4.0f*f/(_numSteps));
-		}
-		else
-		{
-			_shape[f] = 1.0f - 1.0f*f/_numSteps;
-		}
-	}
-
-	// arrow
-	for (int f = 0; f < _numSteps; f++)
-	{
-		if (f < _numSteps/2)
-		{
-			_shape[f] = 2.0f*f/5;
-		}
-		else
-		{
-			_shape[f] = 0.2;
-		}
-	}
-	*/
 }
 
 BasicParticleRenderer::BasicParticleRenderer(vrbase::SceneRef scene, vrbase::ShaderRef shader, int *currentStep, float* shape) : vrbase::BasicRenderedScene(scene, shader), _currentStep(currentStep), _shape(shape) {
 }
 
 BasicParticleRenderer::~BasicParticleRenderer() {
-	//delete[] _shape;
 }
 
 vrbase::ShaderRef BasicParticleRenderer::createBasicShader(const PFCore::partflow::ParticleSetView& particleSet) {
@@ -101,7 +52,7 @@ vrbase::ShaderRef BasicParticleRenderer::createBasicShader(const PFCore::partflo
 	{
 		ss << "layout(location = " << loc << ") in vec3 vectors[];\n";
 	}
-	ss << "uniform float shape[" << _numSteps << "];\n";
+	ss << "uniform float shape[" << (_numSteps > 1 ? _numSteps : _numSteps+1) << "];\n";
 	ss << "uniform mat4 Model;\n" <<
 			"uniform mat4 View;\n" <<
 			"uniform mat4 Projection;\n" <<
@@ -120,7 +71,7 @@ vrbase::ShaderRef BasicParticleRenderer::createBasicShader(const PFCore::partflo
 			"\n" <<
 			"void main() {\n" <<
 			"numParticles = " << particleSet.getNumParticles() << ";\n" <<
-			"numSteps = " << particleSet.getNumSteps() << ";\n" <<
+			"numSteps = " << particleSet.getNumSteps()  << ";\n" <<
 			"InstanceID = gl_InstanceID;\n" <<
 			"vec3 vertLoc = loc[0];\n" <<
 			"vec3 vert = vec3(pos.xy, 0);\n" <<
@@ -133,10 +84,18 @@ vrbase::ShaderRef BasicParticleRenderer::createBasicShader(const PFCore::partflo
 			"	velocity = vectors[1];\n" <<
 			"	vertLoc = loc[1];\n" <<
 			"   step = step - 1;\n" <<
+			"   if (numSteps == 1)\n" <<
+			"	{\n" <<
+			"		vertLoc = loc[0]-vectors[0]/2.0;\n" <<
+			"		mag = length(vectors[0])/90.0;\n" <<
+			"		velocity = vectors[0];\n" <<
+			//"   	step = step + 1;\n" <<
+			"	}\n" <<
 			"} else {\n" <<
 			"	mag = length(vectors[0])/90.0;\n" <<
 			"	velocity = vectors[0];\n" <<
 			"}\n" <<
+
 
 			"float size = 1.0;\n" <<
 			"int steps = 0;\n" <<
@@ -147,7 +106,9 @@ vrbase::ShaderRef BasicParticleRenderer::createBasicShader(const PFCore::partflo
 			"else if (steps-1 == 2) { size = 0.9;\n }" <<
 			"else { size = 1.0 - 1.0*steps/numSteps;\n }" <<
 			//"size = 1.0;\n" <<
-			"size = shape[steps-1];\n" <<
+			"size = shape[steps - 1];\n" <<
+			"if (numSteps == 1) size = shape[0];\n" <<
+			"if (numSteps == 1 && step < 0) size = shape[1];\n" <<
 
 			"vec3 zp = normalize(velocity);\n" <<
 			"vec3 y = vec3(0,1,0);\n" <<
@@ -204,8 +165,7 @@ void BasicParticleRenderer::setShaderParameters(const vrbase::Camera& camera,
 
 	shader->setParameter("currentStep", (*_currentStep)%_numSteps);
 
-	shader->setParameter("shape", _shape, _numSteps);
-
+	shader->setParameter("shape", _shape, _numSteps > 1 ? _numSteps : _numSteps+1);
 }
 
 } /* namespace partflow */

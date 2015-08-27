@@ -66,10 +66,11 @@ void HurricaneApp::init(MinVR::ConfigMapRef configMap) {
 	_computeThreadId = configMap->get<int>("ComputeThreadId", -1);
 	_dt = configMap->get("dt", 1.0f / 60.0f);
 	_noCopy = configMap->get<bool>("NoCopy", false);
+	int numTubeSamplePoints = configMap->get<int>("NumTubeSamplePoints", 6);
 
 #define PI 3.14159265
 
-	float n = 20.0f;
+	float n = numTubeSamplePoints;
 	float k = 3.0f;
 
 	//cout << "SIN: " << cos(2.0f*PI*k/n) << " " << sin(2.0f*PI*k/n) << endl;
@@ -97,53 +98,54 @@ void HurricaneApp::init(MinVR::ConfigMapRef configMap) {
 
 
 	string shapeType = configMap->get("ShapeType", "normal");
+	int numShapeSteps = numParticleSteps > 1 ? numParticleSteps : numParticleSteps+1;
 	_shape = new float[numParticleSteps];
 
-	addEventListener(EventListenerRef(new ShapeEventListener(_shape, numParticleSteps)));
+	addEventListener(EventListenerRef(new ShapeEventListener(_shape, numShapeSteps)));
 
 	if (shapeType == "decreasing")
 	{
 		// decreasing
-		for (int f = 0; f < numParticleSteps; f++)
+		for (int f = 0; f < numShapeSteps; f++)
 		{
-			_shape[f] = 1.0f - 1.0f*f/numParticleSteps;
+			_shape[f] = 1.0f - 1.0f*f/(numShapeSteps-1);
 		}
 	}
 	else if (shapeType == "swordfish")
 	{
 		// swordfish
-		for (int f = 0; f < numParticleSteps; f++)
+		for (int f = 0; f < numShapeSteps; f++)
 		{
 			if (f < 4)
 			{
-				_shape[f] = 1.0f*f*f/(numParticleSteps*numParticleSteps);
+				_shape[f] = 1.0f*f*f/((numShapeSteps-1)*(numShapeSteps-1));
 			}
 			else
 			{
-				_shape[f] = 1.0f - 1.0f*f/numParticleSteps;
+				_shape[f] = 1.0f - 1.0f*f/(numShapeSteps-1);
 			}
 		}
 	}
 	else if (shapeType == "commet")
 	{
 		// commet
-		for (int f = 0; f < numParticleSteps; f++)
+		for (int f = 0; f < numShapeSteps; f++)
 		{
-			if (f < numParticleSteps/4)
+			if (f < numShapeSteps/4)
 			{
-				_shape[f] = sqrt(4.0f*f/(numParticleSteps));
+				_shape[f] = sqrt(4.0f*f/((numShapeSteps-1)));
 			}
 			else
 			{
-				_shape[f] = 1.0f - 1.0f*f/numParticleSteps;
+				_shape[f] = 1.0f - 1.0f*f/(numShapeSteps-1);
 			}
 		}
 	}
 	else if (shapeType == "arrow")
 	{// arrow
-		for (int f = 0; f < numParticleSteps; f++)
+		for (int f = 0; f < numShapeSteps; f++)
 		{
-			if (f < numParticleSteps/2)
+			if (f < numShapeSteps/2)
 			{
 				_shape[f] = 2.0f*f/5;
 			}
@@ -156,13 +158,16 @@ void HurricaneApp::init(MinVR::ConfigMapRef configMap) {
 	else
 	{
 		// normal
-		for (int f = 0; f < numParticleSteps; f++)
+		for (int f = 0; f < numShapeSteps; f++)
 		{
 			_shape[f] = 1.0f;
 		}
 	}
 
-
+	for (int f = 0; f < numShapeSteps; f++)
+	{
+		cout << "Shape: " << _shape[f] << endl;
+	}
 
 	/*for (int f = 0; f < 2; f++)
 	{
