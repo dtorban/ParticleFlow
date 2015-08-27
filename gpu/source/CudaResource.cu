@@ -5,6 +5,11 @@
  *      Author: dtorban
  */
 
+#if defined(WIN32)
+#define NOMINMAX
+#include <windows.h>
+#endif
+
 #include <PFGpu/CudaResource.cuh>
 #include <cuda_gl_interop.h>
 
