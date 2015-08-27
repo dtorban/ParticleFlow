@@ -18,6 +18,7 @@
 #define partFlowCounterStart(counter) PFCore::stats::PerformanceTracker().instance()->start(counter)
 #define partFlowCounterStop(counter) PFCore::stats::PerformanceTracker().instance()->stop(counter)
 #define partFlowCounterGetCounter(counter) PFCore::stats::PerformanceTracker().instance()->getCounter(counter)
+#define partFlowCounterAdd(counter,amount) PFCore::stats::PerformanceTracker().instance()->getCounter(counter)->add(amount)
 
 namespace PFCore {
 namespace stats {
