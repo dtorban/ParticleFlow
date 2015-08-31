@@ -377,8 +377,8 @@ SceneRef HurricaneApp::createAppScene(int threadId, MinVR::WindowRef window)
 			&(*_localSet),
 			this,
 			Box(glm::vec3(startField.x, startField.y, startField.z), glm::vec3(startField.x, startField.y, startField.z) + glm::vec3(lenField.x, lenField.y, lenField.z))
-			, window->getSettings()->computeGpu));
-			//, _noCopy ? window->getSettings()->computeGpu : -1));
+			//, window->getSettings()->computeGpu));
+			, _noCopy ? window->getSettings()->computeGpu : -1));
 		scene = SceneRef(new BasicParticleRenderer(scene, *_localSet, &_currentStep, _shape));
 		bufferedScenes[f] = scene;
 	}
@@ -421,7 +421,7 @@ void HurricaneApp::preDrawComputation(double synchronizedTime) {
 
 		partFlowCounterStart("CopyToGrpahicsGpuTime" + deviceId);
 		ParticleSetView view = _deviceSet->getView().filterByStep(_currentStep,1);
-		//_localSet->copy(view);
+		_localSet->copy(view);
 		partFlowCounterAdd("CopyToGraphicsGpu", view.getSize());
 		partFlowCounterStop("CopyToGrpahicsGpuTime" + deviceId);
 		//_localSet->copy(*_deviceSet);

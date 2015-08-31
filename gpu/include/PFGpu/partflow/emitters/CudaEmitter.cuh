@@ -74,7 +74,6 @@ inline void CudaEmitter<Strategy>::emitParticles(ParticleSetView& particleSet, i
 	math::RandomValue rnd = *(_randValues[deviceId]);
 	rnd.randomize(0);
 	
-	//std::cout << "Cuda emit." << std::endl;
 	CudaEmitter_emitParticle<Strategy><<<1024, particleSet.getNumParticles()/1024>>>(this->_strategy, particleSet, step, rnd, init);
 	cudaDeviceSynchronize();
 }
