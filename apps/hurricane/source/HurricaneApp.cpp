@@ -65,10 +65,11 @@ void HurricaneApp::init(MinVR::ConfigMapRef configMap) {
 	int numTimeSteps = configMap->get<int>("NumTimeSteps", 1);
 	int sampleInterval = configMap->get<int>("SampleInterval", 10);
 	_iterationsPerAdvect = configMap->get<int>("IterationsPerAdvect", 1);
-	_computeThreadId = configMap->get<int>("ComputeThreadId", -1);
+	_primaryComputeGpu = configMap->get<int>("PrimaryComputeGpu", -1);
 	_dt = configMap->get("dt", 1.0f / 60.0f);
 	_noCopy = configMap->get<bool>("NoCopy", false);
 	int numTubeSamplePoints = configMap->get<int>("NumTubeSamplePoints", 6);
+
 
 #define PI 3.14159265
 
@@ -249,9 +250,11 @@ void HurricaneApp::init(MinVR::ConfigMapRef configMap) {
 
 	_mesh = MeshRef(new Mesh(vertices, indices));
 
+	int computeDeviceId = _primaryComputeGpu;
+
 	GpuParticleFactory psetFactory;
 	_localSet = psetFactory.createLocalParticleSet(numParticles, 0, 0, 1, numParticleSteps);
-	_deviceSet = psetFactory.createParticleSet(0, numParticles, 0, 0, 1, numParticleSteps);
+	_deviceSet = psetFactory.createParticleSet(computeDeviceId, numParticles, 0, 0, 1, numParticleSteps);
 	//_deviceSet = psetFactory.createLocalParticleSet(numParticles, 0, 0, 1, 1);
 
 	partFlowCounterAdd("CpuMemory", _localSet->getSize());
@@ -262,7 +265,7 @@ void HurricaneApp::init(MinVR::ConfigMapRef configMap) {
 	vec4 lenField = vec4(2139.0f, 2004.0f, 198.0f, numTimeSteps*1.0f);
 	vec4 sizeField = vec4(500/sampleInterval, 500/sampleInterval, 100/sampleInterval, numTimeSteps);
 	_localField = psetFactory.createLocalParticleField(0, 1, startField, lenField, sizeField);
-	_deviceField = psetFactory.createParticleField(0, 0, 1, startField, lenField, sizeField);
+	_deviceField = psetFactory.createParticleField(computeDeviceId, 0, 1, startField, lenField, sizeField);
 	//_deviceField = psetFactory.createLocalParticleField(0, 1, startField, lenField, sizeField);
 
 	partFlowCounterAdd("CpuMemory", _localField->getMemorySize());
@@ -280,7 +283,7 @@ void HurricaneApp::init(MinVR::ConfigMapRef configMap) {
 	//emitter = EmitterRef(emitterFactory.createSphereEmitter(vec3(200.0f), 100, 500));
 	//_emitters.push_back(emitter);
 
-	for (int f = 0; f < _deviceSet->getNumSteps(); f++)
+	for (int f = 0; f < 1; f++)// _deviceSet->getNumSteps(); f++)
 	{
 		_emitters[0]->emitParticles(*_deviceSet, f, true);
 	}
@@ -319,7 +322,7 @@ void HurricaneApp::init(MinVR::ConfigMapRef configMap) {
 
 void HurricaneApp::calculate()
 {
-	calculateParticleSet(_deviceSet);
+	calculateParticleSet(_deviceSet, _deviceField);
 }
 
 class ComputeScene : public vrbase::SceneAdapter
@@ -346,43 +349,47 @@ SceneRef HurricaneApp::createAppScene(int threadId, MinVR::WindowRef window)
 	glGetIntegerv (GL_MAX_VARYING_COMPONENTS, &max_other);
 	std::cout << "Varying: " << max_attribs << " " << max_other << std::endl;//>
 
-	if (threadId == _computeThreadId)
+	int computeGpu = window->getSettings()->computeGpu;
+	std::string deviceId = std::to_string(computeGpu);
+
+	int numTimeSteps = 1;
+
+	vec4 startField = vec4(0.0f, 0.0f);
+	vec4 lenField = vec4(2139.0f, 2004.0f, 198.0f, numTimeSteps);
+
+	if (_noCopy)
 	{
-		return SceneRef(new ComputeScene(this));
+		GpuParticleFactory psetFactory;
+		_gpuDeviceFields[computeGpu] = psetFactory.createParticleField(computeGpu, 0, 1, _localField->getStart(), _localField->getLength(), _localField->getSize());
+		_gpuDeviceFields[computeGpu]->copy(*_localField);
 	}
-	else
+
+	CompositeScene* world = new CompositeScene();
+
+	MeshScene* mesh = new MeshScene(_mesh);
+	SceneRef meshScene = SceneRef(mesh);
+
+	SceneRef bufferedScenes[2];
+	for (int f = 0; f < 2; f++)
 	{
-		int numTimeSteps = 1;
-
-		vec4 startField = vec4(0.0f, 0.0f);
-		vec4 lenField = vec4(2139.0f, 2004.0f, 198.0f, numTimeSteps);
-
-		CompositeScene* world = new CompositeScene();
-
-		MeshScene* mesh = new MeshScene(_mesh);
-		SceneRef meshScene = SceneRef(mesh);
-
-		SceneRef bufferedScenes[2];
-		for (int f = 0; f < 2; f++)
-		{
-			SceneRef scene = SceneRef(new ParticleScene(meshScene,
-					mesh,
-					&(*_localSet),
-					this,
-					Box(glm::vec3(startField.x, startField.y, startField.z), glm::vec3(startField.x, startField.y, startField.z) + glm::vec3(lenField.x, lenField.y, lenField.z))
-					, _noCopy ? 0 : -1));
-			scene = SceneRef(new BasicParticleRenderer(scene, *_localSet, &_currentStep, _shape));
-			bufferedScenes[f] = scene;
-		}
-
-		SceneRef land = SceneRef(new HeightMapScene(NULL, &_heightData[0], _shaderDir));
-
-		world->addScene(land);
-		//world->addScene(SceneRef(new BufferedScene(bufferedScenes[0], bufferedScenes[1])));
-		world->addScene(bufferedScenes[0]);
-
-		return SceneRef(world);
+		SceneRef scene = SceneRef(new ParticleScene(meshScene,
+			mesh,
+			&(*_localSet),
+			this,
+			Box(glm::vec3(startField.x, startField.y, startField.z), glm::vec3(startField.x, startField.y, startField.z) + glm::vec3(lenField.x, lenField.y, lenField.z))
+			, window->getSettings()->computeGpu));
+			//, _noCopy ? window->getSettings()->computeGpu : -1));
+		scene = SceneRef(new BasicParticleRenderer(scene, *_localSet, &_currentStep, _shape));
+		bufferedScenes[f] = scene;
 	}
+
+	SceneRef land = SceneRef(new HeightMapScene(NULL, &_heightData[0], _shaderDir));
+
+	world->addScene(land);
+	//world->addScene(SceneRef(new BufferedScene(bufferedScenes[0], bufferedScenes[1])));
+	world->addScene(bufferedScenes[0]);
+
+	return SceneRef(world);
 
 }
 
@@ -401,10 +408,10 @@ void HurricaneApp::preDrawComputation(double synchronizedTime) {
 	_currentStep++;
 	_currentParticleTime += _dt*_iterationsPerAdvect;
 
-	if (_computeThreadId < 0 && !_noCopy)
+	/*if (_computeThreadId < 0 && !_noCopy)
 	{
 		calculate();
-	}
+	}*/
 
 	//_localSet->copy(_deviceSet->getView().filterByStep(_currentStep-1, 1));
 	//_localSet->copy(*_deviceSet);
@@ -414,7 +421,7 @@ void HurricaneApp::preDrawComputation(double synchronizedTime) {
 
 		partFlowCounterStart("CopyToGrpahicsGpuTime" + deviceId);
 		ParticleSetView view = _deviceSet->getView().filterByStep(_currentStep,1);
-		_localSet->copy(view);
+		//_localSet->copy(view);
 		partFlowCounterAdd("CopyToGraphicsGpu", view.getSize());
 		partFlowCounterStop("CopyToGrpahicsGpuTime" + deviceId);
 		//_localSet->copy(*_deviceSet);
@@ -464,18 +471,21 @@ DataLoaderRef HurricaneApp::createValueLoader(const std::string &dataDir, const 
 	return DataLoaderRef(new CompositeDataLoader(values));
 }
 
-void HurricaneApp::calculateParticleSet(PFCore::partflow::ParticleSetRef particleSet)
+void HurricaneApp::calculateParticleSet(PFCore::partflow::ParticleSetRef particleSet, PFCore::partflow::ParticleFieldRef particleField)
 {
 	AdvectorRef advector = AdvectorRef(new GpuVectorFieldAdvector<RungaKutta4<ParticleFieldVolume>, ParticleFieldVolume>(
 		RungaKutta4<ParticleFieldVolume>(),
-		ParticleFieldVolume(*_deviceField, 0)));
+		ParticleFieldVolume(*particleField, 0)));
+
+	/*AdvectorRef advector = AdvectorRef(new GpuVectorFieldAdvector<EulerAdvector<ParticleFieldVolume>, ParticleFieldVolume>(
+		EulerAdvector<ParticleFieldVolume>(),
+		ParticleFieldVolume(*particleField, 0)));*/
+
+	ParticleUpdaterRef updater = ParticleUpdaterRef(new GpuParticleUpdater<ParticleFieldUpdater>(ParticleFieldUpdater(ParticleFieldVolume(*particleField, 0))));
 
 	std::string deviceId = std::to_string(particleSet->getDeviceId());
 	partFlowCounterStart("CaluculateParticles" + deviceId);
 
-	/*AdvectorRef advector = AdvectorRef(new GpuVectorFieldAdvector<EulerAdvector<ParticleFieldVolume>,ParticleFieldVolume>(
-		EulerAdvector<ParticleFieldVolume>(),
-		ParticleFieldVolume(*_deviceField, 0)));*/
 
 	partFlowCounterStart("AvectParticles" + deviceId);
 	advector->advectParticles(*particleSet, _currentStep, _currentParticleTime, _dt, _iterationsPerAdvect);
@@ -491,7 +501,7 @@ void HurricaneApp::calculateParticleSet(PFCore::partflow::ParticleSetRef particl
 	partFlowCounterStop("EmitParticles" + deviceId);
 
 	partFlowCounterStart("UpdateParticles" + deviceId);
-	_updater->updateParticles(*particleSet, _currentStep, _currentParticleTime + _dt*_iterationsPerAdvect);
+	updater->updateParticles(*particleSet, _currentStep, _currentParticleTime + _dt*_iterationsPerAdvect);
 	partFlowCounterStop("UpdateParticles" + deviceId);
 
 	partFlowCounterStop("CaluculateParticles" + deviceId);
@@ -504,9 +514,9 @@ void HurricaneApp::updateParticleSet(
 	partFlowCounterStart("UpdateParticleSet" + deviceId);
 	if (_noCopy)
 	{
-		calculateParticleSet(particleSet);
+		calculateParticleSet(particleSet, _gpuDeviceFields[particleSet->getDeviceId()]);
 	}
-	else if (_computeThreadId >= 0)
+	else if (_primaryComputeGpu >= 0)
 	{
 		partFlowCounterStart("CopyToGrpahicsGpuTime" + deviceId);
 
@@ -526,8 +536,22 @@ void HurricaneApp::doUserInput(const std::vector<MinVR::EventRef>& events,
 	{
 		if (events[f]->getName() == "kbd_P_down")
 		{
-			cout << *(PerformanceTracker::instance()) << endl;
+			MinVR::ConfigMapRef configMap = MinVR::ConfigValMap::map;
+			cout << "PrimaryComputeGpu, " << configMap->get<int>("PrimaryComputeGpu", -1) << endl;
+			cout << "NoCopy, " << configMap->get<bool>("NoCopy", false) << endl;
+			cout << "NumParticles, " << configMap->get<int>("NumParticles", 1024 * 32) << endl;
+			cout << "NumParticleSteps, " << configMap->get<int>("NumParticleSteps", 1) << endl;
+			cout << "IterationsPerAdvect, " << configMap->get<int>("IterationsPerAdvect", 1) << endl;
+			cout << "AverageFrameRateCalc: " << 1.0 / (partFlowCounterGetCounter("AverageFrameRate")->getAverage() / 1000.0) << endl;
+			cout << "dt, " << configMap->get("dt", 1.0f / 60.0f) << endl;
+			cout << "NumTimeSteps, " << configMap->get<int>("NumTimeSteps", 1) << endl;
+			cout << "ParticleSize, " << configMap->get("ParticleSize", 10.0f) << endl;
+			cout << "NumTubeSamplePoints, " << configMap->get<int>("NumTubeSamplePoints", 6) << endl;
+			cout << "SampleInterval, " << configMap->get<int>("SampleInterval", 10) << endl;
+			cout << "StartTimeStep, " << configMap->get<int>("StartTimeStep", 0) << endl;
 
+			cout << *(PerformanceTracker::instance()) << endl;
+			exit(0);
 		}
 	}
 }
@@ -535,9 +559,10 @@ void HurricaneApp::doUserInput(const std::vector<MinVR::EventRef>& events,
 void HurricaneApp::asyncComputation()
 {
 	partFlowCounterStart("RenderTime");
-	partFlowCounterStart("ComputeTime");
-	calculate();
-	partFlowCounterStop("ComputeTime");
+	if (!_noCopy)
+	{
+		calculate();
+	}
 }
 
 void HurricaneApp::renderingComplete()

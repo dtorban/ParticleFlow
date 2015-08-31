@@ -16,6 +16,7 @@
 #include "PFCore/input/DataLoader.h"
 #include "PFVis/scenes/update/ParticleSceneUpdater.h"
 #include <vector>
+#include <map>
 
 class HurricaneApp : public PFVis::partflow::PartFlowApp, public PFVis::partflow::ParticleSceneUpdater {
 public:
@@ -34,7 +35,7 @@ public:
 private:
 	PFCore::input::DataLoaderRef createVectorLoader(const std::string &dataDir, const std::string &timeStep, int sampleInterval = 0);
 	PFCore::input::DataLoaderRef createValueLoader(const std::string &dataDir, const std::string &timeStep, const std::vector<std::string>& params);
-	void calculateParticleSet(PFCore::partflow::ParticleSetRef particleSet);
+	void calculateParticleSet(PFCore::partflow::ParticleSetRef particleSet, PFCore::partflow::ParticleFieldRef particleField);
 
 	vrbase::MeshRef _mesh;
 	PFCore::partflow::ParticleSetRef _localSet;
@@ -42,10 +43,11 @@ private:
 	PFCore::partflow::ParticleFieldRef _localField;
 	PFCore::partflow::ParticleFieldRef _deviceField;
 	PFCore::partflow::ParticleUpdaterRef _updater;
+	std::map<int, PFCore::partflow::ParticleFieldRef> _gpuDeviceFields;
 	int _iterationsPerAdvect;
 	int _currentStep;
 	float _currentParticleTime;
-	int _computeThreadId;
+	int _primaryComputeGpu;
 	float _heightData[500*500];
 	std::string _shaderDir;
 	float _dt;
