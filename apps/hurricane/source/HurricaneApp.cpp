@@ -531,3 +531,16 @@ void HurricaneApp::doUserInput(const std::vector<MinVR::EventRef>& events,
 		}
 	}
 }
+
+void HurricaneApp::asyncComputation()
+{
+	partFlowCounterStart("RenderTime");
+	partFlowCounterStart("ComputeTime");
+	calculate();
+	partFlowCounterStop("ComputeTime");
+}
+
+void HurricaneApp::renderingComplete()
+{
+	partFlowCounterStop("RenderTime");
+}

@@ -28,6 +28,8 @@ public:
 	void calculate();
 	void updateParticleSet(PFCore::partflow::ParticleSetRef particleSet);
 	void doUserInput(const std::vector<MinVR::EventRef> &events, double synchronizedTime);
+	void asyncComputation();
+	void renderingComplete();
 
 private:
 	PFCore::input::DataLoaderRef createVectorLoader(const std::string &dataDir, const std::string &timeStep, int sampleInterval = 0);
