@@ -118,7 +118,7 @@ vrbase::ShaderRef BasicParticleRenderer::createBasicShader(const PFCore::partflo
 			"mat4 rot = mat4(vec4(xp,0),vec4(yp,0),vec4(zp,0),vec4(0,0,0,1));\n" <<
 			"v = (View * Model *vec4((rot*vec4(vert,1.0)).xyz*mag*size+vertLoc,1.0)).xyz;\n";
 	ss << "gl_Position = Projection*View*Model* vec4((rot*vec4(vert,1.0)).xyz*mag*size+vertLoc,1.0);\n";
-	ss << "N = normalize((View* Model*vec4(normal,0)).xyz);\n" <<
+	ss << "N = normalize((View* Model*rot*vec4(normal,0)).xyz);\n" <<
 			"}\n";
 	std::string vs_text = ss.str();
 
