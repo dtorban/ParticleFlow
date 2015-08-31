@@ -60,6 +60,7 @@ void CudaVectorFieldAdvector<Strategy, VField>::advectParticles(ParticleSetView&
 	//std::cout << "Advect cuda!" << std::endl;
 	int prevStep = (particleSet.getNumSteps() + step - 1) % particleSet.getNumSteps();
 	CudaVectorFieldAdvector_advectParticle<Strategy, VField><<<1024, particleSet.getNumParticles()/1024>>>(_strategy, _vectorField, particleSet, step, prevStep, time, dt, iterations);
+	cudaDeviceSynchronize();
 }
 
 template<typename VField>

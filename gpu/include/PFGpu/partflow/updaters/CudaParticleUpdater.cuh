@@ -49,6 +49,7 @@ void CudaParticleUpdater<Strategy>::updateParticles(ParticleSetView& particleSet
 {
 //	std::cout << "update cuda!" << std::endl;
 	CudaParticleUpdater_updateParticles<Strategy><<<1024, particleSet.getNumParticles()/1024>>>(_strategy, particleSet, step, time);
+	cudaDeviceSynchronize();
 }
 
 } /* namespace partflow */
