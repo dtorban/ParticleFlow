@@ -10,6 +10,7 @@
 #include <PFGpu/GpuResourceFactory.h>
 #include <PFGpu/partflow/GpuParticleFactory.h>
 #include <iostream>
+#include "PFCore/stats/PerformanceTracker.h"
 
 namespace PFVis {
 namespace partflow {
@@ -115,6 +116,9 @@ void ParticleScene::updateFrame() {
 	}
 	else
 	{
+		std::string deviceId = std::to_string(_particleSet->getDeviceId());
+
+		partFlowCounterStart("CopyToVBO" + deviceId);
 		int numInstances = _particleSet->getNumParticles()*_particleSet->getNumSteps();
 		glBindBuffer(GL_ARRAY_BUFFER, _vbo);
 		int startPos = 0;
@@ -125,6 +129,7 @@ void ParticleScene::updateFrame() {
 		glBufferSubData(GL_ARRAY_BUFFER, startPos, sizeof(GLfloat)*numInstances*_particleSet->getNumValues(), _particleSet->getValues(0));
 		startPos += sizeof(GLfloat)*numInstances*_particleSet->getNumValues();
 		glBufferSubData(GL_ARRAY_BUFFER, startPos, sizeof(GLfloat)*numInstances*_particleSet->getNumVectors()*3, _particleSet->getVectors(0));
+		partFlowCounterStop("CopyToVBO" + deviceId);
 	}
 
 	//_currentStep+=2;
@@ -136,6 +141,8 @@ const vrbase::Box ParticleScene::getBoundingBox() {
 }
 
 void ParticleScene::draw(const vrbase::SceneContext& context) {
+	int numTriangles = 0;
+
 	for (int f = 0; f < 2; f++)
 	{
 		glBindVertexArray(_vao[f]);
@@ -156,8 +163,13 @@ void ParticleScene::draw(const vrbase::SceneContext& context) {
 					0);
 		}
 
+		numTriangles+=numIndices*numInstances/3;
+
 		glBindVertexArray(0);
 	}
+
+	std::string deviceId = std::to_string(_particleSet->getDeviceId());
+	partFlowCounterAdd("NumTrianglesDrawn" + deviceId, numTriangles);
 }
 
 void ParticleScene::updateVao(int positionOffset) {

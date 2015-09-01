@@ -101,10 +101,6 @@ vrbase::ShaderRef BasicParticleRenderer::createBasicShader(const PFCore::partflo
 			"int steps = 0;\n" <<
 			"if (step < mod(currentStep + 1 - positionOffset, numSteps)) { steps = currentStep + 1 - positionOffset - step; }\n" <<
 			"else { steps = numSteps + currentStep + 1 - positionOffset - step; }\n" <<
-			"if (steps-1 == 0) { size = 0.2;\n }" <<
-			"else if (steps-1 == 1) { size = 0.8;\n }" <<
-			"else if (steps-1 == 2) { size = 0.9;\n }" <<
-			"else { size = 1.0 - 1.0*steps/numSteps;\n }" <<
 			//"size = 1.0;\n" <<
 			"size = shape[steps - 1];\n" <<
 			"if (numSteps == 1) size = shape[0];\n" <<
@@ -121,6 +117,33 @@ vrbase::ShaderRef BasicParticleRenderer::createBasicShader(const PFCore::partflo
 	ss << "N = normalize((View* Model*rot*vec4(normal,0)).xyz);\n" <<
 			"}\n";
 	std::string vs_text = ss.str();
+
+ /*   std::string gs_text =
+    		"#version 330\n"
+    		"layout (triangles) in;\n"
+    		"layout (triangle_strip) out;\n"
+    		"layout (max_vertices = 3) out;\n"
+
+    		"out vec3 p;\n"
+    		"out vec3 v;\n"
+    		"out vec3 N;\n"
+    		"out float mag;\n"
+    		"flat out int numSteps;\n"
+    		"out vec3 velocity;\n"
+    		"flat out int InstanceID;\n"
+    		"flat out int numParticles;\n"
+    		"flat out int valid;\n"
+
+    		"void main(void)\n"
+    		"{\n"
+    		"    int i;\n"
+    		"	for (i = 0; i < gl_in.length(); i++)\n"
+    		"    {\n"
+    		"        gl_Position = gl_in[i].gl_Position;\n"
+    		"        EmitVertex();\n"
+    		"    }\n"
+    		"	EndPrimitive();\n"
+    		"}\n";*/
 
     std::string fs_text =
     		"#version 330\n"
@@ -156,6 +179,7 @@ vrbase::ShaderRef BasicParticleRenderer::createBasicShader(const PFCore::partflo
     		"    FragColor = (Idiff + Iamb) * color;\n"
     		"}\n";
 
+    //return vrbase::ShaderRef(new vrbase::Shader(vs_text, gs_text, fs_text));
     return vrbase::ShaderRef(new vrbase::Shader(vs_text, fs_text));
 }
 
