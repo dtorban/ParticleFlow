@@ -8,7 +8,6 @@
 
 #include <vrbase/scenes/MeshScene.h>
 #include <algorithm>
-#include <iostream>
 
 namespace vrbase {
 
@@ -22,6 +21,7 @@ MeshScene::~MeshScene() {
 }
 
 void MeshScene::init() {
+
 	updateVBO();
 }
 
@@ -42,6 +42,7 @@ int MeshScene::getVersion() const {
 }
 
 void MeshScene::updateVBO() {
+
 	const std::vector<glm::vec3>& vertices = _mesh->getVertices();
 	const std::vector<glm::vec3>& normals = _mesh->getNormals();
 	const std::vector<unsigned int>& indices = _mesh->getIndices();
@@ -58,11 +59,6 @@ void MeshScene::updateVBO() {
 
 		_numVertices = vertices.size();
 		_numIndices = indices.size();
-
-		for (int f = 0; f < vertices.size(); f++)
-		{
-			std::cout << _numVertices << " " << numNormals << " " << _numIndices << " " << indices[f] << " "<< vertices[f].x << " " << vertices[f].y << " " << vertices[f].z << " " << std::endl;
-		}
 
 		glBindBuffer(GL_ARRAY_BUFFER, _vbo);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*_numVertices*3 + sizeof(GLfloat)*numNormals*3, 0, GL_DYNAMIC_DRAW);
@@ -84,11 +80,6 @@ void MeshScene::updateVBO() {
 	std::copy(vertices.begin(), vertices.end(), verts);
 	std::copy(normals.begin(), normals.end(), norms);
 	std::copy(indices.begin(), indices.end(), ind);
-
-	for (int f = 0; f < vertices.size(); f++)
-	{
-		std::cout << " "<< verts[f].x << " " << verts[f].y << " " << verts[f].z << " " << std::endl;
-	}
 
 	glBindBuffer(GL_ARRAY_BUFFER, _vbo);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(GLfloat)*_numVertices*3, verts);

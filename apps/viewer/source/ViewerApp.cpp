@@ -7,10 +7,31 @@
  */
 
 #include <viewer/include/ViewerApp.h>
+#include <vector>
 
 #include "ViewerAppScene.h"
 
-ViewerApp::ViewerApp() {
+ViewerApp::ViewerApp() : PFVis::partflow::PartFlowApp() {
+
+	AppBase::init();
+
+	std::vector<glm::vec3> vertices;
+
+	vertices.push_back(glm::vec3(-1.0f, -1.0, 0.0));
+	vertices.push_back(glm::vec3(-1.0f, 1.0, 0.0));
+	vertices.push_back(glm::vec3(1.0f, 1.0, 0.0));
+
+	vertices.push_back(glm::vec3(1.0f, 1.0, 0.0));
+	vertices.push_back(glm::vec3(1.0f, -1.0, 0.0));
+	vertices.push_back(glm::vec3(-1.0f, -1.0, 0.0));
+
+	std::vector<unsigned int> indices;
+	for (int f = 0; f < vertices.size(); f++)
+	{
+		indices.push_back(f);
+	}
+
+	_meshes[0] = vrbase::MeshRef(new vrbase::Mesh(vertices, indices));
 }
 
 ViewerApp::~ViewerApp() {

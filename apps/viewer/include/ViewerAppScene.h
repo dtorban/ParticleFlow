@@ -22,6 +22,7 @@ public:
 	void draw(const vrbase::SceneContext& context);
 
 protected:
+	void initialize();
 	void update();
 
 private:

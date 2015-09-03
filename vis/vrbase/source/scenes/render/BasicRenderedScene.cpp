@@ -8,6 +8,7 @@
 
 #include <vrbase/scenes/render/BasicRenderedScene.h>
 #include <string>
+#include <iostream>
 
 namespace vrbase {
 
@@ -83,6 +84,8 @@ BasicRenderedScene::~BasicRenderedScene() {
 }
 
 void BasicRenderedScene::init() {
+
+	std::cout << "INIT!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
 	getInnerScene()->init();
     _shader->init();
 }
@@ -101,6 +104,7 @@ void BasicRenderedScene::setShader(ShaderRef shader) {
 
 void BasicRenderedScene::setShaderParameters(const Camera& camera,
 		ShaderRef shader) {
+
 	shader->setParameter("Model", camera.getObjectToWorldMatrix());
 	shader->setParameter("View", camera.getViewMatrix());
 	shader->setParameter("Projection", camera.getProjetionMatrix());

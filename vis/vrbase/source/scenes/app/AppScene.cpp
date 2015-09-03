@@ -17,6 +17,7 @@ AppScene::~AppScene() {
 }
 
 void AppScene::init() {
+	initialize();
 	update();
 	_lastAppVersion = _app->getVersion();
 }

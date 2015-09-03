@@ -7,14 +7,25 @@
  */
 
 #include <ViewerAppScene.h>
+#include "vrbase/scenes/render/BasicRenderedScene.h"
+#include "vrbase/scenes/MeshScene.h"
 
-ViewerAppScene::ViewerAppScene(ViewerApp* viewerApp) : vrbase::AppScene(viewerApp), _viewerApp(viewerApp) {
+ViewerAppScene::ViewerAppScene(ViewerApp* viewerApp) : vrbase::AppScene(viewerApp), _viewerApp(viewerApp), _scenes(0) {
 }
 
 ViewerAppScene::~ViewerAppScene() {
 }
 
+void ViewerAppScene::initialize() {
+	_scenes = vrbase::CompositeSceneRef(new vrbase::CompositeScene());
+	_scenes->init();
+}
+
 void ViewerAppScene::update() {
+	vrbase::SceneRef scene = vrbase::SceneRef(new vrbase::MeshScene(_viewerApp->_meshes[0]));
+	scene = vrbase::SceneRef(new vrbase::BasicRenderedScene(scene));
+	scene->init();
+	_scenes->addScene(scene);
 }
 
 const vrbase::Box ViewerAppScene::getBoundingBox() {

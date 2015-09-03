@@ -58,6 +58,7 @@ const Box CompositeScene::getBoundingBox() {
 void CompositeScene::draw(const SceneContext& context) {
 	for (int f = 0; f < _scenes.size(); f++)
 	{
+
 		_scenes[f]->draw(context);
 	}
 }

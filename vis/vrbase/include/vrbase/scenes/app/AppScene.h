@@ -23,6 +23,7 @@ public:
 	void updateFrame();
 
 protected:
+	virtual void initialize() = 0;
 	virtual void update() = 0;
 
 private:
