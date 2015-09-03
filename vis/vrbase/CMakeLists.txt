@@ -20,6 +20,7 @@ source/cameras/OffAxisCamera.cpp
 source/cameras/WorldCamera.cpp
 source/events/BasicMouseListener.cpp
 source/events/BasicTouchListener.cpp
+source/scenes/app/AppScene.cpp
 source/scenes/render/BasicRenderedScene.cpp
 source/scenes/BlankScene.cpp
 source/scenes/BufferedScene.cpp
@@ -42,6 +43,7 @@ include/vrbase/cameras/OffAxisCamera.h
 include/vrbase/cameras/WorldCamera.h
 include/vrbase/events/BasicMouseListener.h
 include/vrbase/events/BasicTouchListener.h
+include/vrbase/scenes/app/AppScene.h
 include/vrbase/scenes/render/BasicRenderedScene.h
 include/vrbase/scenes/BlankScene.h
 include/vrbase/scenes/BufferedScene.h
@@ -59,6 +61,7 @@ include/vrbase/GraphicsObject.h
 include/vrbase/Mesh.h
 include/vrbase/Shader.h
 include/vrbase/Texture.h
+include/vrbase/VersionedItem.h
 )
 
 source_group("Header Files" FILES ${HEADERFILES})

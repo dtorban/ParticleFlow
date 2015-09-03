@@ -14,10 +14,11 @@
 #include "MVRCore/Thread.h"
 #include "MVRCore/ConfigVal.H"
 #include "vrbase/EventListener.h"
+#include "vrbase/VersionedItem.h"
 
 namespace vrbase {
 
-class AppBase : public MinVR::AbstractMVRApp {
+class AppBase : public MinVR::AbstractMVRApp, public VersionedItem {
 public:
 	virtual ~AppBase();
 

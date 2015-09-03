@@ -12,7 +12,11 @@
 #include "vrbase/Scene.h"
 #include <vector>
 
+
 namespace vrbase {
+
+class CompositeScene;
+typedef std::shared_ptr<class CompositeScene> CompositeSceneRef;
 
 class CompositeScene : public Scene {
 public:

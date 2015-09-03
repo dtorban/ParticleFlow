@@ -11,3 +11,4 @@ set (CMAKE_VERBOSE_MAKEFILE TRUE)
 
 add_subdirectory(benchmark)
 add_subdirectory(hurricane)
+add_subdirectory(viewer)

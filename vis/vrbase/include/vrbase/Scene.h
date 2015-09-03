@@ -11,6 +11,7 @@
 
 #include "vrbase/Box.h"
 #include "vrbase/scenes/SceneContext.h"
+#include "vrbase/VersionedItem.h"
 #include <memory>
 
 namespace vrbase {
@@ -18,17 +19,15 @@ namespace vrbase {
 class Scene;
 typedef std::shared_ptr<class Scene> SceneRef;
 
-class Scene {
+class Scene : public VersionedItem {
 public:
 	virtual ~Scene() {}
 
 	virtual void init() {}
 	virtual void updateFrame() {}
-	virtual int getVersion() const { return 0; }
 
 	virtual const Box getBoundingBox() = 0;
 	virtual void draw(const SceneContext& context) = 0;
-
 };
 
 }

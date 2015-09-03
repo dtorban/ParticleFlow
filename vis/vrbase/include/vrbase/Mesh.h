@@ -12,19 +12,19 @@
 #include <memory>
 #include "vrbase/Box.h"
 #include <vector>
+#include "vrbase/VersionedItem.h"
 
 namespace vrbase {
 
 class Mesh;
 typedef std::shared_ptr<Mesh> MeshRef;
 
-class Mesh {
+class Mesh : public VersionedItem {
 public:
 	Mesh(const std::vector<glm::vec3> &vertices, const std::vector<unsigned int>& indices);
 	Mesh(const std::vector<glm::vec3> &vertices, const std::vector<glm::vec3> &normals, const std::vector<unsigned int>& indices);
 	virtual ~Mesh();
 
-	int getVersion() const;
 	const Box getBoundingBox() const;
 
 	const std::vector<unsigned int>& getIndices() const;
@@ -34,15 +34,11 @@ public:
 	const std::vector<glm::vec3>& getNormals() const;
 	void setNormals(const std::vector<glm::vec3>& normals);
 
-protected:
-	void incrementVersion();
-
 private:
 	void calculateBoundingBox();
 	void calculateNormals();
 	void init();
 
-	int _versionId;
 	Box* _boundingBox;
 	bool _hasNormals;
 	std::vector<glm::vec3> _vertices;

@@ -12,12 +12,12 @@
 namespace vrbase {
 
 Mesh::Mesh(const std::vector<glm::vec3>& vertices,
-		const std::vector<unsigned int>& indices) : _versionId(0), _vertices(vertices), _indices(indices), _boundingBox(0), _hasNormals(false) {
+		const std::vector<unsigned int>& indices) : _vertices(vertices), _indices(indices), _boundingBox(0), _hasNormals(false) {
 	init();
 }
 
 Mesh::Mesh(const std::vector<glm::vec3>& vertices, const std::vector<glm::vec3> &normals,
-		const std::vector<unsigned int>& indices) : _versionId(0), _vertices(vertices), _normals(normals), _indices(indices), _boundingBox(0), _hasNormals(true) {
+		const std::vector<unsigned int>& indices) : _vertices(vertices), _normals(normals), _indices(indices), _boundingBox(0), _hasNormals(true) {
 	init();
 }
 
@@ -63,16 +63,8 @@ void Mesh::setNormals(const std::vector<glm::vec3>& normals)
 	incrementVersion();
 }
 
-int Mesh::getVersion() const {
-	return _versionId;
-}
-
 const Box Mesh::getBoundingBox() const {
 	return *_boundingBox;
-}
-
-void Mesh::incrementVersion() {
-	_versionId++;
 }
 
 void Mesh::calculateBoundingBox() {
