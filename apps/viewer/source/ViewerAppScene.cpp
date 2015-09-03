@@ -10,7 +10,7 @@
 #include "vrbase/scenes/render/BasicRenderedScene.h"
 #include "vrbase/scenes/MeshScene.h"
 
-ViewerAppScene::ViewerAppScene(ViewerApp* viewerApp) : vrbase::AppScene(viewerApp), _viewerApp(viewerApp), _scenes(0) {
+ViewerAppScene::ViewerAppScene(ViewerApp* viewerApp) : vrbase::AppScene(viewerApp), _viewerApp(viewerApp), _scenes(0), _meshManager(&(viewerApp->_meshes)) {
 }
 
 ViewerAppScene::~ViewerAppScene() {
@@ -22,10 +22,17 @@ void ViewerAppScene::initialize() {
 }
 
 void ViewerAppScene::update() {
-	vrbase::SceneRef scene = vrbase::SceneRef(new vrbase::MeshScene(_viewerApp->_meshes[0]));
-	scene = vrbase::SceneRef(new vrbase::BasicRenderedScene(scene));
-	scene->init();
-	_scenes->addScene(scene);
+	_meshManager.refresh();
+	_scenes->clear();
+	for (int f = 0; f < _viewerApp->_meshes.size(); f++)
+	{
+		std::cout << f << std::endl;
+		vrbase::SceneRef scene = _meshManager.get(_viewerApp->_meshes[f]);
+		scene = vrbase::SceneRef(new vrbase::BasicRenderedScene(scene));
+		_scenes->addScene(scene);
+	}
+
+	_scenes->init();
 }
 
 const vrbase::Box ViewerAppScene::getBoundingBox() {

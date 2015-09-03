@@ -11,7 +11,7 @@
 
 #include "PFVis/PartFlowApp.h"
 #include "vrbase/Mesh.h"
-#include <map>
+#include <vector>
 
 class ViewerAppScene;
 
@@ -21,10 +21,11 @@ public:
 	ViewerApp();
 	virtual ~ViewerApp();
 
+	void doUserInput(const std::vector<MinVR::EventRef> &events, double synchronizedTime);
 	vrbase::SceneRef createAppScene(int threadId, MinVR::WindowRef window);
 
 private:
-	std::map<int, vrbase::MeshRef> _meshes;
+	std::vector<vrbase::MeshRef> _meshes;
 };
 
 #endif /* VIEWERAPP_H_ */

@@ -44,6 +44,8 @@ include/vrbase/cameras/WorldCamera.h
 include/vrbase/events/BasicMouseListener.h
 include/vrbase/events/BasicTouchListener.h
 include/vrbase/scenes/app/AppScene.h
+include/vrbase/scenes/management/ObjectSceneFactory.h
+include/vrbase/scenes/management/ObjectSceneManager.h
 include/vrbase/scenes/render/BasicRenderedScene.h
 include/vrbase/scenes/BlankScene.h
 include/vrbase/scenes/BufferedScene.h

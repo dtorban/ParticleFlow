@@ -64,3 +64,7 @@ void CompositeScene::draw(const SceneContext& context) {
 }
 
 }
+
+void vrbase::CompositeScene::clear() {
+	_scenes.clear();
+}

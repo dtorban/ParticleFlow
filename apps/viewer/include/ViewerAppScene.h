@@ -12,6 +12,7 @@
 #include "ViewerApp.h"
 #include "vrbase/scenes/app/AppScene.h"
 #include "vrbase/scenes/CompositeScene.h"
+#include "vrbase/scenes/MeshScene.h"
 
 class ViewerAppScene : public vrbase::AppScene {
 public:
@@ -28,6 +29,7 @@ protected:
 private:
 	ViewerApp* _viewerApp;
 	vrbase::CompositeSceneRef _scenes;
+	vrbase::MeshManager _meshManager;
 };
 
 #endif /* VIEWERAPPSCENE_H_ */

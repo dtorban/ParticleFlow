@@ -31,6 +31,7 @@ public:
 	void draw(const SceneContext& context);
 
 	void addScene(SceneRef scene);
+	void clear();
 
 private:
 	std::vector<SceneRef> _scenes;

@@ -13,6 +13,7 @@
 #include "vrbase/Scene.h"
 #include "vrbase/Mesh.h"
 #include "vrbase/GraphicsObject.h"
+#include "vrbase/scenes/management/ObjectSceneManager.h"
 
 namespace vrbase {
 
@@ -45,6 +46,9 @@ private:
 	int _numIndices;
 };
 
+typedef SceneManager<MeshRef, MeshScene> MeshManager;
+
 } /* namespace vrbase */
+
 
 #endif /* MESHSCENE_H_ */

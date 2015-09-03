@@ -84,8 +84,6 @@ BasicRenderedScene::~BasicRenderedScene() {
 }
 
 void BasicRenderedScene::init() {
-
-	std::cout << "INIT!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
 	getInnerScene()->init();
     _shader->init();
 }
