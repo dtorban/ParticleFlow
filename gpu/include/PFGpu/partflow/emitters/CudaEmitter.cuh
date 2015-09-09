@@ -15,6 +15,7 @@
 #include <map>
 #include <iostream>
 #include <stdio.h>
+#include "PFGpu/CudaHelper.cuh"
 
 namespace PFCore {
 namespace partflow {
@@ -74,7 +75,9 @@ inline void CudaEmitter<Strategy>::emitParticles(ParticleSetView& particleSet, i
 	math::RandomValue rnd = *(_randValues[deviceId]);
 	rnd.randomize(0);
 	
-	CudaEmitter_emitParticle<Strategy><<<1024, 512>>>(this->_strategy, particleSet, step, rnd, init);
+	//std::cout << "emit cuda" << std::endl;
+	CudaEmitter_emitParticle<Strategy><<<512, 128>>>(this->_strategy, particleSet, step, rnd, init);
+	CudaHelper::checkError();
 	cudaDeviceSynchronize();
 }
 

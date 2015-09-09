@@ -48,7 +48,7 @@ __global__ void CudaParticleUpdater_updateParticles(Strategy strategy, ParticleS
 void CudaParticleUpdater<Strategy>::updateParticles(ParticleSetView& particleSet, int step, float time)
 {
 //	std::cout << "update cuda!" << std::endl;
-	CudaParticleUpdater_updateParticles<Strategy><<<1024, 512>>>(_strategy, particleSet, step, time);
+	CudaParticleUpdater_updateParticles<Strategy><<<512, 128>>>(_strategy, particleSet, step, time);
 	cudaDeviceSynchronize();
 }
 

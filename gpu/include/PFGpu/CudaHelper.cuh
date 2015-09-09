@@ -10,12 +10,14 @@
 #define CUDAHELPER_H_
 
 #include "string.h"
+#include <iostream>
 
 namespace PFCore {
 
 class CudaHelper {
 public:
 	static void copy(void* dst, int dstDeviceId, const void* src, int srcDeviceId, size_t size);
+	static void checkError();
 };
 
 inline void CudaHelper::copy(void* dst, int dstDeviceId, const void* src, int srcDeviceId, size_t size)
@@ -44,6 +46,18 @@ inline void CudaHelper::copy(void* dst, int dstDeviceId, const void* src, int sr
 		cudaSetDevice(dstDeviceId);
 		cudaMemcpyPeer(dst, dstDeviceId, src, srcDeviceId, size);
 	}
+}
+
+inline void CudaHelper::checkError()
+{
+  // check for error
+  cudaError_t error = cudaGetLastError();
+  if(error != cudaSuccess)
+  {
+    // print the CUDA error message and exit
+    std::cout << "CUDA error: " << cudaGetErrorString(error) << std::endl;
+    exit(-1);
+  }
 }
 
 } /* namespace PFCore */

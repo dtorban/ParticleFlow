@@ -17,6 +17,7 @@
 #include <PFCore/partflow/advectors/strategies/RungaKutta4.h>
 #include <PFCore/partflow/vectorFields/ConstantField.h>
 #include <PFCore/partflow/vectorFields/ParticleFieldVolume.h>
+#include "PFGpu/CudaHelper.cuh"
 
 namespace PFCore {
 namespace partflow {
@@ -59,7 +60,8 @@ template<typename Strategy, typename VField>
 void CudaVectorFieldAdvector<Strategy, VField>::advectParticles(ParticleSetView& particleSet, int step, float time, float dt, int iterations) {
 	//std::cout << "Advect cuda!" << std::endl;
 	int prevStep = (particleSet.getNumSteps() + step - 1) % particleSet.getNumSteps();
-	CudaVectorFieldAdvector_advectParticle<Strategy, VField><<<1024, 512>>>(_strategy, _vectorField, particleSet, step, prevStep, time, dt, iterations);
+	CudaVectorFieldAdvector_advectParticle<Strategy, VField><<<512, 128>>>(_strategy, _vectorField, particleSet, step, prevStep, time, dt, iterations);
+	CudaHelper::checkError();
 	cudaDeviceSynchronize();
 }
 

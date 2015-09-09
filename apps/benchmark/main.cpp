@@ -35,14 +35,14 @@ void printParticleSet(const ParticleSetView& view, bool printVelocity = false, i
 
 int main(int argc, char** argv) {
 	
-	for (int i = 32; i < 1024; i += 32)
+	for (int i = 32; i < 512; i += 32*2)
 	{
 		int numParticles = 1024 * i;
 
 		cout << "Num Particles: " << numParticles << endl;
 		cout << "--------------------------" << endl;
 
-		for (int gpuId = -1; gpuId < 4; gpuId++)
+		for (int gpuId = 0; gpuId < 4; gpuId++)
 		{
 			GpuParticleFactory psetFactory;
 			ParticleSetRef localSet = psetFactory.createLocalParticleSet(numParticles, 0, 0, 1);
@@ -72,10 +72,10 @@ int main(int argc, char** argv) {
 
 			AdvectorRef advector = AdvectorRef(new GpuVectorFieldAdvector<RungaKutta4<ParticleFieldVolume>, ParticleFieldVolume>(RungaKutta4<ParticleFieldVolume>(), ParticleFieldVolume(*deviceField, 0)));
 			float dt = 0.1f;
-			for (int f = 0; f < (gpuId < 0 ? 1 : 10); f++)
+			for (int f = 0; f < (gpuId < 0 ? 1 : 100); f++)
 			{
 				partFlowCounterStart("advect");
-				advector->advectParticles(*deviceSet, f, dt*float(f), dt);
+				advector->advectParticles(*deviceSet, f, dt*float(f), dt, 5);
 				partFlowCounterStop("advect");
 			}
 
