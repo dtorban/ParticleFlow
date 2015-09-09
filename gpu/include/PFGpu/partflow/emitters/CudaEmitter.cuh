@@ -34,7 +34,7 @@ private:
 template<typename Strategy>
 inline CudaEmitter<Strategy>::CudaEmitter(const Strategy& strategy) : BasicEmitter<Strategy>(strategy), _randValues()
 {
-	std::cout << "Created strategry." << std::endl;
+	//std::cout << "Created strategry." << std::endl;
 }
 
 template<typename Strategy>
@@ -74,7 +74,7 @@ inline void CudaEmitter<Strategy>::emitParticles(ParticleSetView& particleSet, i
 	math::RandomValue rnd = *(_randValues[deviceId]);
 	rnd.randomize(0);
 	
-	CudaEmitter_emitParticle<Strategy><<<1024, particleSet.getNumParticles()/1024>>>(this->_strategy, particleSet, step, rnd, init);
+	CudaEmitter_emitParticle<Strategy><<<1024, 512>>>(this->_strategy, particleSet, step, rnd, init);
 	cudaDeviceSynchronize();
 }
 

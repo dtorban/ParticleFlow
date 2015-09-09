@@ -26,21 +26,11 @@ CudaParticleSet::CudaParticleSet(int deviceId, int numParticles, int numAttribut
 	_numSteps = numSteps;
 	_deviceId = deviceId;
 	_createdArrays = true;
-	if (_deviceId < 0)
-	{
-		cudaMallocHost(&_positions, numSteps*numParticles*sizeof(math::vec3));
-		cudaMallocHost(&_attributes, numSteps*numParticles*numAttributes*sizeof(int));
-		cudaMallocHost(&_values, numSteps*numParticles*numValues*sizeof(float));
-		cudaMallocHost(&_vectors, numSteps*numParticles*numVectors*sizeof(math::vec3));
-	}
-	else
-	{
-		cudaSetDevice(deviceId);
-		cudaMalloc(&_positions, numSteps*numParticles*sizeof(math::vec3));
-		cudaMalloc(&_attributes, numSteps*numParticles*numAttributes*sizeof(int));
-		cudaMalloc(&_values, numSteps*numParticles*numValues*sizeof(float));
-		cudaMalloc(&_vectors, numSteps*numParticles*numVectors*sizeof(math::vec3));
-	}
+	cudaSetDevice(deviceId);
+	cudaMalloc(&_positions, numSteps*numParticles*sizeof(math::vec3));
+	cudaMalloc(&_attributes, numSteps*numParticles*numAttributes*sizeof(int));
+	cudaMalloc(&_values, numSteps*numParticles*numValues*sizeof(float));
+	cudaMalloc(&_vectors, numSteps*numParticles*numVectors*sizeof(math::vec3));
 }
 
 CudaParticleSet::CudaParticleSet(GpuResource* resource, int numParticles, int numAttributes, int numValues, int numVectors, int numSteps) : ParticleSet() {
@@ -69,21 +59,11 @@ CudaParticleSet::CudaParticleSet(GpuResource* resource, int numParticles, int nu
 CudaParticleSet::~CudaParticleSet() {
 	if (_createdArrays)
 	{
-		if (_deviceId < 0)
-		{
-			cudaFreeHost(_positions);
-			cudaFreeHost(_attributes);
-			cudaFreeHost(_values);
-			cudaFreeHost(_vectors);
-		}
-		else
-		{
-			cudaSetDevice(_deviceId);
-			cudaFree(_positions);
-			cudaFree(_attributes);
-			cudaFree(_values);
-			cudaFree(_vectors);
-		}
+		cudaSetDevice(_deviceId);
+		cudaFree(_positions);
+		cudaFree(_attributes);
+		cudaFree(_values);
+		cudaFree(_vectors);
 	}
 }
 
@@ -95,7 +75,14 @@ void CudaParticleSet::copy(const ParticleSetView& particleSet, void* dst, const 
 extern "C"
 ParticleSet* createCudaParticleSet(int deviceId, int numParticles, int numAttributes, int numValues, int numVectors, int numSteps)
 {
-	return new CudaParticleSet(deviceId, numParticles, numAttributes, numValues, numVectors, numSteps);
+	if (deviceId < 0)
+	{
+		return new CudaParticleSet(numParticles, numAttributes, numValues, numVectors, numSteps);
+	}
+	else
+	{
+		return new CudaParticleSet(deviceId, numParticles, numAttributes, numValues, numVectors, numSteps);
+	}
 }
 
 extern "C"

@@ -34,10 +34,10 @@ public:
 	ParticleSetRef createParticleSet(int deviceId, int numParticles, int numAttributes = 0, int numValues = 0, int numVectors = 0, int numSteps = 1)
 	{
 #ifdef USE_CUDA
-		std::cout << "Use cuda particle set" << std::endl;
+		//std::cout << "Use cuda particle set" << std::endl;
 		return ParticleSetRef(createCudaParticleSet(deviceId, numParticles, numAttributes, numValues, numVectors, numSteps));
 #else
-		std::cout << "Use cpu particle set" << std::endl;
+		//std::cout << "Use cpu particle set" << std::endl;
 		return ParticleFactory::createParticleSet(deviceId, numParticles, numAttributes, numValues, numVectors, numSteps);
 #endif
 	}
@@ -48,7 +48,7 @@ public:
 		//std::cout << "Use cuda particle set" << std::endl;
 		return ParticleSetRef(createCudaParticleSetFromResource(resource, numParticles, numAttributes, numValues, numVectors, numSteps));
 #else
-		std::cout << "Use cpu particle set" << std::endl;
+		//std::cout << "Use cpu particle set" << std::endl;
 		return ParticleFactory::createParticleSet(resource->getDeviceId(), numParticles, numAttributes, numValues, numVectors, numSteps);
 #endif
 	}
@@ -56,10 +56,10 @@ public:
 	ParticleFieldRef createParticleField(int deviceId, int numValues, int numVectors, math::vec4 start, math::vec4 length, math::vec4 size)
 	{
 #ifdef USE_CUDA
-		std::cout << "Use cuda particle set" << std::endl;
+		//std::cout << "Use cuda particle set" << std::endl;
 		return ParticleFieldRef(createCudaParticleField(deviceId, numValues, numVectors, start, length, size));
 #else
-		std::cout << "Use cpu particle set" << std::endl;
+		//std::cout << "Use cpu particle set" << std::endl;
 		return ParticleFactory::createParticleField(deviceId, numValues, numVectors, start, length, size);
 #endif
 	}
