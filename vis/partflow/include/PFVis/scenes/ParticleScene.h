@@ -10,7 +10,7 @@
 #define PARTICLESCENE_H_
 
 #include "vrbase/scenes/SceneAdapter.h"
-#include "vrbase/GraphicsObject.h"
+#include "vrbase/VboObject.h"
 #include "GL/glew.h"
 #include "PFCore/partflow/ParticleSetView.h"
 #include "PFGpu/GpuResource.h"
@@ -21,7 +21,7 @@ namespace partflow {
 
 class ParticleScene : public vrbase::SceneAdapter {
 public:
-	ParticleScene(vrbase::SceneRef scene, vrbase::GraphicsObject* graphicsObject, PFCore::partflow::ParticleSetView* particleSet, ParticleSceneUpdater* sceneUpdater, const vrbase::Box& boundingBox, int deviceId = -1);
+	ParticleScene(vrbase::SceneRef scene, vrbase::VboObject* graphicsObject, PFCore::partflow::ParticleSetView* particleSet, ParticleSceneUpdater* sceneUpdater, const vrbase::Box& boundingBox, int deviceId = -1);
 	virtual ~ParticleScene();
 
 	void init();
@@ -32,7 +32,7 @@ public:
 private:
 	void updateVao(int positionOffset);
 
-	vrbase::GraphicsObject* _graphicsObject;
+	vrbase::VboObject* _graphicsObject;
 	vrbase::Box _boundingBox;
 
 	GLuint _vao[2];

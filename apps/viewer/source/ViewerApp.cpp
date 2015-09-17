@@ -10,6 +10,8 @@
 #include <vector>
 
 #include "ViewerAppScene.h"
+#include "vrbase/scenes/render/BasicRenderedScene.h"
+#include "vrbase/scenes/MeshScene.h"
 
 ViewerApp::ViewerApp() : PFVis::partflow::PartFlowApp() {
 
@@ -57,5 +59,29 @@ void ViewerApp::doUserInput(const std::vector<MinVR::EventRef>& events,
 
 vrbase::SceneRef ViewerApp::createAppScene(int threadId,
 		MinVR::WindowRef window) {
-	return vrbase::SceneRef(new ViewerAppScene(this));
+
+	std::vector<glm::vec3> vertices;
+	vertices.push_back(glm::vec3(-1.0f, -1.0, 0.0));
+	vertices.push_back(glm::vec3(-1.0f, 1.0, 0.0));
+	vertices.push_back(glm::vec3(1.0f, 1.0, 0.0));
+
+	vertices.push_back(glm::vec3(1.0f, 1.0, 0.0));
+	vertices.push_back(glm::vec3(1.0f, -1.0, 0.0));
+	vertices.push_back(glm::vec3(-1.0f, -1.0, 0.0));
+
+	std::vector<unsigned int> indices;
+	for (int f = 0; f < vertices.size(); f++)
+	{
+		//vertices[f] += glm::vec3(pos, 0.0f);
+		indices.push_back(f);
+	}
+
+	vrbase::MeshRef	mesh = vrbase::MeshRef(new vrbase::Mesh(vertices, indices));
+	vrbase::SceneRef scene = vrbase::SceneRef(new vrbase::MeshScene(mesh));
+	scene = vrbase::SceneRef(new vrbase::BasicRenderedScene(scene));
+	return scene;
+	//return vrbase::SceneRef(new ViewerAppScene(this));
+}
+
+void ViewerApp::drawGraphics(const vrbase::SceneContext& context) {
 }

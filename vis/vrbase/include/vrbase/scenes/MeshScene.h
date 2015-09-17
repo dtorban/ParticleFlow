@@ -12,12 +12,12 @@
 #include "GL/glew.h"
 #include "vrbase/Scene.h"
 #include "vrbase/Mesh.h"
-#include "vrbase/GraphicsObject.h"
+#include "vrbase/VboObject.h"
 #include "vrbase/scenes/management/ObjectSceneManager.h"
 
 namespace vrbase {
 
-class MeshScene : public Scene, public GraphicsObject {
+class MeshScene : public Scene, public VboObject {
 public:
 	MeshScene(MeshRef mesh);
 	virtual ~MeshScene();

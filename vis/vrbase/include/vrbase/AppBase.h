@@ -34,6 +34,7 @@ public:
 	virtual void doUserInput(const std::vector<MinVR::EventRef> &events, double synchronizedTime);
 	virtual void preDrawComputation(double synchronizedTime);
 	virtual SceneRef createScene(int threadId, MinVR::WindowRef window);
+	virtual void drawGraphics(const SceneContext& context);
 
 protected:
 	AppBase();

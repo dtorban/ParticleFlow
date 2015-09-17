@@ -12,20 +12,18 @@
 #include <memory>
 #include "vrbase/Box.h"
 #include <vector>
-#include "vrbase/VersionedItem.h"
+#include "vrbase/GraphicsObject.h"
 
 namespace vrbase {
 
 class Mesh;
 typedef std::shared_ptr<Mesh> MeshRef;
 
-class Mesh : public VersionedItem {
+class Mesh : public GraphicsObject {
 public:
 	Mesh(const std::vector<glm::vec3> &vertices, const std::vector<unsigned int>& indices);
 	Mesh(const std::vector<glm::vec3> &vertices, const std::vector<glm::vec3> &normals, const std::vector<unsigned int>& indices);
 	virtual ~Mesh();
-
-	const Box getBoundingBox() const;
 
 	const std::vector<unsigned int>& getIndices() const;
 	void setIndices(const std::vector<unsigned int>& indices);
@@ -44,6 +42,26 @@ private:
 	std::vector<glm::vec3> _vertices;
 	std::vector<glm::vec3> _normals;
 	std::vector<unsigned int> _indices;
+
+// Graphics code
+public:
+	const Box getBoundingBox();
+	void draw(const SceneContext& context);
+	void generateVaoAttributes(int &location);
+	int bindIndices();
+
+protected:
+	void initContextItem();
+	bool updateContextItem(bool changed);
+	void destroyContextItem();
+
+private:
+	void createVBO();
+	void deleteVBO();
+
+	GL_CONTEXT_ITEM GLuint _vao;
+	GL_CONTEXT_ITEM GLuint _vbo;
+	GL_CONTEXT_ITEM GLuint _indexVbo;
 };
 
 } /* namespace vrbase */

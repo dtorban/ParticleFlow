@@ -63,6 +63,7 @@ include/vrbase/GraphicsObject.h
 include/vrbase/Mesh.h
 include/vrbase/Shader.h
 include/vrbase/Texture.h
+include/vrbase/VboObject.h
 include/vrbase/VersionedItem.h
 )
 

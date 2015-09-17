@@ -63,7 +63,7 @@ void Mesh::setNormals(const std::vector<glm::vec3>& normals)
 	incrementVersion();
 }
 
-const Box Mesh::getBoundingBox() const {
+const Box Mesh::getBoundingBox() {
 	return *_boundingBox;
 }
 
@@ -123,5 +123,102 @@ void Mesh::calculateNormals() {
 		}
 	}
 }
+
+// Graphics code
+
+GL_CONTEXT_ITEM_INIT GLuint Mesh::_vao = 0;
+GL_CONTEXT_ITEM_INIT GLuint Mesh::_vbo = 0;
+GL_CONTEXT_ITEM_INIT GLuint Mesh::_indexVbo = 0;
+
+void Mesh::createVBO() {
+	std::cout << "Update VBO" << std::endl;
+	const std::vector<glm::vec3>& vertices = _vertices;
+	const std::vector<glm::vec3>& normals = _normals;
+	const std::vector<unsigned int>& indices = _indices;
+	int numNormals = normals.size();
+
+	glGenVertexArrays(1, &_vao);
+	glGenBuffers(1, &_vbo);
+	glGenBuffers(1, &_indexVbo);
+
+	int numVertices = vertices.size();
+	int numIndices = indices.size();
+
+	glBindBuffer(GL_ARRAY_BUFFER, _vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*numVertices*3 + sizeof(GLfloat)*numNormals*3, 0, GL_DYNAMIC_DRAW);
+
+	glBindVertexArray(_vao);
+	int loc = 0;
+	generateVaoAttributes(loc);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexVbo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int)*numIndices, 0, GL_DYNAMIC_DRAW);
+
+	glm::vec3* verts = new glm::vec3[numVertices];
+	glm::vec3* norms = new glm::vec3[numNormals];
+	unsigned int* ind = new unsigned int[numIndices];
+
+	std::copy(vertices.begin(), vertices.end(), verts);
+	std::copy(normals.begin(), normals.end(), norms);
+	std::copy(indices.begin(), indices.end(), ind);
+
+	glBindBuffer(GL_ARRAY_BUFFER, _vbo);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(GLfloat)*numVertices*3, verts);
+	glBufferSubData(GL_ARRAY_BUFFER, sizeof(GLfloat)*numVertices*3, sizeof(GLfloat)*numNormals*3, norms);
+
+	// create indexes
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexVbo);
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(unsigned int)*numIndices, ind);
+
+	delete[] verts;
+	delete[] norms;
+	delete[] ind;
+}
+
+void Mesh::generateVaoAttributes(int& location) {
+	glBindBuffer(GL_ARRAY_BUFFER, _vbo);
+	glEnableVertexAttribArray(location);
+	glVertexAttribPointer(location, 3, GL_FLOAT, GL_FALSE, 3*sizeof(GLfloat), (char*)0 + 0*sizeof(GLfloat));
+	glEnableVertexAttribArray(++location);
+	glVertexAttribPointer(location, 3, GL_FLOAT, GL_FALSE, 3*sizeof(GLfloat), (char*)0 + sizeof(GLfloat)*_vertices.size()*3);
+}
+
+int Mesh::bindIndices() {
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexVbo);
+	return _indices.size();
+}
+
+void Mesh::deleteVBO() {
+	glDeleteVertexArrays(1, &_vao);
+	glDeleteBuffers(1, &_vbo);
+	glDeleteBuffers(1, &_indexVbo);
+}
+
+void Mesh::draw(const SceneContext& context) {
+	glBindVertexArray(_vao);
+	int numIndices = bindIndices();
+
+	glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, 0);
+	glBindVertexArray(0);
+}
+
+void Mesh::initContextItem() {
+	createVBO();
+}
+
+bool Mesh::updateContextItem(bool changed) {
+	if (changed)
+	{
+		deleteVBO();
+		createVBO();
+	}
+
+	return true;
+}
+
+void Mesh::destroyContextItem() {
+	deleteVBO();
+}
+
 
 } /* namespace vrbase */

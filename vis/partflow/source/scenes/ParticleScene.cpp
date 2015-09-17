@@ -15,7 +15,7 @@
 namespace PFVis {
 namespace partflow {
 
-ParticleScene::ParticleScene(vrbase::SceneRef scene, vrbase::GraphicsObject* graphicsObject, PFCore::partflow::ParticleSetView* particleSet, ParticleSceneUpdater* sceneUpdater, const vrbase::Box& boundingBox, int deviceId) : vrbase::SceneAdapter(scene), _graphicsObject(graphicsObject),
+ParticleScene::ParticleScene(vrbase::SceneRef scene, vrbase::VboObject* graphicsObject, PFCore::partflow::ParticleSetView* particleSet, ParticleSceneUpdater* sceneUpdater, const vrbase::Box& boundingBox, int deviceId) : vrbase::SceneAdapter(scene), _graphicsObject(graphicsObject),
 			_vbo(0), _particleSet(particleSet), _sceneUpdater(sceneUpdater), _boundingBox(boundingBox), _deviceId(deviceId), _gpuResource(0) {
 }
 

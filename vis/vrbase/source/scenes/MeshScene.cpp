@@ -17,20 +17,21 @@ MeshScene::MeshScene(MeshRef mesh) : _mesh(mesh) {
 }
 
 MeshScene::~MeshScene() {
-	deleteVBO();
+	//deleteVBO();
 }
 
 void MeshScene::init() {
-
-	updateVBO();
+	_mesh->initContext();
+	//updateVBO();
 }
 
 void MeshScene::updateFrame() {
-	if (_meshVersionId != _mesh->getVersion())
+	_mesh->updateContext();
+	/*if (_meshVersionId != _mesh->getVersion())
 	{
 		updateVBO();
 		_meshVersionId = _mesh->getVersion();
-	}
+	}*/
 }
 
 const Box MeshScene::getBoundingBox() {
@@ -43,7 +44,7 @@ int MeshScene::getVersion() const {
 
 void MeshScene::updateVBO() {
 
-	const std::vector<glm::vec3>& vertices = _mesh->getVertices();
+/*	const std::vector<glm::vec3>& vertices = _mesh->getVertices();
 	const std::vector<glm::vec3>& normals = _mesh->getNormals();
 	const std::vector<unsigned int>& indices = _mesh->getIndices();
 	int numNormals = normals.size();
@@ -91,37 +92,40 @@ void MeshScene::updateVBO() {
 
 	delete[] verts;
 	delete[] norms;
-	delete[] ind;
+	delete[] ind;*/
 }
 
 void MeshScene::generateVaoAttributes(int& location) {
-	glBindBuffer(GL_ARRAY_BUFFER, _vbo);
+	_mesh->generateVaoAttributes(location);
+	/*glBindBuffer(GL_ARRAY_BUFFER, _vbo);
 	glEnableVertexAttribArray(location);
 	glVertexAttribPointer(location, 3, GL_FLOAT, GL_FALSE, 3*sizeof(GLfloat), (char*)0 + 0*sizeof(GLfloat));
 	glEnableVertexAttribArray(++location);
-	glVertexAttribPointer(location, 3, GL_FLOAT, GL_FALSE, 3*sizeof(GLfloat), (char*)0 + sizeof(GLfloat)*_numVertices*3);
+	glVertexAttribPointer(location, 3, GL_FLOAT, GL_FALSE, 3*sizeof(GLfloat), (char*)0 + sizeof(GLfloat)*_numVertices*3);*/
 }
 
 int MeshScene::bindIndices() {
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexVbo);
-	return _numIndices;
+	_mesh->bindIndices();
+	/*glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexVbo);
+	return _numIndices;*/
 }
 
 void MeshScene::deleteVBO() {
-	if (_vboInitialized)
+	/*if (_vboInitialized)
 	{
 		glDeleteVertexArrays(1, &_vao);
 		glDeleteBuffers(1, &_vbo);
 		glDeleteBuffers(1, &_indexVbo);
-	}
+	}*/
 }
 
 void  MeshScene::draw(const SceneContext& context) {
-	glBindVertexArray(_vao);
+	/*glBindVertexArray(_vao);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexVbo);
 
 	glDrawElements(GL_TRIANGLES, _numIndices, GL_UNSIGNED_INT, 0);
-	glBindVertexArray(0);
+	glBindVertexArray(0);*/
+	_mesh->draw(context);
 }
 
 } /* namespace vrbase */

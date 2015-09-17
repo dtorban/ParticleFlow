@@ -72,6 +72,7 @@ void AppBase::drawGraphics(int threadId, MinVR::AbstractCameraRef camera,
 	OffAxisCamera contextCamera(*offAxisCamera);
 	context.setCamera(contextCamera);
 	_threadScenes[threadId]->draw(context);
+	drawGraphics(context);
 }
 
 void AppBase::initializeContext(int threadId, MinVR::WindowRef window) {
@@ -96,4 +97,7 @@ void AppBase::addEventListener(EventListenerRef eventListener) {
 
 void vrbase::AppBase::doUserInput(const std::vector<MinVR::EventRef>& events,
 		double synchronizedTime) {
+}
+
+void vrbase::AppBase::drawGraphics(const SceneContext& context) {
 }
