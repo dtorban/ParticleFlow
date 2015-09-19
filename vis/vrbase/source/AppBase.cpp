@@ -14,11 +14,15 @@
 namespace vrbase {
 
 AppBase::AppBase() : _startTime(-1), _numFrames(0) {
-
 }
 
 AppBase::~AppBase() {
 }
+
+void AppBase::cleanup() {
+	VrbaseContext::cleanup();
+}
+
 
 void AppBase::doUserInputAndPreDrawComputation(
 		const std::vector<MinVR::EventRef>& events, double synchronizedTime) {
@@ -34,9 +38,9 @@ void AppBase::doUserInputAndPreDrawComputation(
 
 void AppBase::initializeContextSpecificVars(int threadId,
 		MinVR::WindowRef window) {
-	VrbaseContext::context = {threadId, window};
-	initializeContext(threadId, window);
 	_sceneMutex.lock();
+	VrbaseContext::setCurrentContext({threadId, window});
+	initializeContext(threadId, window);
 	_threadScenes[threadId] = createScene(threadId, window);
 	_sceneMutex.unlock();
 	_threadScenes[threadId]->init();
@@ -47,6 +51,7 @@ void AppBase::postInitialization() {
 
 void AppBase::perFrameComputation(int threadId, MinVR::WindowRef window) {
 	_threadScenes[threadId]->updateFrame();
+	updateContext();
 }
 
 void AppBase::preDrawComputation(double synchronizedTime) {
@@ -99,7 +104,18 @@ void AppBase::addEventListener(EventListenerRef eventListener) {
 
 void vrbase::AppBase::doUserInput(const std::vector<MinVR::EventRef>& events,
 		double synchronizedTime) {
+	for (int f = 0; f < events.size(); f++)
+	{
+		if (events[f]->getName() == "kbd_Q_down")
+		{
+			terminate();
+		}
+	}
 }
+
+void vrbase::AppBase::updateContext() {
+}
+
 
 void vrbase::AppBase::drawGraphics(const SceneContext& context) {
 }

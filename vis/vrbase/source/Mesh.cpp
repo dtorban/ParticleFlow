@@ -23,6 +23,7 @@ Mesh::Mesh(const std::vector<glm::vec3>& vertices, const std::vector<glm::vec3> 
 
 Mesh::~Mesh() {
 	delete _boundingBox;
+	cleanupContext();
 }
 
 void Mesh::init() {

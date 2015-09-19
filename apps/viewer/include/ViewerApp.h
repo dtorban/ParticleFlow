@@ -24,9 +24,11 @@ public:
 	void doUserInput(const std::vector<MinVR::EventRef> &events, double synchronizedTime);
 	vrbase::SceneRef createAppScene(int threadId, MinVR::WindowRef window);
 	void drawGraphics(const vrbase::SceneContext& context);
+	void preDrawComputation(double synchronizedTime);
 
 private:
 	std::vector<vrbase::MeshRef> _meshes;
+	vrbase::MeshRef _mesh;
 };
 
 #endif /* VIEWERAPP_H_ */

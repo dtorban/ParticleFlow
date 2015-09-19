@@ -16,8 +16,6 @@ public:
 	virtual ~VersionedItem() {}
 
 	virtual int getVersion() const { return _version; }
-
-protected:
 	void incrementVersion() {_version++;}
 
 private:
