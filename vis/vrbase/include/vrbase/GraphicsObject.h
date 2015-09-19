@@ -20,55 +20,6 @@
 
 namespace vrbase {
 
-#define GL_CONTEXT_ITEM_INIT thread_local
-#define GL_CONTEXT_ITEM static GL_CONTEXT_ITEM_INIT
-
-class GraphicsObject;
-typedef std::shared_ptr<GraphicsObject> GraphicsObjectRef;
-
-class GraphicsObject : public VersionedItem {
-public:
-
-	virtual ~GraphicsObject() {
-	}
-
-	void initContext()
-	{
-		if (!_initialized)
-		{
-			initContextItem();
-			_oldVersion = getVersion();
-			_initialized = true;
-		}
-	}
-
-	void updateContext()
-	{
-		if (!_initialized)
-		{
-			initContext();
-		}
-
-		int version = getVersion();
-		if (updateContextItem(_oldVersion != version))
-		{
-			_oldVersion = version;
-		}
-	}
-
-	virtual const Box getBoundingBox() = 0;
-	virtual void draw(const SceneContext& context) = 0;
-
-protected:
-	virtual void initContextItem() {}
-	virtual bool updateContextItem(bool changed) { return true; }
-	virtual void destroyContextItem() {}
-
-private:
-	bool _initialized;
-	int _oldVersion;
-};
-
 struct MinVRGraphicsContext
 {
 	int threadId;
@@ -126,6 +77,52 @@ public:
 
 private:
 	std::map<int, T*> _threadMap;
+};
+
+class GraphicsObject;
+typedef std::shared_ptr<GraphicsObject> GraphicsObjectRef;
+
+class GraphicsObject : public VersionedItem {
+public:
+	//GraphicsObject() : _initialized(new bool(false)), _oldVersion(new int(-1)){}
+	virtual ~GraphicsObject() {
+	}
+
+	void initContext()
+	{
+		if (!isInitialized())
+		{
+			initContextItem();
+			_oldVersion.reset(new int(getVersion()));
+			_initialized.reset(new bool(true));
+		}
+	}
+
+	void updateContext()
+	{
+		if (!isInitialized())
+		{
+			initContext();
+		}
+
+		int version = getVersion();
+		if (updateContextItem(*_oldVersion != version))
+		{
+			*_oldVersion = version;
+		}
+	}
+
+	virtual void draw(const SceneContext& context) = 0;
+
+protected:
+	virtual void initContextItem() {}
+	virtual bool updateContextItem(bool changed) { return true; }
+	virtual void destroyContextItem() {}
+
+private:
+	bool isInitialized() { return _initialized.get() != NULL && *_initialized; }
+	ContextSpecificPtr<bool> _initialized;
+	ContextSpecificPtr<int> _oldVersion;
 };
 
 } /* namespace vrbase */
