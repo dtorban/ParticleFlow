@@ -12,8 +12,11 @@
 #include "vrbase/Box.h"
 #include "vrbase/scenes/SceneContext.h"
 #include "vrbase/VersionedItem.h"
+#include "MVRCore/Event.H"
 #include <thread>
 #include <memory>
+#include <map>
+#include <iostream>
 
 namespace vrbase {
 
@@ -27,10 +30,6 @@ class GraphicsObject : public VersionedItem {
 public:
 
 	virtual ~GraphicsObject() {
-		if (_initialized)
-		{
-			destroyContextItem();
-		}
 	}
 
 	void initContext()
@@ -39,13 +38,17 @@ public:
 		{
 			initContextItem();
 			_oldVersion = getVersion();
+			_initialized = true;
 		}
-
-		_initialized = true;
 	}
 
 	void updateContext()
 	{
+		if (!_initialized)
+		{
+			initContext();
+		}
+
 		int version = getVersion();
 		if (updateContextItem(_oldVersion != version))
 		{
@@ -62,8 +65,67 @@ protected:
 	virtual void destroyContextItem() {}
 
 private:
-	bool _initialized = false;
+	bool _initialized;
 	int _oldVersion;
+};
+
+struct MinVRGraphicsContext
+{
+	int threadId;
+	MinVR::WindowRef window;
+};
+
+class VrbaseContext
+{
+public:
+	static thread_local MinVRGraphicsContext context;
+};
+
+template<typename T>
+class ContextSpecificPtr {
+public:
+	ContextSpecificPtr() {}
+	ContextSpecificPtr(T* value) { reset(value); }
+	virtual ~ContextSpecificPtr() {
+		typedef typename std::map<int, T*>::iterator it_type;
+		for(it_type iterator = _threadMap.begin(); iterator != _threadMap.end(); iterator++) {
+			delete iterator->second;
+		}
+	}
+
+	T* get()
+	{
+		if (VrbaseContext::context.threadId < 0) { return NULL; }
+
+		typedef typename std::map<int, T*>::iterator it_type;
+		it_type it = _threadMap.find(VrbaseContext::context.threadId);
+		if (it != _threadMap.end())
+		{
+			return it->second;
+		}
+
+		return NULL;
+	}
+
+	void reset(T* value)
+	{
+		T* val = get();
+		if (val != NULL)
+		{
+			delete val;
+		}
+
+		if (VrbaseContext::context.threadId >= 0)
+		{
+			_threadMap[VrbaseContext::context.threadId] = value;
+		}
+	}
+
+	T& operator*() {return *get();}
+	T* operator->() {return get();}
+
+private:
+	std::map<int, T*> _threadMap;
 };
 
 } /* namespace vrbase */

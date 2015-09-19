@@ -9,6 +9,7 @@
 #include "MVRCore/CameraOffAxis.H"
 #include "vrbase/cameras/OffAxisCamera.h"
 #include "vrbase/scenes/BlankScene.h"
+#include "vrbase/GraphicsObject.h"
 
 namespace vrbase {
 
@@ -33,6 +34,7 @@ void AppBase::doUserInputAndPreDrawComputation(
 
 void AppBase::initializeContextSpecificVars(int threadId,
 		MinVR::WindowRef window) {
+	VrbaseContext::context = {threadId, window};
 	initializeContext(threadId, window);
 	_sceneMutex.lock();
 	_threadScenes[threadId] = createScene(threadId, window);

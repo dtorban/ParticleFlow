@@ -59,9 +59,12 @@ private:
 	void createVBO();
 	void deleteVBO();
 
-	GL_CONTEXT_ITEM GLuint _vao;
+	ContextSpecificPtr<GLuint> _vao;
+	ContextSpecificPtr<GLuint> _vbo;
+	ContextSpecificPtr<GLuint> _indexVbo;
+	/*GL_CONTEXT_ITEM GLuint _vao;
 	GL_CONTEXT_ITEM GLuint _vbo;
-	GL_CONTEXT_ITEM GLuint _indexVbo;
+	GL_CONTEXT_ITEM GLuint _indexVbo;*/
 };
 
 } /* namespace vrbase */

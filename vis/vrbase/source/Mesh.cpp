@@ -126,9 +126,9 @@ void Mesh::calculateNormals() {
 
 // Graphics code
 
-GL_CONTEXT_ITEM_INIT GLuint Mesh::_vao = 0;
-GL_CONTEXT_ITEM_INIT GLuint Mesh::_vbo = 0;
-GL_CONTEXT_ITEM_INIT GLuint Mesh::_indexVbo = 0;
+//GL_CONTEXT_ITEM_INIT GLuint Mesh::_vao = 0;
+//GL_CONTEXT_ITEM_INIT GLuint Mesh::_vbo = 0;
+//GL_CONTEXT_ITEM_INIT GLuint Mesh::_indexVbo = 0;
 
 void Mesh::createVBO() {
 	std::cout << "Update VBO" << std::endl;
@@ -137,21 +137,25 @@ void Mesh::createVBO() {
 	const std::vector<unsigned int>& indices = _indices;
 	int numNormals = normals.size();
 
-	glGenVertexArrays(1, &_vao);
-	glGenBuffers(1, &_vbo);
-	glGenBuffers(1, &_indexVbo);
+	_vao.reset(new GLuint(0));
+	_vbo.reset(new GLuint(0));
+	_indexVbo.reset(new GLuint(0));
+
+	glGenVertexArrays(1, _vao.get());
+	glGenBuffers(1, _vbo.get());
+	glGenBuffers(1, _indexVbo.get());
 
 	int numVertices = vertices.size();
 	int numIndices = indices.size();
 
-	glBindBuffer(GL_ARRAY_BUFFER, _vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, *_vbo);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*numVertices*3 + sizeof(GLfloat)*numNormals*3, 0, GL_DYNAMIC_DRAW);
 
-	glBindVertexArray(_vao);
+	glBindVertexArray(*_vao);
 	int loc = 0;
 	generateVaoAttributes(loc);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexVbo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, *_indexVbo);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int)*numIndices, 0, GL_DYNAMIC_DRAW);
 
 	glm::vec3* verts = new glm::vec3[numVertices];
@@ -162,12 +166,12 @@ void Mesh::createVBO() {
 	std::copy(normals.begin(), normals.end(), norms);
 	std::copy(indices.begin(), indices.end(), ind);
 
-	glBindBuffer(GL_ARRAY_BUFFER, _vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, *_vbo);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(GLfloat)*numVertices*3, verts);
 	glBufferSubData(GL_ARRAY_BUFFER, sizeof(GLfloat)*numVertices*3, sizeof(GLfloat)*numNormals*3, norms);
 
 	// create indexes
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexVbo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, *_indexVbo);
 	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(unsigned int)*numIndices, ind);
 
 	delete[] verts;
@@ -176,7 +180,7 @@ void Mesh::createVBO() {
 }
 
 void Mesh::generateVaoAttributes(int& location) {
-	glBindBuffer(GL_ARRAY_BUFFER, _vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, *_vbo);
 	glEnableVertexAttribArray(location);
 	glVertexAttribPointer(location, 3, GL_FLOAT, GL_FALSE, 3*sizeof(GLfloat), (char*)0 + 0*sizeof(GLfloat));
 	glEnableVertexAttribArray(++location);
@@ -184,18 +188,18 @@ void Mesh::generateVaoAttributes(int& location) {
 }
 
 int Mesh::bindIndices() {
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexVbo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, *_indexVbo);
 	return _indices.size();
 }
 
 void Mesh::deleteVBO() {
-	glDeleteVertexArrays(1, &_vao);
-	glDeleteBuffers(1, &_vbo);
-	glDeleteBuffers(1, &_indexVbo);
+	glDeleteVertexArrays(1, _vao.get());
+	glDeleteBuffers(1, _vbo.get());
+	glDeleteBuffers(1, _indexVbo.get());
 }
 
 void Mesh::draw(const SceneContext& context) {
-	glBindVertexArray(_vao);
+	glBindVertexArray(*_vao);
 	int numIndices = bindIndices();
 
 	glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, 0);

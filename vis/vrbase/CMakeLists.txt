@@ -32,6 +32,7 @@ source/scenes/SceneContext.cpp
 source/textures/DataTexture.cpp
 source/AppBase.cpp
 source/Box.cpp
+source/GraphicsObject.cpp
 source/main.cpp
 source/Mesh.cpp
 source/Shader.cpp
