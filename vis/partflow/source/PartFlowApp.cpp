@@ -13,6 +13,7 @@
 #include "vrbase/scenes/CenteredScene.h"
 #include <glm/gtc/matrix_access.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include "vrbase/cameras/WorldCamera.h"
 
 namespace PFVis {
 namespace partflow {
@@ -92,6 +93,23 @@ vrbase::SceneRef PartFlowApp::createScene(int threadId,
 vrbase::SceneRef PartFlowApp::createAppScene(int threadId,
 		MinVR::WindowRef window) {
 	return vrbase::AppBase::createScene(threadId, window);
+}
+
+void PartFlowApp::drawGraphics(const vrbase::SceneContext& context) {
+	glm::mat4 objectToWorld = context.getCamera().getObjectToWorldMatrix();
+
+	const vrbase::Box box = getBoundingBox();
+	float size = glm::length((box.getHigh()-box.getLow()));
+
+	objectToWorld *= _objectToWorld;
+
+	objectToWorld = glm::scale(objectToWorld, glm::vec3(1.0f/size));
+	objectToWorld = glm::translate(objectToWorld, -box.center());
+
+	vrbase::SceneContext newContext(context);
+	vrbase::WorldCamera newCamera(context.getCamera(), objectToWorld);
+	newContext.setCamera(newCamera);
+	drawAppGraphics(newContext);
 }
 
 } /* namespace partflow */

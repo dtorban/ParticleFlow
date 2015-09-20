@@ -28,7 +28,7 @@ Shader::Shader(const std::string& vertexShader,
 }
 
 Shader::~Shader() {
-	glDeleteProgram(_shaderProgram);
+	cleanupContext();
 }
 
 std::string Shader::loadFile(const std::string &fileName)
@@ -79,17 +79,17 @@ void Shader::init() {
 	compileShader(fragmentShader, loadFile(_fragmentShader));
 
 	// create program
-	_shaderProgram = glCreateProgram();
+	_shaderProgram.reset(new GLuint(glCreateProgram()));
 	// attach shaders
-	glAttachShader(_shaderProgram, vertexShader);
+	glAttachShader(*_shaderProgram, vertexShader);
 	if (_geometryShader != "")
 	{
-		glAttachShader(_shaderProgram, geometryShader);
+		glAttachShader(*_shaderProgram, geometryShader);
 	}
-	glAttachShader(_shaderProgram, fragmentShader);
+	glAttachShader(*_shaderProgram, fragmentShader);
 	// link the program and check for errors
-	glLinkProgram(_shaderProgram);
-	if (!checkProgramLinkStatus(_shaderProgram))
+	glLinkProgram(*_shaderProgram);
+	if (!checkProgramLinkStatus(*_shaderProgram))
 	{
 		exit(0);
 	}
@@ -106,7 +106,11 @@ void Shader::useProgram()
 		init();
 	}
 
-	glUseProgram(_shaderProgram);
+	glUseProgram(*_shaderProgram);
+}
+
+void Shader::releaseProgram() {
+	glUseProgram(0);
 }
 
 // helper to check and display for shader compiler errors
@@ -125,22 +129,22 @@ bool Shader::checkShaderCompileStatus(GLuint obj) {
 }
 
 void Shader::setParameter(const std::string& name, glm::mat4 matrix) {
-	GLint loc = glGetUniformLocation(_shaderProgram, name.c_str());
+	GLint loc = glGetUniformLocation(*_shaderProgram, name.c_str());
 	glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(matrix));
 }
 
 void Shader::setParameter(const std::string& name, glm::vec3 vector) {
-	GLint loc = glGetUniformLocation(_shaderProgram, name.c_str());
+	GLint loc = glGetUniformLocation(*_shaderProgram, name.c_str());
 	glUniform3fv(loc, 1, glm::value_ptr(vector));
 }
 
 void Shader::setParameter(const std::string& name, GLuint id) {
-	GLint loc = glGetUniformLocation(_shaderProgram, name.c_str());
+	GLint loc = glGetUniformLocation(*_shaderProgram, name.c_str());
 	glUniform1i(loc, id);
 }
 
 void Shader::setParameter(const std::string& name, float* values, int numValues) {
-	GLint loc = glGetUniformLocation(_shaderProgram, name.c_str());
+	GLint loc = glGetUniformLocation(*_shaderProgram, name.c_str());
 	glUniform1fv(loc, numValues, values);
 }
 
@@ -159,4 +163,13 @@ bool Shader::checkProgramLinkStatus(GLuint obj) {
 	return true;
 }
 
+void Shader::initContextItem() {
+	init();
 }
+
+void Shader::destroyContextItem() {
+	glDeleteProgram(*_shaderProgram);
+}
+
+}
+

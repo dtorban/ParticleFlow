@@ -11,6 +11,7 @@
 
 #include "PFVis/PartFlowApp.h"
 #include "vrbase/Mesh.h"
+#include "vrbase/Shader.h"
 #include <vector>
 
 class ViewerAppScene;
@@ -23,12 +24,14 @@ public:
 
 	void doUserInput(const std::vector<MinVR::EventRef> &events, double synchronizedTime);
 	vrbase::SceneRef createAppScene(int threadId, MinVR::WindowRef window);
-	void drawGraphics(const vrbase::SceneContext& context);
+	void drawAppGraphics(const vrbase::SceneContext& context);
 	void preDrawComputation(double synchronizedTime);
+	virtual vrbase::Box getBoundingBox() { return _mesh->getBoundingBox(); }
 
 private:
 	std::vector<vrbase::MeshRef> _meshes;
 	vrbase::MeshRef _mesh;
+	vrbase::ShaderRef _shader;
 };
 
 #endif /* VIEWERAPP_H_ */

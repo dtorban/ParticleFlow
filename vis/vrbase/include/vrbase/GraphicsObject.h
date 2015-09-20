@@ -10,7 +10,6 @@
 #define GRAPHICSOBJECT_H_
 
 #include "vrbase/Box.h"
-#include "vrbase/scenes/SceneContext.h"
 #include "vrbase/VersionedItem.h"
 #include "MVRCore/Event.H"
 #include "MVRCore/AbstractWindow.H"
@@ -19,6 +18,8 @@
 #include <map>
 #include <iostream>
 #include <vector>
+#include "GL/glew.h"
+#include <glm/glm.hpp>
 
 namespace vrbase {
 
@@ -113,9 +114,9 @@ private:
 	std::map<int, T*> _threadMap;
 };
 
-class GraphicsObject : public VersionedItem {
+class ContextObject : public VersionedItem {
 public:
-	virtual ~GraphicsObject() {
+	virtual ~ContextObject() {
 	}
 
 	void initContext()
@@ -176,8 +177,6 @@ public:
 		}
 	}
 
-	virtual void draw(const SceneContext& context) = 0;
-
 protected:
 	virtual void initContextItem() {}
 	virtual bool updateContextItem(bool changed) { return true; }
@@ -187,6 +186,15 @@ private:
 	bool isInitialized() { return _initialized.get() != NULL && *_initialized; }
 	ContextSpecificPtr<bool> _initialized;
 	ContextSpecificPtr<int> _oldVersion;
+};
+
+class SceneContext;
+
+class GraphicsObject : public ContextObject {
+public:
+	virtual ~GraphicsObject() {}
+
+	virtual void draw(const vrbase::SceneContext& context) = 0;
 };
 
 } /* namespace vrbase */

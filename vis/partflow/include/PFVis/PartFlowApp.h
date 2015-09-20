@@ -21,6 +21,9 @@ public:
 	virtual void initializeContext(int threadId, MinVR::WindowRef window);
 	vrbase::SceneRef createScene(int threadId, MinVR::WindowRef window);
 	virtual vrbase::SceneRef createAppScene(int threadId, MinVR::WindowRef window);
+	void drawGraphics(const vrbase::SceneContext& context);
+	virtual void drawAppGraphics(const vrbase::SceneContext& context) {}
+	virtual vrbase::Box getBoundingBox() { return vrbase::Box(); }
 
 protected:
 	PartFlowApp();

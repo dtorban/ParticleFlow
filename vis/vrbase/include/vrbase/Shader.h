@@ -10,16 +10,15 @@
 #define SHADER_H_
 
 #include <string>
-#include "GL/glew.h"
-#include <glm/glm.hpp>
 #include <memory>
+#include "vrbase/GraphicsObject.h"
 
 namespace vrbase {
 
 class Shader;
 typedef std::shared_ptr<class Shader> ShaderRef;
 
-class Shader {
+class Shader : public ContextObject {
 public:
 	Shader(const std::string &vertexShader, const std::string &geometryShader, const std::string &fragmentShader);
 	Shader(const std::string &vertexShader, const std::string &fragmentShader);
@@ -27,10 +26,14 @@ public:
 
 	void init();
 	void useProgram();
+	void releaseProgram();
 	void setParameter(const std::string& name, glm::mat4 matrix);
 	void setParameter(const std::string& name, glm::vec3 vector);
 	void setParameter(const std::string& name, GLuint id);
 	void setParameter(const std::string& name, float* values, int numValues);
+
+	void initContextItem();
+	void destroyContextItem();
 
 private:
 	std::string loadFile(const std::string &fileName);
@@ -39,7 +42,7 @@ private:
 	bool checkProgramLinkStatus(GLuint obj);
 
 	bool _isInitialized;
-	GLuint _shaderProgram;
+	ContextSpecificPtr<GLuint> _shaderProgram;
 	std::string _vertexShader;
 	std::string _geometryShader;
 	std::string _fragmentShader;
