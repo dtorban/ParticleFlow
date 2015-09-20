@@ -17,13 +17,11 @@ project (viewer)
 
 set (SOURCEFILES
 source/ViewerApp.cpp
-source/ViewerAppScene.cpp
 source/main.cpp
 )
 
 set (HEADERFILES
 include/ViewerApp.h
-include/ViewerAppScene.h
 )
 
 source_group("Header Files" FILES ${HEADERFILES})

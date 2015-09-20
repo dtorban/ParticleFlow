@@ -22,14 +22,14 @@ public:
 	ViewerApp();
 	virtual ~ViewerApp();
 
-	void doUserInput(const std::vector<MinVR::EventRef> &events, double synchronizedTime);
-	vrbase::SceneRef createAppScene(int threadId, MinVR::WindowRef window);
-	void drawAppGraphics(const vrbase::SceneContext& context);
-	void preDrawComputation(double synchronizedTime);
+	void doUserInput(const std::vector<MinVR::EventRef>& events, double synchronizedTime);
+
+	void initializeContext(int threadId, MinVR::WindowRef window);
+	void updateContext();
 	virtual vrbase::Box getBoundingBox() { return _mesh->getBoundingBox(); }
+	void drawAppGraphics(const vrbase::SceneContext& context);
 
 private:
-	std::vector<vrbase::MeshRef> _meshes;
 	vrbase::MeshRef _mesh;
 	vrbase::ShaderRef _shader;
 };

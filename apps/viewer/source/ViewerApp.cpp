@@ -9,11 +9,6 @@
 #include <viewer/include/ViewerApp.h>
 #include <vector>
 
-#include "ViewerAppScene.h"
-#include "vrbase/scenes/render/BasicRenderedScene.h"
-#include "vrbase/scenes/MeshScene.h"
-#include "vrbase/scenes/BlankScene.h"
-
 ViewerApp::ViewerApp() : PFVis::partflow::PartFlowApp() {
 
 	AppBase::init();
@@ -30,13 +25,10 @@ ViewerApp::ViewerApp() : PFVis::partflow::PartFlowApp() {
 		std::vector<unsigned int> indices;
 		for (int f = 0; f < vertices.size(); f++)
 		{
-			//vertices[f] += glm::vec3(pos, 0.0f);
 			indices.push_back(f);
 		}
 
-		vrbase::MeshRef	mesh = vrbase::MeshRef(new vrbase::Mesh(vertices, indices));
-		_mesh = mesh;
-
+		_mesh = vrbase::MeshRef(new vrbase::Mesh(vertices, indices));
 
 		std::string vs_text =
 				"#version 330\n"
@@ -56,24 +48,8 @@ ViewerApp::ViewerApp() : PFVis::partflow::PartFlowApp() {
 				"p = pos*25.0;\n"
 				"v = (View * Model * vec4(pos,1.0)).xyz;\n"
 				"gl_Position = Projection*View*Model*vec4(pos,1.0);\n"
-				//"v = (View * Model * vec4(pos+loc,1.0)).xyz;\n"
-				//"gl_Position = Projection*View*Model*vec4(pos+loc,1.0);\n"
 				"N = normalize((View*Model*vec4(normal,0)).xyz);\n"
 				"}\n";
-				/*
-	    "#version 330\n"
-	    "layout(location = 0) in vec3 position;"
-	    "layout(location = 1) in vec3 normal;"
-	    "uniform mat4 model;"
-	    "uniform mat4 view;"
-	    "uniform mat4 proj;"
-	    "out vec3 fragColor, fragPosition, fragNormal;\n"
-	    "void main() {\n"
-	    "  fragColor = vec4(1.0,0.0,0.0,1.0);\n"
-	    "  gl_Position = proj * view * model * vec4(position,1.0);\n"
-	    "  fragPosition = (model * vec4(position,1.0)).xyz;\n"
-	    "  fragNormal = normalize((transpose(inverse(model)) * vec4(normal,1.0)).xyz);\n"
-	    "}\n";*/
 
 	    std::string fs_text =
 	    		"#version 330\n"
@@ -85,8 +61,6 @@ ViewerApp::ViewerApp() : PFVis::partflow::PartFlowApp() {
 	    		"in vec3 p;\n"
 	    		"\n"
 	    		"void main() {\n"
-	    		//"	FragColor = vec4(1.0,0,0,1.0);\n"
-
 	    		"	vec3 lightPos = vec3(0.5, 0.0, 3.0);\n"
 	    		"	vec4 color = vec4(1.0,0,0,1.0);\n" //vec4(p.y,0.4,1.0,0.3);\n"
 	    		"	vec3 L = normalize(lightPos - v); \n"
@@ -107,52 +81,22 @@ ViewerApp::~ViewerApp() {
 
 void ViewerApp::doUserInput(const std::vector<MinVR::EventRef>& events,
 		double synchronizedTime) {
-	for (int f = 0; f < events.size(); f++)
-	{
-		if (events[f]->getName() == "mouse_btn_right_down")
-		{
-			std::vector<glm::vec3> vertices;
-
-			MinVR::WindowRef window = events[f]->getWindow();
-			glm::vec2 res(window->getWidth(), window->getHeight());
-			glm::vec2 pos(events[f]->get2DData());
-			pos /= res;
-
-			vertices.push_back(glm::vec3(-1.0f, -1.0, 0.0));
-			vertices.push_back(glm::vec3(-1.0f, 1.0, 0.0));
-			vertices.push_back(glm::vec3(1.0f, 1.0, 0.0));
-
-			vertices.push_back(glm::vec3(1.0f, 1.0, 0.0));
-			vertices.push_back(glm::vec3(1.0f, -1.0, 0.0));
-			vertices.push_back(glm::vec3(-1.0f, -1.0, 0.0));
-
-			std::vector<unsigned int> indices;
-			for (int f = 0; f < vertices.size(); f++)
-			{
-				vertices[f] += glm::vec3(pos, 0.0f);
-				indices.push_back(f);
-			}
-
-			_meshes.push_back(vrbase::MeshRef(new vrbase::Mesh(vertices, indices)));
-			incrementVersion();
-		}
-	}
+	//for (int f = 0; f < events.size(); f++)
+	//{
+	//}
 
 	AppBase::doUserInput(events, synchronizedTime);
 
 }
 
-vrbase::SceneRef ViewerApp::createAppScene(int threadId,
-		MinVR::WindowRef window) {
-
+void ViewerApp::initializeContext(int threadId, MinVR::WindowRef window) {
 	_shader->initContext();
 	_mesh->initContext();
+}
 
-	//vrbase::SceneRef scene = vrbase::SceneRef(new vrbase::MeshScene(mesh));
-	vrbase::SceneRef scene = vrbase::SceneRef(new vrbase::BlankScene());
-	scene = vrbase::SceneRef(new vrbase::BasicRenderedScene(scene));
-	return scene;
-	//return vrbase::SceneRef(new ViewerAppScene(this));
+void ViewerApp::updateContext() {
+	_shader->updateContext();
+	_mesh->updateContext();
 }
 
 void ViewerApp::drawAppGraphics(const vrbase::SceneContext& context) {
@@ -162,11 +106,4 @@ void ViewerApp::drawAppGraphics(const vrbase::SceneContext& context) {
 	_shader->setParameter("Projection", context.getCamera().getProjetionMatrix());
 	_mesh->draw(context);
 	_shader->releaseProgram();
-}
-
-void ViewerApp::preDrawComputation(double synchronizedTime) {
-	//_mesh->incrementVersion();
-	_mesh->updateImediately();
-
-	AppBase::preDrawComputation(synchronizedTime);
 }
