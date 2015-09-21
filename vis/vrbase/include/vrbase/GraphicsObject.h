@@ -20,6 +20,7 @@
 #include <vector>
 #include "GL/glew.h"
 #include <glm/glm.hpp>
+#include "vrbase/Box.h"
 
 namespace vrbase {
 
@@ -194,6 +195,7 @@ class GraphicsObject : public ContextObject {
 public:
 	virtual ~GraphicsObject() {}
 
+	virtual const Box getBoundingBox() = 0;
 	virtual void draw(const vrbase::SceneContext& context) = 0;
 };
 
