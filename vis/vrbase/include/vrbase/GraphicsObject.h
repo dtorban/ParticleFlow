@@ -24,6 +24,12 @@
 
 namespace vrbase {
 
+#if defined(WIN32)
+#define THREAD_LOCAL __declspec(thread)
+#else
+#define THREAD_LOCAL thread_local
+#endif
+
 class GraphicsObject;
 typedef std::shared_ptr<GraphicsObject> GraphicsObjectRef;
 
@@ -43,17 +49,28 @@ public:
 			contextMap[context.threadId] = context;
 		}
 
-		currentContext = context;
+		currentThreadId = context.threadId;
 	}
 
 	static void cleanup()
 	{
 		contextMap.clear();
-		currentContext = {-1, NULL};
+		currentThreadId = -1;
+	}
+
+	static MinVRGraphicsContext getCurrentContext()
+	{
+		if (currentThreadId >= 0)
+		{
+			return contextMap[currentThreadId];
+		}
+
+		MinVRGraphicsContext context = { -1, NULL };
+		return context;
 	}
 
 	static std::map<int, MinVRGraphicsContext> contextMap;
-	static thread_local MinVRGraphicsContext currentContext;
+	static THREAD_LOCAL int currentThreadId;
 };
 
 template<typename T>
@@ -70,10 +87,10 @@ public:
 
 	T* get()
 	{
-		if (VrbaseContext::currentContext.threadId < 0) { return NULL; }
+		if (VrbaseContext::currentThreadId < 0) { return NULL; }
 
 		typedef typename std::map<int, T*>::iterator it_type;
-		it_type it = _threadMap.find(VrbaseContext::currentContext.threadId);
+		it_type it = _threadMap.find(VrbaseContext::currentThreadId);
 		if (it != _threadMap.end())
 		{
 			return it->second;
@@ -90,9 +107,9 @@ public:
 			delete val;
 		}
 
-		if (VrbaseContext::currentContext.threadId >= 0)
+		if (VrbaseContext::currentThreadId >= 0)
 		{
-			_threadMap[VrbaseContext::currentContext.threadId] = value;
+			_threadMap[VrbaseContext::currentThreadId] = value;
 		}
 	}
 
@@ -146,35 +163,35 @@ public:
 
 	void cleanupContext()
 	{
-		if (VrbaseContext::currentContext.threadId < 0)
+		if (VrbaseContext::getCurrentContext().threadId < 0)
 		{
 			std::vector<MinVRGraphicsContext> contexts = _initialized.getContexts();
 			for (int f = 0; f < contexts.size(); f++)
 			{
-				VrbaseContext::currentContext = contexts[f];
+				VrbaseContext::currentThreadId = contexts[f].threadId;
 				contexts[f].window->makeContextCurrent();
 				cleanupContextItem();
 				contexts[f].window->releaseContext();
 			}
 
-			VrbaseContext::currentContext = {-1, NULL};
+			VrbaseContext::currentThreadId = -1;
 		}
 	}
 
 	void updateImediately()
 	{
-		if (VrbaseContext::currentContext.threadId < 0)
+		if (VrbaseContext::currentThreadId < 0)
 		{
 			std::vector<MinVRGraphicsContext> contexts = _initialized.getContexts();
 			for (int f = 0; f < contexts.size(); f++)
 			{
-				VrbaseContext::currentContext = contexts[f];
+				VrbaseContext::currentThreadId = contexts[f].threadId;
 				contexts[f].window->makeContextCurrent();
 				updateContext();
 				contexts[f].window->releaseContext();
 			}
 
-			VrbaseContext::currentContext = {-1, NULL};
+			VrbaseContext::currentThreadId = -1;
 		}
 	}
 

@@ -105,7 +105,7 @@ void MeshScene::generateVaoAttributes(int& location) {
 }
 
 int MeshScene::bindIndices() {
-	_mesh->bindIndices();
+	return _mesh->bindIndices();
 	/*glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexVbo);
 	return _numIndices;*/
 }

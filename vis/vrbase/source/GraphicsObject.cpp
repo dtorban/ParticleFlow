@@ -11,6 +11,7 @@
 namespace vrbase {
 
 std::map<int, MinVRGraphicsContext> VrbaseContext::contextMap = std::map<int, MinVRGraphicsContext>();
-thread_local MinVRGraphicsContext VrbaseContext::currentContext = {-1, NULL};
+__declspec(thread) int VrbaseContext::currentThreadId = -1;
+//__declspec(thread) MinVRGraphicsContext VrbaseContext::currentContext = { -1, NULL };
 
 } /* namespace vrbase */
