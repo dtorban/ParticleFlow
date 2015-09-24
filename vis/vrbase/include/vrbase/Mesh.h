@@ -47,6 +47,8 @@ private:
 public:
 	const Box getBoundingBox();
 	void draw(const SceneContext& context);
+	void initVboContext() { initContext(); }
+	void updateVboContext() { updateContext(); }
 	void generateVaoAttributes(int &location);
 	int bindIndices();
 

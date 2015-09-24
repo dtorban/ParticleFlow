@@ -20,6 +20,7 @@ source/cameras/OffAxisCamera.cpp
 source/cameras/WorldCamera.cpp
 source/events/BasicMouseListener.cpp
 source/events/BasicTouchListener.cpp
+source/instancing/InstancedObject.cpp
 source/scenes/app/AppScene.cpp
 source/scenes/render/BasicRenderedScene.cpp
 source/scenes/BlankScene.cpp
@@ -44,6 +45,7 @@ include/vrbase/cameras/OffAxisCamera.h
 include/vrbase/cameras/WorldCamera.h
 include/vrbase/events/BasicMouseListener.h
 include/vrbase/events/BasicTouchListener.h
+include/vrbase/instancing/InstancedObject.h
 include/vrbase/scenes/app/AppScene.h
 include/vrbase/scenes/management/ObjectSceneFactory.h
 include/vrbase/scenes/management/ObjectSceneManager.h

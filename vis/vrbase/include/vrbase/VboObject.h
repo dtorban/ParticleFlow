@@ -9,12 +9,19 @@
 #ifndef VBOOBJECT_H_
 #define VBOOBJECT_H_
 
+#include <memory>
+
 namespace vrbase {
+
+class VboObject;
+typedef std::shared_ptr<VboObject> VboObjectRef;
 
 class VboObject {
 public:
 	virtual ~VboObject() {}
 
+	virtual void initVboContext() = 0;
+	virtual void updateVboContext() = 0;
 	virtual void generateVaoAttributes(int &location) = 0;
 	virtual int bindIndices() = 0;
 };
