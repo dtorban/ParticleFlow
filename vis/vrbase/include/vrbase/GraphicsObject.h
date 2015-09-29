@@ -196,9 +196,9 @@ public:
 	}
 
 protected:
-	virtual void initContextItem() {}
-	virtual bool updateContextItem(bool changed) { return true; }
-	virtual void cleanupContextItem() {}
+	virtual void initContextItem() = 0;
+	virtual bool updateContextItem(bool changed) = 0;
+	virtual void cleanupContextItem() = 0;
 
 private:
 	bool isInitialized() { return _initialized.get() != NULL && *_initialized; }

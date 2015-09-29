@@ -29,8 +29,9 @@ public:
 	const Box getBoundingBox();
 	void draw(const SceneContext& context);
 
-	virtual void initVboContext() { init(); }
-	virtual void updateVboContext() { updateFrame(); }
+	void initContextItem() { init(); }
+	bool updateContextItem(bool changed) { if (changed) { updateFrame(); } return true; }
+	void cleanupContextItem() { deleteVBO(); }
 	void generateVaoAttributes(int &location);
 	int bindIndices();
 

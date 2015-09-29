@@ -12,14 +12,14 @@
 #include <memory>
 #include "vrbase/Box.h"
 #include <vector>
-#include "vrbase/GraphicsObject.h"
+#include "vrbase/VboObject.h"
 
 namespace vrbase {
 
 class Mesh;
 typedef std::shared_ptr<Mesh> MeshRef;
 
-class Mesh : public GraphicsObject {
+class Mesh : public VboObject {
 public:
 	Mesh(const std::vector<glm::vec3> &vertices, const std::vector<unsigned int>& indices);
 	Mesh(const std::vector<glm::vec3> &vertices, const std::vector<glm::vec3> &normals, const std::vector<unsigned int>& indices);
@@ -55,7 +55,7 @@ public:
 protected:
 	void initContextItem();
 	bool updateContextItem(bool changed);
-	void destroyContextItem();
+	void cleanupContextItem();
 
 private:
 	void createVBO();

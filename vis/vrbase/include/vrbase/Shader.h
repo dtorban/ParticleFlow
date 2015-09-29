@@ -33,7 +33,8 @@ public:
 	void setParameter(const std::string& name, float* values, int numValues);
 
 	void initContextItem();
-	void destroyContextItem();
+	bool updateContextItem(bool changed) { return true; }
+	void cleanupContextItem();
 
 private:
 	std::string loadFile(const std::string &fileName);

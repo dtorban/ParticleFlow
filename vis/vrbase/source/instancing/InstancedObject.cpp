@@ -18,7 +18,7 @@ InstancedObject::~InstancedObject() {
 }
 
 void InstancedObject::initContextItem() {
-	_vboObject->initVboContext();
+	_vboObject->initContext();
 	_vboObject->generateVaoAttributes(_startLocation);
 	initContextItem(_startLocation);
 }
@@ -26,14 +26,11 @@ void InstancedObject::initContextItem() {
 bool InstancedObject::updateContextItem(bool changed) {
 	if (changed)
 	{
-		_vboObject->updateVboContext();
+		_vboObject->updateContext();
 		_vboObject->generateVaoAttributes(_startLocation);
 	}
 
 	return updateContextItem(changed, _startLocation);
-}
-
-void InstancedObject::cleanupContextItem() {
 }
 
 void InstancedObject::draw(const vrbase::SceneContext& context) {

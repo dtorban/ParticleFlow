@@ -21,7 +21,6 @@ public:
 
 	void initContextItem();
 	bool updateContextItem(bool changed);
-	void cleanupContextItem();
 	void draw(const vrbase::SceneContext& context);
 
 	virtual bool initContextItem(int startLocation) = 0;

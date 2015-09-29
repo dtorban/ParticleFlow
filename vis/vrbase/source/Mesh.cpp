@@ -221,7 +221,7 @@ bool Mesh::updateContextItem(bool changed) {
 	return true;
 }
 
-void Mesh::destroyContextItem() {
+void Mesh::cleanupContextItem() {
 	deleteVBO();
 }
 

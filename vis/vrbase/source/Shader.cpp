@@ -167,7 +167,7 @@ void Shader::initContextItem() {
 	init();
 }
 
-void Shader::destroyContextItem() {
+void Shader::cleanupContextItem() {
 	glDeleteProgram(*_shaderProgram);
 }
 
